@@ -1,125 +1,159 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Home, Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
   { label: "Home", href: "/" },
-  { label: "About", href: "#about" },
-  { label: "Properties", href: "#properties" },
-  { label: "News", href: "#insights" },
-  { label: "Contact", href: "#contact" },
+  { label: "Properties", href: "/properties" },
+  { label: "About", href: "/about" },
+  { label: "Our Team", href: "/team" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const isTransparent = isHome && !scrolled;
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 60);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <motion.header
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled ? "bg-white/95 backdrop-blur-md shadow-sm" : "bg-white"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        isTransparent
+          ? "bg-transparent"
+          : "bg-white/95 backdrop-blur-md border-b border-gray-100"
       )}
     >
-      <nav className="container mx-auto px-6 h-14 flex items-center justify-between max-w-6xl">
+      <nav className="mx-auto px-6 lg:px-10 h-16 flex items-center justify-between max-w-7xl">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-base text-black">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-black">
-            <Home className="h-3.5 w-3.5 text-white" />
-          </div>
-          DreamHouse
+        <Link
+          href="/"
+          className={cn(
+            "text-[15px] font-bold tracking-tight transition-colors",
+            isTransparent ? "text-white" : "text-black"
+          )}
+        >
+          Horizon
+          <span
+            className={cn(
+              "font-light",
+              isTransparent ? "text-white/70" : "text-gray-400"
+            )}
+          >
+            Estate
+          </span>
         </Link>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-7">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-gray-600 hover:text-black transition-colors"
+              className={cn(
+                "text-sm transition-colors",
+                isTransparent
+                  ? cn(
+                      "text-white/60 hover:text-white",
+                      pathname === link.href && "text-white font-medium"
+                    )
+                  : cn(
+                      "text-gray-500 hover:text-black",
+                      pathname === link.href && "text-black font-semibold"
+                    )
+              )}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* Right: Admin + CTA */}
+        <div className="hidden md:flex items-center gap-4">
           <Link
             href="/admin/login"
-            className="text-sm text-gray-500 hover:text-black transition-colors"
+            className={cn(
+              "text-xs transition-colors",
+              isTransparent
+                ? "text-white/40 hover:text-white/60"
+                : "text-gray-400 hover:text-gray-600"
+            )}
           >
             Admin
           </Link>
-          <a
-            href="#contact"
-            className="bg-black text-white text-sm font-medium px-5 py-2 rounded-full hover:bg-gray-800 transition-colors"
+          <Link
+            href="/contact"
+            className={cn(
+              "text-sm font-semibold px-5 py-2 rounded-full transition-colors",
+              isTransparent
+                ? "bg-white text-black hover:bg-white/90"
+                : "bg-black text-white hover:bg-gray-800"
+            )}
           >
             Get Started
-          </a>
+          </Link>
         </div>
 
         {/* Mobile toggle */}
         <button
-          className="md:hidden p-2 text-black"
+          className={cn("md:hidden p-1", isTransparent ? "text-white" : "text-black")}
           onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle menu"
         >
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </nav>
 
       {/* Mobile menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="md:hidden border-t border-gray-100 bg-white overflow-hidden"
-          >
-            <div className="container mx-auto px-6 py-4 space-y-3">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="block text-sm text-gray-700 py-2"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {link.label}
-                </a>
-              ))}
-              <div className="flex gap-2 pt-2">
-                <Link
-                  href="/admin/login"
-                  className="flex-1 text-center text-sm border border-gray-200 rounded-full py-2 text-gray-700"
-                >
-                  Admin
-                </Link>
-                <a
-                  href="#contact"
-                  className="flex-1 text-center text-sm bg-black text-white rounded-full py-2"
-                >
-                  Get Started
-                </a>
-              </div>
+      {mobileOpen && (
+        <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
+          <div className="px-6 py-5 space-y-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "block text-sm py-3 border-b border-gray-50 last:border-0 transition-colors",
+                  pathname === link.href
+                    ? "text-black font-semibold"
+                    : "text-gray-600 hover:text-black"
+                )}
+                onClick={() => setMobileOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="pt-3 flex gap-3">
+              <Link
+                href="/admin/login"
+                className="flex-1 text-center text-xs border border-gray-200 rounded-full py-2.5 text-gray-500"
+                onClick={() => setMobileOpen(false)}
+              >
+                Admin
+              </Link>
+              <Link
+                href="/contact"
+                className="flex-1 text-center text-sm bg-black text-white font-semibold rounded-full py-2.5"
+                onClick={() => setMobileOpen(false)}
+              >
+                Get Started
+              </Link>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.header>
+          </div>
+        </div>
+      )}
+    </header>
   );
 }

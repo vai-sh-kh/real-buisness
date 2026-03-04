@@ -1,10 +1,9 @@
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
-import { ExpertGuides } from "@/components/landing/ExpertGuides";
-import { MoveInReady } from "@/components/landing/MoveInReady";
+import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FeaturedProperties } from "@/components/landing/FeaturedProperties";
-import { Insights } from "@/components/landing/Insights";
-import { FAQ } from "@/components/landing/FAQ";
+import { StatsBar } from "@/components/landing/StatsBar";
+import { OurVision } from "@/components/landing/OurVision";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { CTA } from "@/components/landing/CTA";
 import { Footer } from "@/components/landing/Footer";
@@ -12,9 +11,9 @@ import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvide
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "DreamHouse — Find Premium Properties",
+  title: "HorizonEstate — Find Premium Properties",
   description:
-    "Discover premium properties for sale and rent. Buy, sell, or rent your dream home with DreamHouse.",
+    "Discover premium properties for sale and rent. Find your dream home with HorizonEstate.",
 };
 
 export default function LandingPage() {
@@ -23,11 +22,10 @@ export default function LandingPage() {
       <Navbar />
       <main>
         <Hero />
-        <ExpertGuides />
-        <MoveInReady />
+        <HowItWorks />
         <FeaturedProperties />
-        <Insights />
-        <FAQ />
+        <StatsBar />
+        <OurVision />
         <Testimonials />
         <CTA />
       </main>

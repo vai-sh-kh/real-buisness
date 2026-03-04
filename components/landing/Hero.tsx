@@ -1,122 +1,134 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-import { MapPin, ChevronDown, Home } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export function Hero() {
-  const [searchType] = useState("Rent/Buy");
-  const [propertyType] = useState("House");
-  const [location, setLocation] = useState("");
+  const [activeTab, setActiveTab] = useState<"buy" | "rent">("buy");
+  const [search, setSearch] = useState("");
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden">
+    <section className="relative w-full min-h-screen bg-[#0f0f0f] flex flex-col overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1800&q=80"
-          alt="Hero house"
-          className="h-full w-full object-cover object-center"
+          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=80"
+          alt="Luxury home exterior"
+          className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/10" />
+        <div className="absolute inset-0 bg-black/55" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-start pt-36 px-4 text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.08] tracking-tight max-w-3xl"
-        >
-          More Than a Home,
-          <br />
-          Build Your Future
-        </motion.h1>
+      {/* Main content */}
+      <div className="relative z-10 flex flex-col flex-1 max-w-7xl mx-auto w-full px-6 lg:px-10">
+        {/* Upper content area */}
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between flex-1 pt-28 pb-14 gap-10">
+          {/* Left: Headline */}
+          <div className="lg:max-w-3xl">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="flex items-center gap-3 mb-7"
+            >
+              <span className="h-px w-10 bg-white/40 inline-block" />
+              <span className="text-white/50 text-xs tracking-[0.2em] uppercase">
+                Premium Real Estate
+              </span>
+            </motion.p>
 
-        <motion.p
+            <motion.h1
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="text-5xl sm:text-6xl lg:text-[82px] font-bold text-white leading-[0.95] tracking-tight"
+            >
+              Find a place
+              <br />
+              you will call
+              <br />
+              <span className="italic font-light">home.</span>
+            </motion.h1>
+          </div>
+
+          {/* Right: Subtext + CTA */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:max-w-[280px]"
+          >
+            <p className="text-white/60 text-sm leading-relaxed mb-7">
+              With us you will find not just accommodation, but a place where
+              your new life begins, full of coziness and possibilities.
+            </p>
+            <Link
+              href="/properties"
+              className="inline-flex items-center bg-white text-black text-sm font-semibold px-7 py-3.5 rounded-full hover:bg-white/90 transition-colors"
+            >
+              Book a Consultation
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* Search bar — pinned to bottom */}
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-5 text-sm sm:text-base text-white/75 max-w-md leading-relaxed"
+          transition={{ duration: 0.8, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="pb-10"
         >
-          Dive into a world of comfort and convenience as we connect you the
-          finest hotels, ensuring a perfect getaway tailored to your preferences
-        </motion.p>
+          <div className="bg-white rounded-2xl p-2 flex flex-col sm:flex-row items-stretch gap-2 shadow-2xl">
+            {/* Buy / Rent tabs */}
+            <div className="flex bg-gray-100 rounded-xl p-1 shrink-0">
+              {(["buy", "rent"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={cn(
+                    "px-5 py-2 text-sm font-semibold rounded-lg capitalize transition-all",
+                    activeTab === tab
+                      ? "bg-black text-white shadow-sm"
+                      : "text-gray-500 hover:text-black"
+                  )}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            {/* Search input */}
+            <div className="flex items-center gap-3 flex-1 px-4 min-w-0">
+              <Search className="h-4 w-4 text-gray-400 shrink-0" />
+              <input
+                type="text"
+                placeholder="Search property or location..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="flex-1 text-sm outline-none text-gray-800 placeholder:text-gray-400 bg-transparent min-w-0"
+              />
+            </div>
+
+            {/* Filters */}
+            <button className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-gray-200 text-sm text-gray-600 hover:border-gray-400 transition-colors sm:shrink-0">
+              <SlidersHorizontal className="h-4 w-4" />
+              <span>Filters</span>
+            </button>
+
+            {/* CTA */}
+            <Link
+              href={`/properties?type=${activeTab}${search ? `&q=${encodeURIComponent(search)}` : ""}`}
+              className="bg-black text-white text-sm font-semibold px-6 py-3 rounded-xl hover:bg-gray-800 transition-colors whitespace-nowrap text-center sm:shrink-0"
+            >
+              Show Properties
+            </Link>
+          </div>
+        </motion.div>
       </div>
-
-      {/* Floating property info card — bottom right */}
-      <motion.div
-        initial={{ opacity: 0, x: 40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.8, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute bottom-36 right-6 md:right-14 z-10 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-2xl max-w-[210px]"
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-black shrink-0">
-            <Home className="h-3.5 w-3.5 text-white" />
-          </div>
-          <span className="font-semibold text-xs text-black leading-tight">DuneHaven Residences</span>
-        </div>
-        <p className="text-xs text-gray-500 mb-3 leading-relaxed">
-          2972 Westheimer Rd. Santa Ana,
-          <br />
-          Illinois 85486
-        </p>
-        <button className="w-full bg-black text-white text-xs font-medium py-1.5 rounded-full hover:bg-gray-800 transition-colors">
-          Learn More
-        </button>
-      </motion.div>
-
-      {/* Spacer */}
-      <div className="relative z-10 h-36 sm:h-44" />
-
-      {/* Search bar — overlapping bottom */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-20 w-full max-w-2xl px-4"
-      >
-        <div className="bg-white rounded-2xl shadow-2xl p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-          {/* Rent/Buy */}
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 rounded-xl cursor-pointer select-none shrink-0">
-            <span className="text-sm font-medium text-gray-700">{searchType}</span>
-            <ChevronDown className="h-4 w-4 text-gray-400" />
-          </div>
-
-          {/* Divider */}
-          <div className="hidden sm:block w-px h-6 bg-gray-200 shrink-0" />
-
-          {/* Property type */}
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 rounded-xl cursor-pointer select-none shrink-0">
-            <Home className="h-4 w-4 text-gray-500" />
-            <span className="text-sm font-medium text-gray-700">{propertyType}</span>
-            <ChevronDown className="h-4 w-4 text-gray-400" />
-          </div>
-
-          {/* Divider */}
-          <div className="hidden sm:block w-px h-6 bg-gray-200 shrink-0" />
-
-          {/* Location */}
-          <div className="flex items-center gap-2 px-4 py-2.5 flex-1 min-w-0">
-            <MapPin className="h-4 w-4 text-gray-400 shrink-0" />
-            <input
-              type="text"
-              placeholder="Malang, Indonesia"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="flex-1 text-sm outline-none text-gray-700 placeholder:text-gray-400 bg-transparent min-w-0"
-            />
-          </div>
-
-          {/* CTA */}
-          <button className="bg-black text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-800 transition-colors whitespace-nowrap shrink-0">
-            Find Property
-          </button>
-        </div>
-      </motion.div>
     </section>
   );
 }
