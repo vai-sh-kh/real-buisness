@@ -30,14 +30,14 @@ export function HowItWorks() {
 
   return (
     <section className="py-24 bg-white" ref={ref}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-16 gap-6">
           <motion.h2
             initial={{ opacity: 0, y: 24 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black leading-tight max-w-lg"
+            className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-charcoal leading-tight max-w-lg"
           >
             We help you find the home
             <br />
@@ -66,16 +66,20 @@ export function HowItWorks() {
                 ease: [0.22, 1, 0.36, 1],
                 delay: 0.1 + i * 0.1,
               }}
-              className="relative pr-0 md:pr-12 lg:pr-16 pb-8 md:pb-0"
+              className="group relative pr-0 md:pr-12 lg:pr-16 pb-8 md:pb-0"
             >
               {/* Divider line */}
-              <div className="h-px bg-gray-200 mb-6" />
+              <div className="h-px bg-gray-200 mb-6 group-hover:bg-brand-gold/30 transition-colors" />
 
-              <div className="text-xs text-gray-400 tracking-widest mb-4 uppercase">
+              <div className="text-xs text-brand-gold tracking-widest mb-4 uppercase font-semibold">
                 {step.number}
               </div>
-              <h3 className="text-lg font-bold text-black mb-3">{step.title}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
+              <h3 className="text-lg font-bold text-brand-charcoal mb-3">
+                {step.title}
+              </h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                {step.description}
+              </p>
             </motion.div>
           ))}
         </div>

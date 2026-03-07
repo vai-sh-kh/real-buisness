@@ -10,6 +10,9 @@ const config: Config = {
   ],
   prefix: "",
   theme: {
+    fontFamily: {
+      heading: ["var(--font-heading)", "Lora", "serif"],
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -18,6 +21,17 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        "admin-sans": ["var(--admin-font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
+      height: {
+        "admin-app-bar": "var(--admin-app-bar-height)",
+        "admin-bottom-nav": "var(--admin-bottom-nav-height)",
+      },
+      spacing: {
+        "safe-top": "env(safe-area-inset-top)",
+        "safe-bottom": "env(safe-area-inset-bottom)",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -28,6 +42,21 @@ const config: Config = {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          foreground: "hsl(var(--gold-foreground))",
+        },
+        "brand-gold": {
+          DEFAULT: "hsl(var(--brand-gold))",
+          foreground: "hsl(var(--brand-gold-foreground))",
+        },
+        "brand-blue": {
+          DEFAULT: "hsl(var(--brand-blue))",
+          foreground: "hsl(var(--brand-blue-foreground))",
+        },
+        "brand-charcoal": "#1A1A1A",
+        "brand-orange": "hsl(var(--brand-orange))",
+        "brand-orange-muted": "hsl(var(--brand-orange-muted))",
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
@@ -51,6 +80,27 @@ const config: Config = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        /* Admin panel - only used inside #admin-theme-root */
+        "admin-sidebar": {
+          bg: "hsl(var(--admin-sidebar-bg))",
+          border: "hsl(var(--admin-sidebar-border))",
+          text: "hsl(var(--admin-sidebar-text))",
+          "text-muted": "hsl(var(--admin-sidebar-text-muted))",
+          hover: "hsl(var(--admin-sidebar-hover))",
+          active: "hsl(var(--admin-sidebar-active))",
+          "active-indicator": "hsl(var(--admin-sidebar-active-indicator))",
+        },
+        "admin-header": {
+          bg: "hsl(var(--admin-header-bg))",
+          border: "hsl(var(--admin-header-border))",
+        },
+        "admin-main": {
+          bg: "hsl(var(--admin-main-bg))",
+        },
+        "admin-card": {
+          bg: "hsl(var(--admin-card-bg))",
+          border: "hsl(var(--admin-card-border))",
         },
       },
       borderRadius: {

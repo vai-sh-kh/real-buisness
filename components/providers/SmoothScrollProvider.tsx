@@ -1,38 +1,61 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 
+/** Enable Lenis smooth scroll only on public routes (not admin). Scroll to top on navigation. */
 export function SmoothScrollProvider({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    const lenisRef = useRef<Lenis | null>(null);
+  const lenisRef = useRef<Lenis | null>(null);
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
 
-    useEffect(() => {
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smoothWheel: true,
-            wheelMultiplier: 1,
-            touchMultiplier: 2,
-        });
+  // Scroll to top when route changes (fixes Next.js navigation leaving scroll mid-page)
+  useEffect(() => {
+    if (lenisRef.current && !isAdmin) {
+      lenisRef.current.scrollTo(0, { immediate: true });
+    } else if (isAdmin && typeof window !== "undefined") {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, isAdmin]);
 
-        lenisRef.current = lenis;
+  // Init/destroy Lenis based on route: only public pages get smooth scroll
+  useEffect(() => {
+    if (isAdmin) {
+      if (lenisRef.current) {
+        lenisRef.current.destroy();
+        lenisRef.current = null;
+      }
+      return;
+    }
 
-        function raf(time: number) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
+    });
 
-        const rafId = requestAnimationFrame(raf);
+    lenisRef.current = lenis;
 
-        return () => {
-            cancelAnimationFrame(rafId);
-            lenis.destroy();
-        };
-    }, []);
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
 
-    return <>{children}</>;
+    const rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, [isAdmin]);
+
+  return <>{children}</>;
 }

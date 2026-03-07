@@ -27,37 +27,40 @@ export function StatsCard({
 }: StatsCardProps) {
   if (isLoading) {
     return (
-      <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
+      <div className="rounded-xl border border-admin-card-border bg-admin-card-bg p-4 shadow-sm lg:p-6">
+        <div className="mb-4 flex items-center justify-between">
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-9 w-9 rounded-xl" />
         </div>
-        <Skeleton className="h-8 w-16 mb-2" />
+        <Skeleton className="mb-2 h-8 w-16" />
         <Skeleton className="h-3 w-28" />
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-500 font-medium">{title}</p>
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-50 border border-gray-100">
-          <Icon className="h-4 w-4 text-gray-700" />
+    <div className="rounded-xl border border-admin-card-border bg-admin-card-bg p-4 shadow-sm transition-all hover:border-brand-gold/30 hover:shadow-md lg:p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-brand-gold/20 bg-brand-gold/10">
+          <Icon className="h-4 w-4 text-brand-gold" />
         </div>
       </div>
-      <p className="text-3xl font-bold text-black tracking-tight">{value}</p>
+      <p className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
+        {value}
+      </p>
       {subtitle && (
-        <p className="text-xs text-gray-400 mt-1">{subtitle}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
       )}
       {trend && (
         <p
           className={cn(
             "text-xs mt-2 font-medium",
-            trend.positive !== false ? "text-green-600" : "text-red-500"
+            trend.positive !== false ? "text-green-600" : "text-red-500",
           )}
         >
-          {trend.positive !== false ? "↑" : "↓"} {Math.abs(trend.value)}% {trend.label}
+          {trend.positive !== false ? "↑" : "↓"} {Math.abs(trend.value)}%{" "}
+          {trend.label}
         </p>
       )}
     </div>

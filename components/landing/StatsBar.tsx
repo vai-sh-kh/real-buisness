@@ -15,8 +15,8 @@ export function StatsBar() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="py-20 bg-[#0f0f0f]" ref={ref}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+    <section className="py-20 bg-brand-charcoal" ref={ref}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
           {stats.map((stat, i) => (
             <motion.div
@@ -27,9 +27,9 @@ export function StatsBar() {
               className="text-center"
             >
               <div className="text-4xl lg:text-5xl font-bold text-white mb-2 tracking-tight">
-                {stat.value}
+                <span className="text-brand-gold">{stat.value}</span>
               </div>
-              <div className="text-sm text-white/40">{stat.label}</div>
+              <div className="text-sm text-white/50">{stat.label}</div>
             </motion.div>
           ))}
         </div>

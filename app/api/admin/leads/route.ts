@@ -33,11 +33,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data, total, page, limit });
   } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch leads";
     console.error("[GET /api/admin/leads]", err);
-    return NextResponse.json(
-      { error: "Failed to fetch leads" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

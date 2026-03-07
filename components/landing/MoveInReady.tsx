@@ -22,7 +22,13 @@ const featuredHomes = [
   },
 ];
 
-function HomeCard({ home, delay }: { home: typeof featuredHomes[0]; delay: number }) {
+function HomeCard({
+  home,
+  delay,
+}: {
+  home: (typeof featuredHomes)[0];
+  delay: number;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -47,12 +53,14 @@ function HomeCard({ home, delay }: { home: typeof featuredHomes[0]; delay: numbe
 
       {/* Content */}
       <div className="flex items-start gap-4">
-        <span className="text-4xl font-bold text-gray-150 leading-none shrink-0 select-none" style={{ color: '#e8e8e8' }}>
+        <span className="text-4xl font-bold text-brand-gold/40 leading-none shrink-0 select-none">
           {home.num}
         </span>
         <div>
-          <h3 className="text-base font-bold text-black mb-2">{home.title}</h3>
-          <p className="text-sm text-gray-500 leading-relaxed">{home.description}</p>
+          <h3 className="text-base font-bold text-brand-charcoal mb-2">{home.title}</h3>
+          <p className="text-sm text-gray-500 leading-relaxed">
+            {home.description}
+          </p>
         </div>
       </div>
     </motion.div>
@@ -65,13 +73,13 @@ export function MoveInReady() {
 
   return (
     <section className="py-20 bg-white">
-      <div className="container mx-auto px-6 max-w-5xl">
+      <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
         <div ref={headRef} className="text-center mb-12">
           <motion.h2
             initial={{ opacity: 0, y: 24 }}
             animate={headInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-black leading-tight"
+            className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-brand-charcoal leading-tight"
           >
             Move-In Ready Gems:
             <br />

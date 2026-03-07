@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/ui/Logo";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -33,28 +34,16 @@ export function Navbar() {
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
         isTransparent
           ? "bg-transparent"
-          : "bg-white/95 backdrop-blur-md border-b border-gray-100"
+          : "bg-white/95 backdrop-blur-md border-b border-gray-100",
       )}
     >
-      <nav className="mx-auto px-6 lg:px-10 h-16 flex items-center justify-between max-w-7xl">
+      <nav className="mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between max-w-7xl">
         {/* Logo */}
-        <Link
-          href="/"
-          className={cn(
-            "text-[15px] font-bold tracking-tight transition-colors",
-            isTransparent ? "text-white" : "text-black"
-          )}
-        >
-          Horizon
-          <span
-            className={cn(
-              "font-light",
-              isTransparent ? "text-white/70" : "text-gray-400"
-            )}
-          >
-            Estate
-          </span>
-        </Link>
+        <Logo
+          variant={isTransparent ? "dark" : "light"}
+          height={32}
+          className={isTransparent ? undefined : "h-8"}
+        />
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-7">
@@ -67,12 +56,13 @@ export function Navbar() {
                 isTransparent
                   ? cn(
                       "text-white/60 hover:text-white",
-                      pathname === link.href && "text-white font-medium"
+                      pathname === link.href && "text-white font-medium",
                     )
                   : cn(
-                      "text-gray-500 hover:text-black",
-                      pathname === link.href && "text-black font-semibold"
-                    )
+                      "text-gray-500 hover:text-brand-charcoal",
+                      pathname === link.href &&
+                        "text-brand-charcoal font-semibold",
+                    ),
               )}
             >
               {link.label}
@@ -88,7 +78,7 @@ export function Navbar() {
               "text-xs transition-colors",
               isTransparent
                 ? "text-white/40 hover:text-white/60"
-                : "text-gray-400 hover:text-gray-600"
+                : "text-gray-400 hover:text-gray-600",
             )}
           >
             Admin
@@ -98,8 +88,8 @@ export function Navbar() {
             className={cn(
               "text-sm font-semibold px-5 py-2 rounded-full transition-colors",
               isTransparent
-                ? "bg-white text-black hover:bg-white/90"
-                : "bg-black text-white hover:bg-gray-800"
+                ? "bg-brand-gold text-white hover:opacity-90"
+                : "bg-brand-charcoal text-white hover:opacity-90",
             )}
           >
             Get Started
@@ -108,11 +98,18 @@ export function Navbar() {
 
         {/* Mobile toggle */}
         <button
-          className={cn("md:hidden p-1", isTransparent ? "text-white" : "text-black")}
+          className={cn(
+            "md:hidden p-1",
+            isTransparent ? "text-white" : "text-brand-charcoal",
+          )}
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {mobileOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
         </button>
       </nav>
 
@@ -127,8 +124,8 @@ export function Navbar() {
                 className={cn(
                   "block text-sm py-3 border-b border-gray-50 last:border-0 transition-colors",
                   pathname === link.href
-                    ? "text-black font-semibold"
-                    : "text-gray-600 hover:text-black"
+                    ? "text-brand-charcoal font-semibold"
+                    : "text-gray-600 hover:text-brand-charcoal",
                 )}
                 onClick={() => setMobileOpen(false)}
               >
@@ -145,7 +142,7 @@ export function Navbar() {
               </Link>
               <Link
                 href="/contact"
-                className="flex-1 text-center text-sm bg-black text-white font-semibold rounded-full py-2.5"
+                className="flex-1 text-center text-sm bg-brand-charcoal text-white font-semibold rounded-full py-2.5 hover:bg-brand-charcoal/90"
                 onClick={() => setMobileOpen(false)}
               >
                 Get Started

@@ -5,7 +5,7 @@ import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact — HorizonEstate",
+  title: "Contact — The Real Business",
   description:
     "Get in touch with HorizonEstate. We're here to help you find your perfect property.",
 };
@@ -39,7 +39,7 @@ export default function ContactPage() {
       <Navbar />
       <main className="pt-16">
         {/* Hero */}
-        <section className="bg-[#0f0f0f] pt-20 pb-16 px-6 lg:px-10">
+        <section className="bg-black pt-20 pb-16 px-4 sm:px-6 lg:px-10">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
               <div>
@@ -67,12 +67,14 @@ export default function ContactPage() {
         </section>
 
         {/* Main content */}
-        <section className="py-20 bg-white px-6 lg:px-10">
+        <section className="py-20 bg-white px-4 sm:px-6 lg:px-10">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-5 gap-12 lg:gap-20">
               {/* Left: Contact info */}
               <div className="lg:col-span-2">
-                <span className="text-sm text-gray-400 tracking-widest">/Get In Touch</span>
+                <span className="text-sm text-gray-400 tracking-widest">
+                  /Get In Touch
+                </span>
                 <h2 className="text-3xl font-bold text-black mt-3 mb-8 leading-tight">
                   We&apos;d love to
                   <br />
@@ -103,15 +105,17 @@ export default function ContactPage() {
                     Follow Us
                   </p>
                   <div className="flex items-center gap-3">
-                    {["Facebook", "Instagram", "X", "LinkedIn"].map((social) => (
-                      <a
-                        key={social}
-                        href="#"
-                        className="h-9 w-9 rounded-full border border-gray-200 flex items-center justify-center text-xs font-medium text-gray-500 hover:bg-black hover:text-white hover:border-black transition-all"
-                      >
-                        {social[0]}
-                      </a>
-                    ))}
+                    {["Facebook", "Instagram", "X", "LinkedIn"].map(
+                      (social) => (
+                        <a
+                          key={social}
+                          href="#"
+                          className="h-9 w-9 rounded-full border border-gray-200 flex items-center justify-center text-xs font-medium text-gray-500 hover:bg-black hover:text-white hover:border-black transition-all"
+                        >
+                          {social[0]}
+                        </a>
+                      ),
+                    )}
                   </div>
                 </div>
               </div>
@@ -134,8 +138,12 @@ export default function ContactPage() {
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="bg-white rounded-2xl px-6 py-4 shadow-xl text-center">
-              <p className="text-sm font-semibold text-black">Main Street Plaza</p>
-              <p className="text-xs text-gray-500 mt-0.5">Downtown Business District, New York</p>
+              <p className="text-sm font-semibold text-black">
+                Main Street Plaza
+              </p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Downtown Business District, New York
+              </p>
             </div>
           </div>
         </section>

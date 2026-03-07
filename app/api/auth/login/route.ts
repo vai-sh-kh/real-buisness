@@ -1,22 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/auth/session";
+import { loginSchema } from "@/lib/validations/auth.schema";
 
 export async function POST(request: NextRequest) {
-  let body: { email?: string; password?: string };
+  let body: unknown;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { email, password } = body;
-
-  if (!email || !password) {
-    return NextResponse.json(
-      { error: "Email and password are required" },
-      { status: 400 }
-    );
+  const parsed = loginSchema.safeParse(body);
+  if (!parsed.success) {
+    const firstError = parsed.error.errors[0];
+    const message = firstError?.message ?? "Invalid request";
+    return NextResponse.json({ error: message }, { status: 400 });
   }
+
+  const { email, password } = parsed.data;
 
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPassword = process.env.ADMIN_PASSWORD;

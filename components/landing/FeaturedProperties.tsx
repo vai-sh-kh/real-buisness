@@ -111,7 +111,11 @@ function PropertyCard({
       ref={ref}
       initial={{ opacity: 0, y: 28 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: (index % 3) * 0.1 }}
+      transition={{
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1],
+        delay: (index % 3) * 0.1,
+      }}
       className="group cursor-pointer"
     >
       {/* Image */}
@@ -130,13 +134,13 @@ function PropertyCard({
         )}
         {/* Type badge */}
         <div className="absolute top-3 left-3">
-          <span className="bg-black/80 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
+          <span className="bg-brand-charcoal/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
             {property.type === "sale" ? "For Sale" : "For Rent"}
           </span>
         </div>
         {/* Price badge */}
         <div className="absolute bottom-3 right-3">
-          <span className="bg-white text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+          <span className="bg-brand-gold text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
             {formatPrice(property.price ?? 0)}
           </span>
         </div>
@@ -144,7 +148,7 @@ function PropertyCard({
 
       {/* Info */}
       <div className="flex items-start justify-between gap-2 mb-1">
-        <h3 className="font-semibold text-black text-[15px] leading-snug group-hover:opacity-70 transition-opacity">
+        <h3 className="font-semibold text-brand-charcoal text-[15px] leading-snug group-hover:opacity-70 transition-opacity">
           {property.title}
         </h3>
       </div>
@@ -203,7 +207,7 @@ export function FeaturedProperties() {
   const { data, isLoading } = useQuery({
     queryKey: ["featured-properties"],
     queryFn: async () => {
-      const res = await fetch("/api/properties?is_featured=true&status=active&limit=6");
+      const res = await fetch("/api/properties?status=active&limit=6");
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
       return json.data as PropertyWithRelations[];
@@ -217,8 +221,8 @@ export function FeaturedProperties() {
       : (fallbackProperties as Partial<PropertyWithRelations>[]);
 
   return (
-    <section id="properties" className="py-24 bg-[#f8f8f6]">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+    <section id="properties" className="py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         {/* Header */}
         <div ref={headRef} className="flex items-end justify-between mb-12">
           <div>
@@ -226,15 +230,19 @@ export function FeaturedProperties() {
               initial={{ opacity: 0 }}
               animate={headInView ? { opacity: 1 } : {}}
               transition={{ duration: 0.5 }}
-              className="text-sm text-gray-400 tracking-widest"
+              className="text-sm text-brand-gold/80 tracking-widest"
             >
               /Discover
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={headInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mt-1"
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+                delay: 0.1,
+              }}
+              className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-charcoal mt-1"
             >
               New Properties
             </motion.h2>
@@ -246,7 +254,7 @@ export function FeaturedProperties() {
           >
             <Link
               href="/properties"
-              className="hidden sm:flex items-center gap-2 text-sm font-semibold text-black hover:opacity-60 transition-opacity"
+              className="hidden sm:flex items-center gap-2 text-sm font-semibold text-brand-charcoal hover:text-brand-gold transition-colors"
             >
               View all <ArrowRight className="h-4 w-4" />
             </Link>
@@ -257,20 +265,22 @@ export function FeaturedProperties() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {isLoading
             ? Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)
-            : properties.slice(0, 6).map((property, i) => (
-                <PropertyCard
-                  key={property.id}
-                  property={property}
-                  index={i}
-                />
-              ))}
+            : properties
+                .slice(0, 6)
+                .map((property, i) => (
+                  <PropertyCard
+                    key={property.id}
+                    property={property}
+                    index={i}
+                  />
+                ))}
         </div>
 
         {/* Mobile view all */}
         <div className="mt-10 sm:hidden text-center">
           <Link
             href="/properties"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-black border border-black rounded-full px-6 py-3"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-brand-charcoal border-2 border-brand-charcoal rounded-full px-6 py-3 hover:bg-brand-charcoal hover:text-white transition-colors"
           >
             View all properties <ArrowRight className="h-4 w-4" />
           </Link>

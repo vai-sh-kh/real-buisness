@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/admin/layout/Sidebar";
 import { Header } from "@/components/admin/layout/Header";
+import { BottomNav } from "@/components/admin/layout/BottomNav";
 import { AdminClientWrapper } from "@/components/admin/layout/AdminClientWrapper";
 
 export default function AdminLayout({
@@ -9,13 +10,12 @@ export default function AdminLayout({
 }) {
   return (
     <AdminClientWrapper>
-      <div className="min-h-screen bg-gray-50">
-        <Sidebar />
-        <div className="flex flex-col">
-          <Header />
-          <main className="flex-1 p-6">{children}</main>
-        </div>
-      </div>
+      <Sidebar />
+      <Header />
+      <main className="min-h-full bg-admin-main-bg px-2 py-6 pt-16 pb-20 sm:px-6 lg:px-8 lg:pt-[4.5rem] lg:pb-6">
+        {children}
+      </main>
+      <BottomNav />
     </AdminClientWrapper>
   );
 }

@@ -1,10 +1,28 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { ReportsData, PropertyStats, LeadStats, CategoryDistribution, RecentActivity } from "@/types";
 
-export async function getReportsData(): Promise<ReportsData> {
-  const supabase = createAdminClient();
+export interface ReportsFilters {
+  date_from?: string; // ISO date
+  date_to?: string;
+  sort_activity?: "asc" | "desc";
+}
 
-  // Parallel queries for performance
+export async function getReportsData(filters: ReportsFilters = {}): Promise<ReportsData> {
+  const supabase = createAdminClient();
+  const { date_from, date_to, sort_activity = "desc" } = filters;
+
+  let propertiesQuery = supabase.from("properties").select("status, type, created_at");
+  let leadsQuery = supabase.from("leads").select("status, source, created_at");
+  if (date_from) {
+    propertiesQuery = propertiesQuery.gte("created_at", date_from);
+    leadsQuery = leadsQuery.gte("created_at", date_from);
+  }
+  if (date_to) {
+    const end = date_to.includes("T") ? date_to : `${date_to}T23:59:59.999Z`;
+    propertiesQuery = propertiesQuery.lte("created_at", end);
+    leadsQuery = leadsQuery.lte("created_at", end);
+  }
+
   const [
     propertiesResult,
     leadsResult,
@@ -12,8 +30,8 @@ export async function getReportsData(): Promise<ReportsData> {
     recentPropertiesResult,
     recentLeadsResult,
   ] = await Promise.all([
-    supabase.from("properties").select("status, type, is_featured"),
-    supabase.from("leads").select("status, source"),
+    propertiesQuery,
+    leadsQuery,
     supabase
       .from("categories")
       .select("id, name, properties(count)")
@@ -21,13 +39,13 @@ export async function getReportsData(): Promise<ReportsData> {
     supabase
       .from("properties")
       .select("id, title, city, created_at")
-      .order("created_at", { ascending: false })
-      .limit(5),
+      .order("created_at", { ascending: sort_activity === "asc" })
+      .limit(20),
     supabase
       .from("leads")
       .select("id, name, email, created_at")
-      .order("created_at", { ascending: false })
-      .limit(5),
+      .order("created_at", { ascending: sort_activity === "asc" })
+      .limit(20),
   ]);
 
   // Property stats
@@ -38,7 +56,6 @@ export async function getReportsData(): Promise<ReportsData> {
     draft: properties.filter((p) => p.status === "draft").length,
     sold: properties.filter((p) => p.status === "sold").length,
     rented: properties.filter((p) => p.status === "rented").length,
-    featured: properties.filter((p) => p.is_featured).length,
     for_sale: properties.filter((p) => p.type === "sale").length,
     for_rent: properties.filter((p) => p.type === "rent").length,
   };
@@ -96,50 +113,11 @@ export async function getReportsData(): Promise<ReportsData> {
       subtitle: l.email ?? "No email",
       created_at: l.created_at,
     })),
-  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  ].sort(
+    (a, b) =>
+      (sort_activity === "asc" ? 1 : -1) *
+      (new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+  );
 
   return { property_stats, lead_stats, category_distribution, recent_activity };
-}
-
-export async function getDashboardStats() {
-  const supabase = createAdminClient();
-
-  const [
-    propertiesCountResult,
-    leadsCountResult,
-    activePropertiesResult,
-    newLeadsResult,
-    recentLeadsResult,
-    recentPropertiesResult,
-  ] = await Promise.all([
-    supabase.from("properties").select("id", { count: "exact", head: true }),
-    supabase.from("leads").select("id", { count: "exact", head: true }),
-    supabase
-      .from("properties")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "active"),
-    supabase
-      .from("leads")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "new"),
-    supabase
-      .from("leads")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(5),
-    supabase
-      .from("properties")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(5),
-  ]);
-
-  return {
-    total_properties: propertiesCountResult.count ?? 0,
-    total_leads: leadsCountResult.count ?? 0,
-    active_properties: activePropertiesResult.count ?? 0,
-    new_leads: newLeadsResult.count ?? 0,
-    recent_leads: recentLeadsResult.data ?? [],
-    recent_properties: recentPropertiesResult.data ?? [],
-  };
 }

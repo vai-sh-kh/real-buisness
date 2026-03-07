@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Category, CategoryFilters } from "@/types";
 import { slugify } from "@/lib/utils";
+import { toUserFriendlyMessage } from "@/lib/db-errors";
 
 export async function getCategories(
   opts: Partial<CategoryFilters> = {}
@@ -28,7 +29,7 @@ export async function getCategories(
   query = query.range(from, from + limit - 1);
 
   const { data, error, count } = await query;
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
 
   return { data: (data as Category[]) ?? [], total: count ?? 0 };
 }
@@ -41,7 +42,7 @@ export async function getAllActiveCategories(): Promise<Category[]> {
     .eq("is_active", true)
     .order("name", { ascending: true });
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
   return (data as Category[]) ?? [];
 }
 
@@ -68,7 +69,7 @@ export async function createCategory(
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
   return data as Category;
 }
 
@@ -90,12 +91,12 @@ export async function updateCategory(
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
   return data as Category;
 }
 
 export async function deleteCategory(id: string): Promise<void> {
   const supabase = createAdminClient();
   const { error } = await supabase.from("categories").delete().eq("id", id);
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
 }

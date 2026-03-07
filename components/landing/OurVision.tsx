@@ -34,7 +34,7 @@ export function OurVision() {
 
   return (
     <section className="py-24 bg-white" ref={ref}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left: Text */}
           <div>
@@ -42,7 +42,7 @@ export function OurVision() {
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
               transition={{ duration: 0.5 }}
-              className="text-sm text-gray-400 tracking-widest"
+              className="text-sm text-brand-gold/80 tracking-widest"
             >
               /Our Vision
             </motion.span>
@@ -50,8 +50,12 @@ export function OurVision() {
             <motion.h2
               initial={{ opacity: 0, y: 24 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mt-3 mb-5 leading-tight"
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+                delay: 0.1,
+              }}
+              className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-charcoal mt-3 mb-5 leading-tight"
             >
               Our vision is to create
               <br />
@@ -80,7 +84,7 @@ export function OurVision() {
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.6, delay: 0.3 + i * 0.08 }}
                 >
-                  <h4 className="font-semibold text-black text-sm mb-2">
+                  <h4 className="font-semibold text-brand-charcoal text-sm mb-2">
                     {feature.title}
                   </h4>
                   <p className="text-xs text-gray-500 leading-relaxed">
@@ -88,7 +92,7 @@ export function OurVision() {
                   </p>
                   <Link
                     href="/about"
-                    className="inline-flex items-center gap-1 text-xs font-medium text-black mt-3 hover:opacity-60 transition-opacity"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-brand-charcoal mt-3 hover:text-brand-gold transition-colors"
                   >
                     Learn more <ArrowRight className="h-3 w-3" />
                   </Link>
@@ -113,9 +117,11 @@ export function OurVision() {
               />
             </div>
             {/* Floating stat card */}
-            <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl p-5 shadow-xl">
-              <div className="text-3xl font-bold text-black">14%</div>
-              <div className="text-xs text-gray-500 mt-1">Annual ROI average</div>
+            <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl p-5 shadow-xl border border-brand-gold/20">
+              <div className="text-3xl font-bold text-brand-gold">14%</div>
+              <div className="text-xs text-gray-500 mt-1">
+                Annual ROI average
+              </div>
             </div>
           </motion.div>
         </div>

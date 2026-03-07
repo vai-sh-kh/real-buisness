@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { toUserFriendlyMessage } from "@/lib/db-errors";
 import type { PropertyWithRelations, PropertyFilters } from "@/types";
 
 export interface AdminListPropertiesOptions {
@@ -12,7 +13,6 @@ export interface AdminListPropertiesOptions {
   min_price?: number;
   max_price?: number;
   bedrooms?: number;
-  is_featured?: boolean;
   sort_by?: string;
   sort_order?: "asc" | "desc";
 }
@@ -82,7 +82,7 @@ export async function getProperties(
   query = query.range(from, from + limit - 1);
 
   const { data, error, count } = await query;
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
 
   return { data: (data as PropertyWithRelations[]) ?? [], total: count ?? 0 };
 }
@@ -102,7 +102,6 @@ export async function getPropertiesForAdmin(
     min_price,
     max_price,
     bedrooms,
-    is_featured,
     sort_by = "created_at",
     sort_order = "desc",
   } = opts;
@@ -118,7 +117,6 @@ export async function getPropertiesForAdmin(
   if (min_price !== undefined) query = query.gte("price", min_price);
   if (max_price !== undefined) query = query.lte("price", max_price);
   if (bedrooms !== undefined) query = query.eq("bedrooms", bedrooms);
-  if (is_featured !== undefined) query = query.eq("is_featured", is_featured);
   if (search) {
     query = query.or(`title.ilike.%${search}%,address.ilike.%${search}%,city.ilike.%${search}%`);
   }
@@ -129,7 +127,7 @@ export async function getPropertiesForAdmin(
   query = query.range(from, from + limit - 1);
 
   const { data, error, count } = await query;
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
 
   return { data: (data as PropertyWithRelations[]) ?? [], total: count ?? 0 };
 }
@@ -151,11 +149,10 @@ export async function getFeaturedProperties(limit = 6): Promise<PropertyWithRela
   const { data, error } = await supabase
     .from("properties")
     .select("*, category:categories(id,name,slug)")
-    .eq("is_featured", true)
     .eq("status", "active")
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
   return (data as PropertyWithRelations[]) ?? [];
 }

@@ -4,7 +4,15 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Search, SlidersHorizontal, Bed, Bath, Maximize2, MapPin, X } from "lucide-react";
+import {
+  Search,
+  SlidersHorizontal,
+  Bed,
+  Bath,
+  Maximize2,
+  MapPin,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/utils";
 import type { PropertyWithRelations } from "@/types";
@@ -18,7 +26,15 @@ const TYPE_TABS = [
   { label: "Commercial", value: "commercial" },
 ] as const;
 
-const CITIES = ["All Cities", "Los Angeles", "New York", "Miami", "Chicago", "Austin", "Seattle"];
+const CITIES = [
+  "All Cities",
+  "Los Angeles",
+  "New York",
+  "Miami",
+  "Chicago",
+  "Austin",
+  "Seattle",
+];
 const PRICE_RANGES = [
   { label: "Any Price", min: undefined, max: undefined },
   { label: "Under $200K", min: undefined, max: 200000 },
@@ -157,7 +173,13 @@ const fallback: Partial<PropertyWithRelations>[] = [
   },
 ];
 
-function PropertyCard({ property, index }: { property: Partial<PropertyWithRelations>; index: number }) {
+function PropertyCard({
+  property,
+  index,
+}: {
+  property: Partial<PropertyWithRelations>;
+  index: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -174,21 +196,23 @@ function PropertyCard({ property, index }: { property: Partial<PropertyWithRelat
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="h-full w-full flex items-center justify-center text-gray-300 text-4xl">🏠</div>
+          <div className="h-full w-full flex items-center justify-center text-gray-300 text-4xl">
+            🏠
+          </div>
         )}
         <div className="absolute top-3 left-3">
-          <span className="bg-black/80 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
+          <span className="bg-brand-charcoal/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
             {property.type === "sale" ? "For Sale" : "For Rent"}
           </span>
         </div>
         <div className="absolute bottom-3 right-3">
-          <span className="bg-white text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+          <span className="bg-brand-gold text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
             {formatPrice(property.price ?? 0)}
           </span>
         </div>
       </div>
       <div className="flex items-start justify-between mb-1">
-        <h3 className="font-semibold text-black text-[15px] leading-snug group-hover:opacity-70 transition-opacity">
+        <h3 className="font-semibold text-brand-charcoal text-[15px] leading-snug group-hover:opacity-70 transition-opacity">
           {property.title}
         </h3>
       </div>
@@ -233,7 +257,7 @@ function CardSkeleton() {
 export function PropertiesClient() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<string>(
-    searchParams.get("type") === "rent" ? "rent" : "all"
+    searchParams.get("type") === "rent" ? "rent" : "all",
   );
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
   const [city, setCity] = useState("All Cities");
@@ -247,8 +271,8 @@ export function PropertiesClient() {
     activeTab === "buy" || activeTab === "sale"
       ? "sale"
       : activeTab === "rent"
-      ? "rent"
-      : undefined;
+        ? "rent"
+        : undefined;
 
   const queryString = new URLSearchParams({
     limit: "12",
@@ -275,22 +299,26 @@ export function PropertiesClient() {
   });
 
   const properties =
-    data && data.length > 0 ? data : (fallback as Partial<PropertyWithRelations>[]);
+    data && data.length > 0
+      ? data
+      : (fallback as Partial<PropertyWithRelations>[]);
 
   return (
     <>
       {/* Page hero */}
-      <div className="bg-[#f8f8f6] pt-12 pb-10 px-6 lg:px-10">
+      <div className="bg-gray-50 pt-12 pb-10 px-4 sm:px-6 lg:px-10">
         <div className="max-w-7xl mx-auto">
-          <p className="text-sm text-gray-400 tracking-widest mb-2">/Properties</p>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black leading-tight mb-3">
+          <p className="text-sm text-gray-400 tracking-widest mb-2">
+            /Properties
+          </p>
+          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-brand-charcoal leading-tight mb-3">
             Find the home
             <br />
             that will be yours
           </h1>
           <p className="text-gray-500 text-sm max-w-sm leading-relaxed">
-            Our curated listings include photos, 3D tours, and offline viewings — everything
-            you need to explore and buy with confidence.
+            Our curated listings include photos, 3D tours, and offline viewings
+            — everything you need to explore and buy with confidence.
           </p>
         </div>
       </div>
@@ -309,8 +337,8 @@ export function PropertiesClient() {
                   className={cn(
                     "px-4 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap",
                     activeTab === tab.value
-                      ? "bg-black text-white shadow-sm"
-                      : "text-gray-500 hover:text-black"
+                      ? "bg-brand-charcoal text-white shadow-sm"
+                      : "text-gray-500 hover:text-brand-charcoal",
                   )}
                 >
                   {tab.label}
@@ -341,8 +369,8 @@ export function PropertiesClient() {
               className={cn(
                 "flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors shrink-0",
                 showFilters
-                  ? "bg-black text-white border-black"
-                  : "border-gray-200 text-gray-600 hover:border-gray-400"
+                  ? "bg-brand-charcoal text-white border-brand-charcoal"
+                  : "border-gray-200 text-gray-600 hover:border-gray-400",
               )}
             >
               <SlidersHorizontal className="h-4 w-4" />
@@ -386,8 +414,8 @@ export function PropertiesClient() {
                     className={cn(
                       "px-3 py-1.5 text-xs font-medium rounded-lg transition-all",
                       bedrooms === b
-                        ? "bg-black text-white"
-                        : "text-gray-500 hover:text-black"
+                        ? "bg-brand-charcoal text-white"
+                        : "text-gray-500 hover:text-brand-charcoal",
                     )}
                   >
                     {b}
@@ -404,7 +432,7 @@ export function PropertiesClient() {
                   setSearch("");
                   setActiveTab("all");
                 }}
-                className="text-xs text-gray-400 hover:text-black transition-colors flex items-center gap-1 px-3 py-2.5"
+                className="text-xs text-gray-400 hover:text-brand-charcoal transition-colors flex items-center gap-1 px-3 py-2.5"
               >
                 <X className="h-3 w-3" /> Clear filters
               </button>
@@ -414,7 +442,7 @@ export function PropertiesClient() {
       </div>
 
       {/* Results */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12">
         {/* Results count */}
         <p className="text-sm text-gray-400 mb-8">
           {isLoading ? "Loading..." : `${properties.length} properties found`}
@@ -431,7 +459,9 @@ export function PropertiesClient() {
 
         {!isLoading && properties.length === 0 && (
           <div className="text-center py-24">
-            <p className="text-gray-400 text-sm">No properties found for your criteria.</p>
+            <p className="text-gray-400 text-sm">
+              No properties found for your criteria.
+            </p>
           </div>
         )}
       </div>

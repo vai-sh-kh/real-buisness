@@ -71,3 +71,74 @@ export function buildQueryString(
   }
   return qs.toString();
 }
+
+/** Validates if a string is a valid image URL (http/https) */
+export function isValidImageUrl(url: string | null | undefined): boolean {
+  if (!url || typeof url !== "string" || url.trim() === "") return false;
+  try {
+    const parsed = new URL(url.trim());
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+/** Normalize image URL for display (empty string -> null) */
+export function normalizeImageUrl(
+  url: string | null | undefined
+): string | null {
+  if (!url || typeof url !== "string" || url.trim() === "") return null;
+  return url.trim();
+}
+
+const STOP_WORDS = new Set([
+  "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
+  "of", "with", "by", "from", "as", "is", "was", "are", "were", "been",
+  "be", "have", "has", "had", "do", "does", "did", "will", "would",
+  "could", "should", "may", "might", "must", "shall", "can", "need",
+]);
+
+/** Generate SEO metadata from title and description */
+export function generateSeoFromContent(
+  title: string | null | undefined,
+  description: string | null | undefined,
+  siteName = "TheRealBusiness"
+): {
+  meta_title: string;
+  meta_description: string;
+  meta_keywords: string;
+} {
+  const t = (title ?? "").trim();
+  const d = (description ?? "").trim();
+  const desc = d || t;
+  const suffix = ` | ${siteName}`;
+  const maxTitleLen = 70 - suffix.length;
+
+  const meta_title = t
+    ? t.length > maxTitleLen
+      ? t.slice(0, maxTitleLen - 3).trim() + "..." + suffix
+      : t + suffix
+    : "";
+
+  const meta_description =
+    desc.length > 160 ? desc.slice(0, 157).trim() + "..." : desc;
+
+  const words = [...t.toLowerCase().split(/\s+/), ...desc.toLowerCase().split(/\s+/)];
+  const seen = new Set<string>();
+  const keywords = words
+    .map((w) => w.replace(/[^\w-]/g, ""))
+    .filter((w) => w.length >= 2 && !STOP_WORDS.has(w))
+    .filter((w) => {
+      if (seen.has(w)) return false;
+      seen.add(w);
+      return true;
+    })
+    .slice(0, 10)
+    .join(", ");
+
+  return {
+    meta_title,
+    meta_description,
+    meta_keywords: keywords,
+  };
+}

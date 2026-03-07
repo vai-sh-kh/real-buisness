@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { slugify } from "@/lib/utils";
+import { useScrollToFirstError } from "@/hooks/useScrollToFirstError";
 import type { Category } from "@/types";
 import { toast } from "sonner";
 
@@ -33,8 +34,6 @@ const defaultValues: Partial<PropertyFormValues> = {
   type: "sale",
   status: "draft",
   country: "India",
-  parking: false,
-  is_featured: false,
 };
 
 export function PropertyFormSimple({
@@ -50,6 +49,8 @@ export function PropertyFormSimple({
   });
 
   const title = form.watch("title");
+  useScrollToFirstError(form.formState.errors);
+
   useEffect(() => {
     if (title && !form.getValues("slug")) {
       form.setValue("slug", slugify(title));
@@ -135,7 +136,9 @@ export function PropertyFormSimple({
               <Label>Category</Label>
               <Select
                 value={form.watch("category_id") || "none"}
-                onValueChange={(v) => form.setValue("category_id", v === "none" ? null : v)}
+                onValueChange={(v) =>
+                  form.setValue("category_id", v === "none" ? null : v)
+                }
               >
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select category" />
@@ -328,28 +331,6 @@ export function PropertyFormSimple({
                   <SelectItem value="unfurnished">Unfurnished</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="flex items-center gap-4 pt-8">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.watch("parking")}
-                  onChange={(e) => form.setValue("parking", e.target.checked)}
-                  className="rounded border-input"
-                />
-                <span className="text-sm font-medium">Parking</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.watch("is_featured")}
-                  onChange={(e) =>
-                    form.setValue("is_featured", e.target.checked)
-                  }
-                  className="rounded border-input"
-                />
-                <span className="text-sm font-medium">Featured</span>
-              </label>
             </div>
           </div>
         </CardContent>

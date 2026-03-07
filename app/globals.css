@@ -4,48 +4,76 @@
 
 @layer base {
   :root {
+    /* Logo-derived: white #FFFFFF, gold #B79354, charcoal #1A1A1A */
     --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --foreground: 0 0% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 3.9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 100%;
+    --brand-gold: 38 39% 52%;
+    --brand-gold-foreground: 0 0% 10%;
+    --gold: 38 39% 52%;
+    --gold-foreground: 0 0% 10%;
+    --brand-charcoal: 0 0% 10%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 38 39% 96%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 38 39% 52%;
     --radius: 0.5rem;
+    --surface-dark: 0 0% 10%;
+    --surface-light: 0 0% 98%;
+    --brand-gold-hover: 38 39% 58%;
+    --brand-gold-muted: 38 39% 92%;
+    --brand-blue: 221 83% 53%;
+    --brand-blue-foreground: 0 0% 100%;
+    --brand-blue-hover: 221 83% 48%;
+    --brand-blue-muted: 221 83% 92%;
+    --brand-orange: 24 95% 53%;
+    --brand-orange-foreground: 0 0% 100%;
+    --brand-orange-muted: 24 95% 96%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --background: 0 0% 10%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 14%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 14%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 38 39% 52%;
+    --primary-foreground: 0 0% 10%;
+    --brand-gold: 38 39% 58%;
+    --brand-gold-foreground: 0 0% 10%;
+    --gold: 38 39% 58%;
+    --gold-foreground: 0 0% 10%;
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 38 39% 24%;
+    --accent-foreground: 38 39% 92%;
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
+    --ring: 38 39% 52%;
+    --brand-blue: 221 83% 60%;
+    --brand-blue-foreground: 0 0% 100%;
+    --brand-blue-hover: 221 83% 65%;
+    --brand-blue-muted: 221 83% 20%;
+    --brand-orange: 24 95% 58%;
+    --brand-orange-foreground: 0 0% 100%;
+    --brand-orange-muted: 24 95% 18%;
   }
 }
 
@@ -73,4 +101,43 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground));
+}
+
+/* Admin panel design system - scoped to #admin-theme-root only */
+#admin-theme-root {
+  --admin-sidebar-bg: 0 0% 98%;
+  --admin-sidebar-border: 0 0% 92%;
+  --admin-sidebar-text: 0 0% 15%;
+  --admin-sidebar-text-muted: 0 0% 45%;
+  --admin-sidebar-hover: 0 0% 94%;
+  --admin-sidebar-active: 0 0% 90%;
+  --admin-sidebar-active-indicator: 221 83% 53%;
+  --admin-header-bg: 0 0% 100%;
+  --admin-header-border: 0 0% 92%;
+  --admin-main-bg: 220 14% 96%;
+  --admin-card-bg: 0 0% 100%;
+  --admin-card-border: 0 0% 92%;
+  --admin-input-bg: 0 0% 100%;
+  --admin-input-border: 0 0% 90%;
+  --admin-app-bar-height: 3.5rem;
+  --admin-bottom-nav-height: 4rem;
+  --admin-font-sans: ui-sans-serif, system-ui, "Inter", "Segoe UI", Roboto, sans-serif;
+  font-family: var(--admin-font-sans);
+}
+
+#admin-theme-root.dark {
+  --admin-sidebar-bg: 222 47% 11%;
+  --admin-sidebar-border: 217 33% 17%;
+  --admin-sidebar-text: 0 0% 98%;
+  --admin-sidebar-text-muted: 0 0% 65%;
+  --admin-sidebar-hover: 217 33% 17%;
+  --admin-sidebar-active: 217 33% 22%;
+  --admin-sidebar-active-indicator: 217 91% 60%;
+  --admin-header-bg: 222 47% 11%;
+  --admin-header-border: 217 33% 17%;
+  --admin-main-bg: 222 47% 7%;
+  --admin-card-bg: 217 33% 12%;
+  --admin-card-border: 217 33% 17%;
+  --admin-input-bg: 217 33% 12%;
+  --admin-input-border: 217 33% 22%;
 }

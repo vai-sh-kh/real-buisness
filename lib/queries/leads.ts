@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { toUserFriendlyMessage } from "@/lib/db-errors";
 import type { Lead, LeadWithProperty, LeadFilters } from "@/types";
 
 export async function getLeads(
@@ -17,7 +18,7 @@ export async function getLeads(
 
   let query = supabase
     .from("leads")
-    .select("*, property:properties(id,title,slug)", { count: "exact" });
+    .select("*, property:properties(id,title,slug,price)", { count: "exact" });
 
   if (status && status !== "all") query = query.eq("status", status);
   if (source && source !== "all") query = query.eq("source", source);
@@ -31,7 +32,7 @@ export async function getLeads(
   query = query.range(from, from + limit - 1);
 
   const { data, error, count } = await query;
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
 
   return { data: (data as LeadWithProperty[]) ?? [], total: count ?? 0 };
 }
@@ -40,7 +41,7 @@ export async function getLeadById(id: string): Promise<LeadWithProperty | null> 
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("leads")
-    .select("*, property:properties(id,title,slug)")
+    .select("*, property:properties(id,title,slug,price)")
     .eq("id", id)
     .single();
 
@@ -58,7 +59,7 @@ export async function createLead(
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
   return data as Lead;
 }
 
@@ -74,12 +75,12 @@ export async function updateLead(
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
   return data as Lead;
 }
 
 export async function deleteLead(id: string): Promise<void> {
   const supabase = createAdminClient();
   const { error } = await supabase.from("leads").delete().eq("id", id);
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserFriendlyMessage(error));
 }

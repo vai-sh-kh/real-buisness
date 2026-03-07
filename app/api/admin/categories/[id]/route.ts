@@ -54,7 +54,8 @@ export async function PUT(request: NextRequest, { params }: Params) {
     return NextResponse.json({ data });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to update category";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status = message.includes("already exists") ? 409 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }
 

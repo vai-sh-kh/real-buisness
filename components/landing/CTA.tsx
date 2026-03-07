@@ -10,8 +10,8 @@ export function CTA() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="py-24 bg-[#0f0f0f]" ref={ref}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+    <section className="py-24 bg-brand-charcoal" ref={ref}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10">
           {/* Left: Heading */}
           <div>
@@ -19,15 +19,19 @@ export function CTA() {
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
               transition={{ duration: 0.5 }}
-              className="text-sm text-white/30 tracking-widest"
+              className="text-sm text-brand-gold/70 tracking-widest"
             >
               /Get In Touch
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 24 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mt-3 leading-tight max-w-xl"
+              transition={{
+                duration: 0.8,
+                ease: [0.22, 1, 0.36, 1],
+                delay: 0.1,
+              }}
+              className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-white mt-3 leading-tight max-w-xl"
             >
               Ready to find your
               <br />
@@ -49,13 +53,13 @@ export function CTA() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
                 href="/contact"
-                className="flex items-center justify-center gap-2 bg-white text-black text-sm font-semibold px-7 py-3.5 rounded-full hover:bg-white/90 transition-colors"
+                className="flex items-center justify-center gap-2 bg-brand-gold text-white text-sm font-semibold px-7 py-3.5 rounded-full hover:opacity-90 transition-opacity"
               >
                 Contact Us <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/properties"
-                className="flex items-center justify-center gap-2 border border-white/20 text-white text-sm font-semibold px-7 py-3.5 rounded-full hover:border-white/60 transition-colors"
+                className="flex items-center justify-center gap-2 border border-white/20 text-white text-sm font-semibold px-7 py-3.5 rounded-full hover:border-brand-gold/60 hover:text-brand-gold transition-colors"
               >
                 Browse Properties
               </Link>

@@ -17,6 +17,7 @@ import {
 import type { PropertyWithRelations } from "@/types";
 import type { Category } from "@/types";
 import { slugify } from "@/lib/utils";
+import { useScrollToFirstError } from "@/hooks/useScrollToFirstError";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,8 +59,6 @@ const defaultFormValues: Partial<PropertyFormValues> = {
   type: "sale",
   status: "draft",
   country: "India",
-  parking: false,
-  is_featured: false,
   description: null,
   short_description: null,
   category_id: null,
@@ -90,7 +89,6 @@ function propertyToFormValues(
     floors: p.floors ?? undefined,
     facing: p.facing ?? undefined,
     age_years: p.age_years ?? undefined,
-    parking: p.parking ?? false,
     furnished: p.furnished ?? undefined,
     address: p.address,
     city: p.city,
@@ -101,11 +99,11 @@ function propertyToFormValues(
     longitude: p.longitude ?? undefined,
     map_embed_url: p.map_embed_url ?? undefined,
     cover_image_url: p.cover_image_url ?? undefined,
+    gallery_images: p.gallery_images ?? undefined,
     amenities: p.amenities ?? undefined,
     highlights: p.highlights ?? undefined,
     plot_number: p.plot_number ?? undefined,
     plot_dimensions: p.plot_dimensions ?? undefined,
-    is_featured: p.is_featured ?? false,
     meta_title: p.meta_title ?? undefined,
     meta_description: p.meta_description ?? undefined,
     meta_keywords: p.meta_keywords ?? undefined,
@@ -141,7 +139,10 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
   const fetchList = useCallback(async () => {
     setLoading(true);
     try {
-      const sortMap: Record<SortOption, { sort_by: string; sort_order: "asc" | "desc" }> = {
+      const sortMap: Record<
+        SortOption,
+        { sort_by: string; sort_order: "asc" | "desc" }
+      > = {
         newest: { sort_by: "created_at", sort_order: "desc" },
         price_asc: { sort_by: "price", sort_order: "asc" },
         price_desc: { sort_by: "price", sort_order: "desc" },
@@ -173,6 +174,8 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
   });
 
   const title = form.watch("title");
+  useScrollToFirstError(form.formState.errors);
+
   useEffect(() => {
     if (title && !form.getValues("slug")) {
       form.setValue("slug", slugify(title));
@@ -256,64 +259,77 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Properties</h1>
-        <Button onClick={openAdd} className="shrink-0">
-          <Plus className="h-4 w-4 mr-2" />
-          Add
-        </Button>
-      </div>
-
-      <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
-        <form onSubmit={handleSearch} className="flex gap-2">
-          <Input
-            placeholder="Search by title or city..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="max-w-xs"
-          />
-          <Button type="submit" variant="secondary">
-            Search
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm mb-6">
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold text-gray-900">
+            Properties Inventory
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage and track all real estate listings
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <form onSubmit={handleSearch} className="flex gap-2 w-full sm:w-auto">
+            <Input
+              placeholder="Search by title or city..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="w-full sm:w-[220px] h-10 rounded-xl"
+            />
+            <Button
+              type="submit"
+              variant="secondary"
+              className="h-10 rounded-xl"
+            >
+              Search
+            </Button>
+          </form>
+          <Select
+            value={status || STATUS_ALL}
+            onValueChange={(v) => {
+              setStatus(v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-full sm:w-[140px] h-10 rounded-xl">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value={STATUS_ALL}>All statuses</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="sold">Sold</SelectItem>
+              <SelectItem value="rented">Rented</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={sort}
+            onValueChange={(v) => {
+              setSort(v as SortOption);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-full sm:w-[140px] h-10 rounded-xl">
+              <SelectValue placeholder="Sort" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="newest">Newest</SelectItem>
+              <SelectItem value="price_asc">Price (low)</SelectItem>
+              <SelectItem value="price_desc">Price (high)</SelectItem>
+              <SelectItem value="views">Views</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            onClick={openAdd}
+            className="h-10 rounded-xl bg-brand-blue hover:bg-brand-blue-hover text-white px-5 shadow-sm shadow-brand-blue/20 w-full sm:w-auto"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Property
           </Button>
-        </form>
-        <Select
-          value={status || STATUS_ALL}
-          onValueChange={(v) => {
-            setStatus(v);
-            setPage(1);
-          }}
-        >
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={STATUS_ALL}>All</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="draft">Draft</SelectItem>
-            <SelectItem value="sold">Sold</SelectItem>
-            <SelectItem value="rented">Rented</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select
-          value={sort}
-          onValueChange={(v) => {
-            setSort(v as SortOption);
-            setPage(1);
-          }}
-        >
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Sort" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="newest">Newest</SelectItem>
-            <SelectItem value="price_asc">Price (low)</SelectItem>
-            <SelectItem value="price_desc">Price (high)</SelectItem>
-            <SelectItem value="views">Views</SelectItem>
-          </SelectContent>
-        </Select>
+        </div>
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-3xl border border-gray-100 bg-white shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -355,8 +371,8 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
                   <TableCell>{row.city}</TableCell>
                   <TableCell>
                     {row.category &&
-                      typeof row.category === "object" &&
-                      "name" in row.category
+                    typeof row.category === "object" &&
+                    "name" in row.category
                       ? (row.category as { name: string }).name
                       : "—"}
                   </TableCell>
@@ -388,8 +404,8 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
         </Table>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="p-4 border-t border-gray-50 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-sm text-gray-500">
           <span>
             {total === 0 ? "0" : `${from}–${to}`} of {total}
           </span>
@@ -400,10 +416,10 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-[70px] h-8">
+            <SelectTrigger className="w-[70px] h-8 rounded-lg bg-white">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-xl">
               {PAGE_SIZES.map((n) => (
                 <SelectItem key={n} value={String(n)}>
                   {n}
@@ -417,6 +433,7 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
           <Button
             variant="outline"
             size="sm"
+            className="rounded-lg bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
           >
@@ -425,6 +442,7 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
           <Button
             variant="outline"
             size="sm"
+            className="rounded-lg bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
           >

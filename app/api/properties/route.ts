@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProperties } from "@/lib/queries/properties";
+import { toUserFriendlyMessage } from "@/lib/db-errors";
 
 // Public endpoint — serves the landing page featured properties
 export async function GET(request: NextRequest) {
@@ -14,8 +15,6 @@ export async function GET(request: NextRequest) {
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const limit = parseInt(searchParams.get("limit") ?? "12", 10);
   const search = searchParams.get("search") ?? undefined;
-  const is_featured = searchParams.get("is_featured");
-
   try {
     const { data, total } = await getProperties({
       type: type ?? undefined,
@@ -31,14 +30,10 @@ export async function GET(request: NextRequest) {
       limit,
     });
 
-    // Filter by featured if requested
-    const filteredData = is_featured === "true"
-      ? data.filter((p) => p.is_featured)
-      : data;
-
-    return NextResponse.json({ data: filteredData, total });
+    return NextResponse.json({ data, total });
   } catch (err) {
+    const message = toUserFriendlyMessage(err);
     console.error("[GET /api/properties]", err);
-    return NextResponse.json({ error: "Failed to fetch properties" }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

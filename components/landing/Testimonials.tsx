@@ -7,9 +7,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const testimonials = [
   {
     quote:
-      "HorizonEstate transformed our home buying experience with professionalism and care, making the process smooth and enjoyable. Highly recommended for anyone seeking quality service.",
+      "The Real Business transformed our home buying experience with professionalism and care, making the process smooth and enjoyable. Highly recommended for anyone seeking quality service.",
     quote2:
-      "The team at HorizonEstate exceeded our expectations, delivering exceptional results and personalized attention. Their expertise made our property investment truly successful.",
+      "The team at The Real Business exceeded our expectations, delivering exceptional results and personalized attention. Their expertise made our property investment truly successful.",
     name: "Adriana O'Sullivan",
     handle: "adriana@gmail.com",
     avatar:
@@ -17,7 +17,7 @@ const testimonials = [
   },
   {
     quote:
-      "Needed a quick sale. HorizonEstate delivered an amazing offer, exceeding our expectations. So grateful for their expertise and the way they guided us through every step.",
+      "Needed a quick sale. The Real Business delivered an amazing offer, exceeding our expectations. So grateful for their expertise and the way they guided us through every step.",
     quote2:
       "The entire team was responsive, knowledgeable, and truly cared about finding us the right outcome. I couldn't have asked for a better real estate partner.",
     name: "John Miles",
@@ -29,7 +29,7 @@ const testimonials = [
     quote:
       "Professional, fast, and reliable. They handled everything and we got our dream home in under 30 days. The process was incredibly seamless.",
     quote2:
-      "From the very first consultation to the final paperwork, HorizonEstate's attention to detail and commitment to excellence was truly outstanding.",
+      "From the very first consultation to the final paperwork, The Real Business's attention to detail and commitment to excellence was truly outstanding.",
     name: "Marcus Johnson",
     handle: "marcus.j@gmail.com",
     avatar:
@@ -42,14 +42,16 @@ export function Testimonials() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const [active, setActive] = useState(0);
 
-  const prev = () => setActive((a) => (a === 0 ? testimonials.length - 1 : a - 1));
-  const next = () => setActive((a) => (a === testimonials.length - 1 ? 0 : a + 1));
+  const prev = () =>
+    setActive((a) => (a === 0 ? testimonials.length - 1 : a - 1));
+  const next = () =>
+    setActive((a) => (a === testimonials.length - 1 ? 0 : a + 1));
 
   const t = testimonials[active];
 
   return (
-    <section className="py-24 bg-[#f8f8f6]" ref={ref}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+    <section className="py-24 bg-gray-50" ref={ref}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         {/* Footer info row */}
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10">
           {/* Left: branding info */}
@@ -74,14 +76,16 @@ export function Testimonials() {
               transition={{ duration: 0.5 }}
               className="mb-3"
             >
-              <span className="text-sm text-gray-400 tracking-widest">/Testimonial</span>
+              <span className="text-sm text-brand-gold/80 tracking-widest">
+                /Testimonial
+              </span>
             </motion.div>
 
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-10 leading-tight"
+              className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-charcoal mb-10 leading-tight"
             >
               What our clients say
             </motion.h2>
@@ -104,11 +108,15 @@ export function Testimonials() {
                     className="h-10 w-10 rounded-full object-cover"
                   />
                   <div>
-                    <p className="text-sm font-semibold text-black">{t.name}</p>
+                    <p className="text-sm font-semibold text-brand-charcoal">
+                      {t.name}
+                    </p>
                     <p className="text-xs text-gray-400">{t.handle}</p>
                   </div>
                 </div>
-                <p className="text-sm text-gray-700 leading-relaxed">{t.quote}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  {t.quote}
+                </p>
               </div>
 
               {/* Second paragraph */}
@@ -123,7 +131,7 @@ export function Testimonials() {
             <div className="flex items-center gap-4">
               <button
                 onClick={prev}
-                className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-black hover:border-black hover:text-white transition-all"
+                className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-brand-charcoal hover:border-brand-charcoal hover:text-white transition-all"
                 aria-label="Previous"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
@@ -132,8 +140,10 @@ export function Testimonials() {
               {/* Progress bar */}
               <div className="flex-1 h-px bg-gray-200 relative">
                 <div
-                  className="absolute top-0 left-0 h-full bg-black transition-all duration-500"
-                  style={{ width: `${((active + 1) / testimonials.length) * 100}%` }}
+                  className="absolute top-0 left-0 h-full bg-brand-charcoal transition-all duration-500"
+                  style={{
+                    width: `${((active + 1) / testimonials.length) * 100}%`,
+                  }}
                 />
               </div>
 
@@ -143,7 +153,7 @@ export function Testimonials() {
 
               <button
                 onClick={next}
-                className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-black hover:border-black hover:text-white transition-all"
+                className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-brand-charcoal hover:border-brand-charcoal hover:text-white transition-all"
                 aria-label="Next"
               >
                 <ChevronRight className="h-3.5 w-3.5" />

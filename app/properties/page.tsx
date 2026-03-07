@@ -6,13 +6,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Properties — HorizonEstate",
-  description: "Browse our curated collection of premium properties for sale and rent.",
+  title: "Properties — The Real Business",
+  description:
+    "Browse our curated collection of premium properties for sale and rent.",
 };
 
 function PropertiesLoading() {
   return (
-    <div className="max-w-7xl mx-auto px-6 lg:px-10 py-24">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-24">
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
         {Array.from({ length: 9 }).map((_, i) => (
           <div key={i}>

@@ -1,93 +1,61 @@
 "use client";
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  keepPreviousData,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { toast } from "sonner";
-import type { Category, CategoryFilters } from "@/types";
 import { buildQueryString } from "@/lib/utils";
+import type { Category, CategoryFilters } from "@/types";
 
-const CATEGORIES_KEY = "categories";
+const KEYS = {
+  list: (f: CategoryFilters) => ["categories", f] as const,
+  allActive: ["categories", "all-active"] as const,
+  detail: (id: string) => ["categories", id] as const,
+};
 
-async function fetchCategories(filters: Partial<CategoryFilters>) {
-  const qs = buildQueryString(filters as Record<string, string | number | boolean | undefined | null>);
-  const res = await fetch(`/api/admin/categories?${qs}`);
-  if (!res.ok) throw new Error("Failed to fetch categories");
-  return res.json() as Promise<{ data: Category[]; total: number }>;
-}
-
-async function fetchAllCategories() {
-  const res = await fetch(`/api/admin/categories?limit=100&sort_order=asc`);
-  if (!res.ok) throw new Error("Failed to fetch categories");
-  const json = await res.json();
-  return json.data as Category[];
-}
-
-async function createCategory(
-  values: Pick<Category, "name" | "description" | "icon" | "is_active">
-) {
-  const res = await fetch("/api/admin/categories", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(values),
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error ?? "Failed to create category");
+function getApiErrorMessage(err: unknown): string {
+  if (axios.isAxiosError(err) && err.response?.data?.error) {
+    return String(err.response.data.error);
   }
-  return res.json();
+  return err instanceof Error ? err.message : "Something went wrong";
 }
 
-async function updateCategory(
-  id: string,
-  values: Partial<Pick<Category, "name" | "description" | "icon" | "is_active">>
-) {
-  const res = await fetch(`/api/admin/categories/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(values),
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error ?? "Failed to update category");
-  }
-  return res.json();
-}
-
-async function deleteCategory(id: string) {
-  const res = await fetch(`/api/admin/categories/${id}`, { method: "DELETE" });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error ?? "Failed to delete category");
-  }
-}
-
-export function useCategories(filters: Partial<CategoryFilters>) {
-  return useQuery({
-    queryKey: [CATEGORIES_KEY, "list", filters],
-    queryFn: () => fetchCategories(filters),
-    placeholderData: keepPreviousData,
+export function useCategories(filters: CategoryFilters = {}) {
+  return useQuery<{ data: Category[]; total: number; page?: number; limit?: number }>({
+    queryKey: KEYS.list(filters),
+    queryFn: async () => {
+      const qs = buildQueryString(filters as Record<string, string | number | boolean | undefined>);
+      const { data } = await axios.get(`/api/admin/categories?${qs}`);
+      return data;
+    },
+    placeholderData: (prev) => prev,
   });
 }
 
 export function useAllCategories() {
-  return useQuery({
-    queryKey: [CATEGORIES_KEY, "all"],
-    queryFn: fetchAllCategories,
-    staleTime: 5 * 60 * 1000,
+  return useQuery<Category[]>({
+    queryKey: KEYS.allActive,
+    queryFn: async () => {
+      const { data } = await axios.get("/api/admin/categories?limit=100&is_active=true");
+      return (data.data ?? []) as Category[];
+    },
+    placeholderData: (prev) => prev,
   });
 }
 
 export function useCreateCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: createCategory,
+    mutationFn: async (body: Pick<Category, "name" | "description" | "icon" | "is_active">) => {
+      try {
+        const { data } = await axios.post("/api/admin/categories", body);
+        return data.data as Category;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err));
+      }
+    },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [CATEGORIES_KEY] });
-      toast.success("Category created successfully");
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      toast.success("Category created");
     },
     onError: (err: Error) => toast.error(err.message),
   });
@@ -96,16 +64,23 @@ export function useCreateCategory() {
 export function useUpdateCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       id,
       values,
     }: {
       id: string;
       values: Partial<Pick<Category, "name" | "description" | "icon" | "is_active">>;
-    }) => updateCategory(id, values),
+    }) => {
+      try {
+        const { data } = await axios.put(`/api/admin/categories/${id}`, values);
+        return data.data as Category;
+      } catch (err) {
+        throw new Error(getApiErrorMessage(err));
+      }
+    },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [CATEGORIES_KEY] });
-      toast.success("Category updated successfully");
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      toast.success("Category updated");
     },
     onError: (err: Error) => toast.error(err.message),
   });
@@ -114,10 +89,12 @@ export function useUpdateCategory() {
 export function useDeleteCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: deleteCategory,
+    mutationFn: async (id: string) => {
+      await axios.delete(`/api/admin/categories/${id}`);
+    },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [CATEGORIES_KEY] });
-      toast.success("Category deleted successfully");
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      toast.success("Category deleted");
     },
     onError: (err: Error) => toast.error(err.message),
   });

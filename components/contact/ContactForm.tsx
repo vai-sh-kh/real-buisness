@@ -4,7 +4,9 @@ import { useState } from "react";
 import { Send, CheckCircle } from "lucide-react";
 
 export function ContactForm() {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -14,7 +16,9 @@ export function ContactForm() {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -47,17 +51,19 @@ export function ContactForm() {
   if (status === "success") {
     return (
       <div className="h-full flex flex-col items-center justify-center py-20 text-center">
-        <div className="h-16 w-16 rounded-full bg-black flex items-center justify-center mb-6">
+        <div className="h-16 w-16 rounded-full bg-brand-charcoal flex items-center justify-center mb-6">
           <CheckCircle className="h-8 w-8 text-white" />
         </div>
-        <h3 className="text-2xl font-bold text-black mb-3">Message Sent!</h3>
+        <h3 className="text-2xl font-bold text-brand-charcoal mb-3">
+          Message Sent!
+        </h3>
         <p className="text-gray-500 text-sm max-w-xs leading-relaxed mb-8">
           Thank you for reaching out. One of our experts will get back to you
           within 24 hours.
         </p>
         <button
           onClick={() => setStatus("idle")}
-          className="text-sm font-semibold text-black underline underline-offset-4 hover:opacity-60 transition-opacity"
+          className="text-sm font-semibold text-brand-charcoal underline underline-offset-4 hover:text-brand-gold transition-colors"
         >
           Send another message
         </button>
@@ -71,7 +77,7 @@ export function ContactForm() {
         {/* Name */}
         <div>
           <label className="block text-xs font-medium text-gray-500 uppercase tracking-widest mb-2">
-            Full Name <span className="text-black">*</span>
+            Full Name <span className="text-brand-charcoal">*</span>
           </label>
           <input
             type="text"
@@ -80,14 +86,14 @@ export function ContactForm() {
             onChange={handleChange}
             required
             placeholder="John Doe"
-            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-black placeholder:text-gray-400 outline-none focus:border-black transition-colors"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-brand-charcoal placeholder:text-gray-400 outline-none focus:border-brand-gold transition-colors"
           />
         </div>
 
         {/* Email */}
         <div>
           <label className="block text-xs font-medium text-gray-500 uppercase tracking-widest mb-2">
-            Email Address <span className="text-black">*</span>
+            Email Address <span className="text-brand-charcoal">*</span>
           </label>
           <input
             type="email"
@@ -96,7 +102,7 @@ export function ContactForm() {
             onChange={handleChange}
             required
             placeholder="john@example.com"
-            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-black placeholder:text-gray-400 outline-none focus:border-black transition-colors"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-brand-charcoal placeholder:text-gray-400 outline-none focus:border-brand-gold transition-colors"
           />
         </div>
       </div>
@@ -113,7 +119,7 @@ export function ContactForm() {
             value={form.phone}
             onChange={handleChange}
             placeholder="+1 (555) 000-0000"
-            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-black placeholder:text-gray-400 outline-none focus:border-black transition-colors"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-brand-charcoal placeholder:text-gray-400 outline-none focus:border-brand-gold transition-colors"
           />
         </div>
 
@@ -126,7 +132,7 @@ export function ContactForm() {
             name="interest"
             value={form.interest}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-black outline-none focus:border-black transition-colors bg-white cursor-pointer appearance-none"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-brand-charcoal outline-none focus:border-brand-gold transition-colors bg-white cursor-pointer appearance-none"
           >
             <option value="buy">Buying a property</option>
             <option value="rent">Renting a property</option>
@@ -140,7 +146,7 @@ export function ContactForm() {
       {/* Message */}
       <div>
         <label className="block text-xs font-medium text-gray-500 uppercase tracking-widest mb-2">
-          Message <span className="text-black">*</span>
+          Message <span className="text-brand-charcoal">*</span>
         </label>
         <textarea
           name="message"
@@ -149,7 +155,7 @@ export function ContactForm() {
           required
           rows={5}
           placeholder="Tell us more about what you're looking for..."
-          className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-black placeholder:text-gray-400 outline-none focus:border-black transition-colors resize-none"
+          className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-brand-charcoal placeholder:text-gray-400 outline-none focus:border-brand-gold transition-colors resize-none"
         />
       </div>
 
@@ -162,7 +168,7 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full flex items-center justify-center gap-2 bg-black text-white text-sm font-semibold py-4 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-2 bg-brand-charcoal text-white text-sm font-semibold py-4 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {status === "loading" ? (
           <span>Sending...</span>
@@ -175,7 +181,10 @@ export function ContactForm() {
 
       <p className="text-xs text-gray-400 text-center">
         By submitting this form, you agree to our{" "}
-        <a href="#" className="underline hover:text-black transition-colors">
+        <a
+          href="#"
+          className="underline hover:text-brand-gold transition-colors"
+        >
           Privacy Policy
         </a>
         .

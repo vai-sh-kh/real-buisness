@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
 import { getCategories, createCategory } from "@/lib/queries/categories";
-import type { Category } from "@/types";
+import type { Category, CategoryFilters } from "@/types";
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,8 +16,11 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get("limit") ?? "10", 10);
   const search = searchParams.get("search") ?? undefined;
   const is_active = searchParams.get("is_active");
-  const sort_by = searchParams.get("sort_by") ?? "name";
-  const sort_order = (searchParams.get("sort_order") as "asc" | "desc") ?? "asc";
+  const sortByParam = searchParams.get("sort_by") ?? "name";
+  const sort_by: CategoryFilters["sort_by"] =
+    sortByParam === "created_at" ? "created_at" : "name";
+  const sort_order: "asc" | "desc" =
+    searchParams.get("sort_order") === "desc" ? "desc" : "asc";
 
   try {
     const { data, total } = await getCategories({
@@ -31,11 +34,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data, total, page, limit });
   } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch categories";
     console.error("[GET /api/admin/categories]", err);
-    return NextResponse.json(
-      { error: "Failed to fetch categories" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -73,6 +74,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to create category";
     console.error("[POST /api/admin/categories]", err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status = message.includes("already exists") ? 409 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }

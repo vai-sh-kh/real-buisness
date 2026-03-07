@@ -7,18 +7,17 @@ import { OurVision } from "@/components/landing/OurVision";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { CTA } from "@/components/landing/CTA";
 import { Footer } from "@/components/landing/Footer";
-import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "HorizonEstate — Find Premium Properties",
+  title: "The Real Business — Find Premium Properties",
   description:
-    "Discover premium properties for sale and rent. Find your dream home with HorizonEstate.",
+    "Discover premium properties for sale and rent. Find your dream home with The Real Business.",
 };
 
 export default function LandingPage() {
   return (
-    <SmoothScrollProvider>
+    <>
       <Navbar />
       <main>
         <Hero />
@@ -30,6 +29,6 @@ export default function LandingPage() {
         <CTA />
       </main>
       <Footer />
-    </SmoothScrollProvider>
+    </>
   );
 }

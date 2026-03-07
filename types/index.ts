@@ -1,4 +1,29 @@
-// ─── Category ─────────────────────────────────────────────────────────────────
+// ─── Shared ──────────────────────────────────────────────────────────────────
+
+export interface ApiResponse<T> {
+  data?: T;
+  error?: string;
+}
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: PaginationMeta;
+}
+
+export interface AdminSession {
+  isAdmin: boolean;
+  email: string;
+}
+
+// ─── Categories (initial migration) ─────────────────────────────────────────
+
 export interface Category {
   id: string;
   name: string;
@@ -10,15 +35,29 @@ export interface Category {
   updated_at: string;
 }
 
-// ─── Property ─────────────────────────────────────────────────────────────────
+export interface CategoryFilters {
+  page?: number;
+  limit?: number;
+  search?: string;
+  is_active?: boolean;
+  sort_by?: "name" | "created_at";
+  sort_order?: "asc" | "desc";
+}
+
+// ─── Properties (initial migration) ──────────────────────────────────────────
+
+export type PropertyType = "sale" | "rent";
+export type PropertyStatus = "active" | "sold" | "rented" | "draft";
+export type PropertyFurnished = "furnished" | "semi-furnished" | "unfurnished";
+
 export interface Property {
   id: string;
   title: string;
   slug: string;
   description: string | null;
   short_description: string | null;
-  type: "sale" | "rent";
-  status: "active" | "sold" | "rented" | "draft";
+  type: PropertyType;
+  status: PropertyStatus;
   category_id: string | null;
   price: number;
   price_label: string | null;
@@ -28,8 +67,7 @@ export interface Property {
   floors: number | null;
   facing: string | null;
   age_years: number | null;
-  parking: boolean;
-  furnished: "furnished" | "semi-furnished" | "unfurnished" | null;
+  furnished: PropertyFurnished | null;
   address: string;
   city: string;
   state: string;
@@ -39,11 +77,11 @@ export interface Property {
   longitude: number | null;
   map_embed_url: string | null;
   cover_image_url: string | null;
+  gallery_images: string[] | null;
   amenities: string[] | null;
   highlights: string[] | null;
   plot_number: string | null;
   plot_dimensions: string | null;
-  is_featured: boolean;
   views: number;
   meta_title: string | null;
   meta_description: string | null;
@@ -54,10 +92,26 @@ export interface Property {
 }
 
 export interface PropertyWithRelations extends Property {
-  category?: Category | null;
+  category: { id: string; name: string; slug: string } | null;
 }
 
-// ─── Lead ─────────────────────────────────────────────────────────────────────
+export interface PropertyFilters {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: PropertyStatus | "all";
+  type?: PropertyType | "all";
+  category_id?: string;
+  city?: string;
+  min_price?: number;
+  max_price?: number;
+  bedrooms?: number;
+  sort_by?: string;
+  sort_order?: "asc" | "desc";
+}
+
+// ─── Leads (initial migration) ─────────────────────────────────────────────
+
 export type LeadSource = "website" | "meta_ads" | "google_ads" | "manual";
 export type LeadStatus = "new" | "contacted" | "qualified" | "converted" | "lost";
 
@@ -77,17 +131,27 @@ export interface Lead {
 }
 
 export interface LeadWithProperty extends Lead {
-  property?: Pick<Property, "id" | "title" | "slug"> | null;
+  property: { id: string; title: string; slug: string; price?: number } | null;
 }
 
-// ─── Reports ─────────────────────────────────────────────────────────────────
+export interface LeadFilters {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: LeadStatus | "all";
+  source?: LeadSource | "all";
+  sort_by?: string;
+  sort_order?: "asc" | "desc";
+}
+
+// ─── Reports (dashboard/reports) ───────────────────────────────────────────
+
 export interface PropertyStats {
   total: number;
   active: number;
   draft: number;
   sold: number;
   rented: number;
-  featured: number;
   for_sale: number;
   for_rent: number;
 }
@@ -99,10 +163,7 @@ export interface LeadStats {
   qualified: number;
   converted: number;
   lost: number;
-  by_source: {
-    source: LeadSource;
-    count: number;
-  }[];
+  by_source: { source: LeadSource; count: number }[];
 }
 
 export interface CategoryDistribution {
@@ -126,66 +187,59 @@ export interface ReportsData {
   recent_activity: RecentActivity[];
 }
 
-// ─── Dashboard ────────────────────────────────────────────────────────────────
+// ─── Dashboard & Analytics ───────────────────────────────────────────────────
+
+export interface PropertyStatusCount {
+  status: PropertyStatus;
+  count: number;
+}
+
+export interface LeadStatusCount {
+  status: LeadStatus;
+  count: number;
+}
+
 export interface DashboardStats {
   total_properties: number;
-  total_leads: number;
   active_properties: number;
+  total_leads: number;
   new_leads: number;
-  recent_leads: Lead[];
-  recent_properties: Property[];
+  properties_by_status: PropertyStatusCount[];
+  leads_by_status: LeadStatusCount[];
+  recent_properties: Pick<PropertyWithRelations, "id" | "title" | "city" | "status" | "created_at" | "cover_image_url">[];
+  recent_leads: Pick<LeadWithProperty, "id" | "name" | "email" | "status" | "created_at">[];
 }
 
-// ─── API Response ─────────────────────────────────────────────────────────────
-export interface ApiResponse<T> {
-  data: T;
-  total?: number;
-  page?: number;
-  limit?: number;
-}
+// ─── Admin Settings ───────────────────────────────────────────────────────────
 
-export interface ApiError {
-  error: string;
-  details?: unknown;
-}
+export type ThemePreference = "light" | "dark" | "system";
 
-// ─── Pagination ───────────────────────────────────────────────────────────────
-export interface PaginationParams {
-  page: number;
-  limit: number;
-}
-
-export interface SortParams {
-  sort_by?: string;
-  sort_order?: "asc" | "desc";
-}
-
-// ─── Filters ─────────────────────────────────────────────────────────────────
-export interface PropertyFilters extends PaginationParams, SortParams {
-  search?: string;
-  status?: Property["status"] | "all";
-  type?: Property["type"] | "all";
-  category_id?: string;
-  city?: string;
-  min_price?: number;
-  max_price?: number;
-  bedrooms?: number;
-  is_featured?: boolean;
-}
-
-export interface LeadFilters extends PaginationParams, SortParams {
-  search?: string;
-  status?: LeadStatus | "all";
-  source?: LeadSource | "all";
-}
-
-export interface CategoryFilters extends PaginationParams, SortParams {
-  search?: string;
-  is_active?: boolean;
-}
-
-// ─── Session ─────────────────────────────────────────────────────────────────
-export interface AdminSession {
-  isAdmin: boolean;
+export interface AdminSettings {
+  id: string;
   email: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  phone: string | null;
+  notifications_enabled: boolean;
+  email_notifications: boolean;
+  lead_alerts: boolean;
+  browser_notifications: boolean;
+  theme: ThemePreference;
+  language: string;
+  timezone: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminSettingsUpdate {
+  display_name?: string | null;
+  avatar_url?: string | null;
+  phone?: string | null;
+  notifications_enabled?: boolean;
+  email_notifications?: boolean;
+  lead_alerts?: boolean;
+  browser_notifications?: boolean;
+  theme?: ThemePreference;
+  language?: string;
+  timezone?: string;
 }

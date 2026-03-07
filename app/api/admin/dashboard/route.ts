@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
-import { getDashboardStats } from "@/lib/queries/reports";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getDashboardStats } from "@/lib/queries/dashboard";
+import { toUserFriendlyMessage } from "@/lib/db-errors";
 
 export async function GET() {
   try {
@@ -10,13 +12,12 @@ export async function GET() {
   }
 
   try {
-    const data = await getDashboardStats();
+    const supabase = createAdminClient();
+    const data = await getDashboardStats(supabase);
     return NextResponse.json({ data });
   } catch (err) {
+    const message = toUserFriendlyMessage(err);
     console.error("[GET /api/admin/dashboard]", err);
-    return NextResponse.json(
-      { error: "Failed to fetch dashboard stats" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

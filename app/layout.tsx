@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
+import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
+const lora = Lora({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -28,9 +34,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.className} ${lora.variable}`}>
         <QueryProvider>
-          {children}
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
           <Toaster richColors position="top-right" />
         </QueryProvider>
       </body>

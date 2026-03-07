@@ -5,16 +5,16 @@ import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Our Team — HorizonEstate",
+  title: "Our Team — The Real Business",
   description:
-    "Meet the talented professionals behind HorizonEstate — passionate experts dedicated to exceptional real estate service.",
+    "Meet the talented professionals behind The Real Business — passionate experts dedicated to exceptional real estate service.",
 };
 
 const team = [
   {
     name: "Marcus Lee",
     role: "CEO & Co-Founder",
-    bio: "With over 20 years in luxury real estate, Marcus leads HorizonEstate with vision and an unwavering commitment to client excellence.",
+    bio: "With over 20 years in luxury real estate, Marcus leads The Real Business with vision and an unwavering commitment to client excellence.",
     rating: 4.9,
     reviews: 71,
     image:
@@ -91,11 +91,13 @@ export default function TeamPage() {
       <Navbar />
       <main className="pt-16">
         {/* Hero */}
-        <section className="bg-[#f8f8f6] pt-20 pb-16 px-6 lg:px-10">
+        <section className="bg-[#f8f8f6] pt-20 pb-16 px-4 sm:px-6 lg:px-10">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
               <div>
-                <p className="text-sm text-gray-400 tracking-widest mb-3">/Our Team</p>
+                <p className="text-sm text-gray-400 tracking-widest mb-3">
+                  /Our Team
+                </p>
                 <h1 className="text-5xl sm:text-6xl lg:text-[72px] font-bold text-black leading-[0.95] tracking-tight max-w-2xl">
                   The experts
                   <br />
@@ -122,7 +124,7 @@ export default function TeamPage() {
         </section>
 
         {/* Team grid */}
-        <section className="py-20 bg-white px-6 lg:px-10">
+        <section className="py-20 bg-white px-4 sm:px-6 lg:px-10">
           <div className="max-w-7xl mx-auto">
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {team.map((member, i) => (
@@ -145,7 +147,9 @@ export default function TeamPage() {
                         <div className="text-xs font-semibold text-black">
                           ★ {member.rating.toFixed(1)}
                         </div>
-                        <div className="text-xs text-gray-500">{member.reviews} reviews</div>
+                        <div className="text-xs text-gray-500">
+                          {member.reviews} reviews
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -156,8 +160,12 @@ export default function TeamPage() {
                     <p className="text-xs text-gray-400 tracking-widest uppercase mb-2">
                       {member.role}
                     </p>
-                    <h3 className="font-bold text-black text-lg mb-3">{member.name}</h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">{member.bio}</p>
+                    <h3 className="font-bold text-black text-lg mb-3">
+                      {member.name}
+                    </h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      {member.bio}
+                    </p>
                     <Link
                       href="/contact"
                       className="inline-flex items-center gap-1.5 mt-4 text-xs font-semibold text-black hover:opacity-60 transition-opacity"
@@ -172,15 +180,15 @@ export default function TeamPage() {
         </section>
 
         {/* Join the team CTA */}
-        <section className="py-20 bg-[#0f0f0f] px-6 lg:px-10">
+        <section className="py-20 bg-black px-4 sm:px-6 lg:px-10">
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
                 Want to join our team?
               </h2>
               <p className="text-white/50 text-sm max-w-sm leading-relaxed">
-                We&apos;re always looking for talented real estate professionals who
-                share our passion for excellence and innovation.
+                We&apos;re always looking for talented real estate professionals
+                who share our passion for excellence and innovation.
               </p>
             </div>
             <Link

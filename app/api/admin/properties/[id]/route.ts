@@ -4,6 +4,7 @@ import { getPropertyById } from "@/lib/queries/properties";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { propertySchema } from "@/lib/validations/property.schema";
 import { slugify } from "@/lib/utils";
+import { toUserFriendlyMessage } from "@/lib/db-errors";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -68,9 +69,10 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
   if (error) {
     console.error("[PUT /api/admin/properties/:id]", error);
+    const status = (error as { code?: string }).code === "23505" ? 409 : 500;
     return NextResponse.json(
-      { error: error.message || "Failed to update property" },
-      { status: 500 }
+      { error: toUserFriendlyMessage(error) },
+      { status }
     );
   }
 

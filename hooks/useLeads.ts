@@ -1,76 +1,74 @@
 "use client";
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  keepPreviousData,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { Lead, LeadFilters, LeadWithProperty } from "@/types";
 import { buildQueryString } from "@/lib/utils";
+import type { Lead, LeadWithProperty, LeadFilters } from "@/types";
 
-const LEADS_KEY = "leads";
-
-async function fetchLeads(filters: Partial<LeadFilters>) {
-  const qs = buildQueryString(filters as Record<string, string | number | boolean | undefined | null>);
-  const res = await fetch(`/api/admin/leads?${qs}`);
-  if (!res.ok) throw new Error("Failed to fetch leads");
-  return res.json() as Promise<{ data: LeadWithProperty[]; total: number }>;
-}
-
-async function fetchLead(id: string) {
-  const res = await fetch(`/api/admin/leads/${id}`);
-  if (!res.ok) throw new Error("Failed to fetch lead");
-  const json = await res.json();
-  return json.data as LeadWithProperty;
-}
-
-async function updateLead(id: string, values: Partial<Lead>) {
-  const res = await fetch(`/api/admin/leads/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(values),
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error ?? "Failed to update lead");
-  }
-  return res.json();
-}
-
-async function deleteLead(id: string) {
-  const res = await fetch(`/api/admin/leads/${id}`, { method: "DELETE" });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error ?? "Failed to delete lead");
-  }
-}
-
-export function useLeads(filters: Partial<LeadFilters>) {
-  return useQuery({
-    queryKey: [LEADS_KEY, "list", filters],
-    queryFn: () => fetchLeads(filters),
-    placeholderData: keepPreviousData,
+export function useLeads(filters: LeadFilters = {}) {
+  return useQuery<{
+    data: LeadWithProperty[];
+    total: number;
+    page?: number;
+    limit?: number;
+  }>({
+    queryKey: ["leads", filters],
+    queryFn: async () => {
+      const qs = buildQueryString(
+        filters as Record<string, string | number | boolean | undefined>
+      );
+      const res = await fetch(`/api/admin/leads?${qs}`);
+      if (!res.ok) throw new Error("Failed to fetch leads");
+      return res.json();
+    },
+    placeholderData: (prev) => prev,
   });
 }
 
-export function useLead(id: string | null) {
-  return useQuery({
-    queryKey: [LEADS_KEY, "detail", id],
-    queryFn: () => fetchLead(id!),
-    enabled: !!id,
+export function useCreateLead() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: Omit<Lead, "id" | "created_at" | "updated_at">) => {
+      const res = await fetch("/api/admin/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to create lead");
+      return json.data as Lead;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["leads"] });
+      toast.success("Lead created");
+    },
+    onError: (err: Error) => toast.error(err.message),
   });
 }
 
 export function useUpdateLead() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, values }: { id: string; values: Partial<Lead> }) =>
-      updateLead(id, values),
+    mutationFn: async ({
+      id,
+      values,
+    }: {
+      id: string;
+      values: Partial<Pick<Lead, "status" | "notes">>;
+    }) => {
+      const res = await fetch(`/api/admin/leads/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to update lead");
+      return json.data as Lead;
+    },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [LEADS_KEY] });
-      toast.success("Lead updated successfully");
+      qc.invalidateQueries({ queryKey: ["leads"] });
+      toast.success("Lead updated");
     },
     onError: (err: Error) => toast.error(err.message),
   });
@@ -79,10 +77,16 @@ export function useUpdateLead() {
 export function useDeleteLead() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: deleteLead,
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/leads/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error || "Failed to delete lead");
+      }
+    },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [LEADS_KEY] });
-      toast.success("Lead deleted successfully");
+      qc.invalidateQueries({ queryKey: ["leads"] });
+      toast.success("Lead deleted");
     },
     onError: (err: Error) => toast.error(err.message),
   });
