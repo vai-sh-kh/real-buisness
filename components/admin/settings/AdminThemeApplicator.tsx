@@ -12,11 +12,8 @@ export function AdminThemeApplicator() {
     const el = document.getElementById(THEME_ROOT_ID);
     if (el) {
       el.classList.remove("light", "dark");
-      if (resolvedTheme === "dark") {
-        el.classList.add("dark");
-      } else {
-        el.classList.add("light");
-      }
+      /* Temporarily force light theme only */
+      el.classList.add("light");
     }
   }, [resolvedTheme]);
 

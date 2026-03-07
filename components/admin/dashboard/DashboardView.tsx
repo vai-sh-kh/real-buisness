@@ -44,11 +44,11 @@ function DashboardSkeleton() {
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
       {/* KPI Stats Row */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="flex items-center gap-4 rounded-xl border border-admin-card-border bg-admin-card-bg p-6 shadow-sm"
+            className="flex min-w-0 items-center gap-3 overflow-hidden rounded-xl border border-admin-card-border bg-admin-card-bg p-4 shadow-sm sm:gap-4 sm:p-6"
           >
             <div className="h-12 w-12 shrink-0 rounded-xl bg-muted" />
             <div className="min-w-0 flex-1 space-y-2">
@@ -60,25 +60,25 @@ function DashboardSkeleton() {
         ))}
       </div>
       {/* Charts Row */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/50">
-          <div className="mb-6 flex items-center justify-between">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
+        <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6">
+          <div className="mb-4 flex items-center justify-between sm:mb-6">
             <div className="h-6 w-56 rounded bg-muted" />
             <div className="h-4 w-16 rounded bg-muted" />
           </div>
-          <div className="h-[280px] rounded-xl bg-muted/50" />
+          <div className="h-48 rounded-xl bg-muted/50 sm:h-64 lg:h-[280px]" />
         </div>
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/50">
-          <div className="mb-6 flex items-center justify-between">
+        <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6">
+          <div className="mb-4 flex items-center justify-between sm:mb-6">
             <div className="h-6 w-48 rounded bg-muted" />
             <div className="h-4 w-16 rounded bg-muted" />
           </div>
-          <div className="h-[280px] rounded-xl bg-muted/50" />
+          <div className="h-48 rounded-xl bg-muted/50 sm:h-64 lg:h-[280px]" />
         </div>
       </div>
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/50">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
+        <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6">
           <div className="mb-6 flex items-center justify-between">
             <div className="h-6 w-40 rounded bg-muted" />
             <div className="h-4 w-16 rounded bg-muted" />
@@ -100,8 +100,8 @@ function DashboardSkeleton() {
             ))}
           </div>
         </div>
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/50">
-          <div className="mb-6 flex items-center justify-between">
+        <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6">
+          <div className="mb-4 flex items-center justify-between sm:mb-6">
             <div className="h-6 w-28 rounded bg-muted" />
             <div className="h-4 w-16 rounded bg-muted" />
           </div>
@@ -155,7 +155,7 @@ export function DashboardView() {
   return (
     <div className="space-y-8">
       {/* KPI Stats Row */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {[
           {
             title: "Total Properties",
@@ -202,35 +202,39 @@ export function DashboardView() {
             key={item.title}
             href={item.href}
             className={cn(
-              "flex items-center gap-4 rounded-xl border border-admin-card-border bg-admin-card-bg p-6 shadow-sm transition-all duration-200",
+              "flex min-w-0 items-center gap-3 overflow-hidden rounded-xl border border-admin-card-border bg-admin-card-bg p-4 shadow-sm transition-all duration-200 sm:gap-4 sm:p-6",
               "hover:border-admin-card-border/80 hover:shadow-md",
             )}
           >
             <div
               className={cn(
-                "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
+                "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg sm:h-12 sm:w-12 sm:rounded-xl",
                 item.bg,
               )}
             >
-              <item.icon className={cn("h-6 w-6", item.iconColor)} />
+              <item.icon
+                className={cn("h-5 w-5 sm:h-6 sm:w-6", item.iconColor)}
+              />
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-muted-foreground">
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <p className="truncate text-xs font-medium text-muted-foreground sm:text-sm">
                 {item.title}
               </p>
-              <p className="mt-1 text-2xl font-bold text-foreground">
+              <p className="mt-0.5 truncate text-xl font-bold text-foreground sm:mt-1 sm:text-2xl">
                 {item.value}
               </p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{item.sub}</p>
+              <p className="mt-0.5 truncate text-[11px] text-muted-foreground sm:text-xs">
+                {item.sub}
+              </p>
             </div>
           </Link>
         ))}
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
         {/* Property Status Distribution */}
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/50">
+        <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-lg font-bold text-foreground">
               Property Status Distribution
@@ -243,14 +247,14 @@ export function DashboardView() {
             </Link>
           </div>
           {propertyStatusData.length === 0 ? (
-            <div className="flex h-[280px] flex-col items-center justify-center rounded-xl bg-gray-50 dark:bg-gray-800/50">
+            <div className="flex h-48 flex-col items-center justify-center rounded-xl bg-gray-50 sm:h-64 sm:min-h-[280px]">
               <BarChart3 className="h-12 w-12 text-muted-foreground/50" />
               <p className="mt-1 text-sm text-muted-foreground">
                 No property data yet
               </p>
             </div>
           ) : (
-            <div className="h-[280px]">
+            <div className="h-48 min-w-0 sm:h-64 lg:h-[280px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -322,14 +326,20 @@ export function DashboardView() {
                     type="number"
                     axisLine={{ stroke: "hsl(var(--border))" }}
                     tickLine={{ stroke: "hsl(var(--border))" }}
-                    tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                    tick={{
+                      fontSize: 11,
+                      fill: "hsl(var(--muted-foreground))",
+                    }}
                     allowDecimals={false}
                   />
                   <YAxis
                     type="category"
                     dataKey="name"
                     width={48}
-                    tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                    tick={{
+                      fontSize: 11,
+                      fill: "hsl(var(--muted-foreground))",
+                    }}
                     axisLine={{ stroke: "hsl(var(--border))" }}
                     tickLine={{ stroke: "hsl(var(--border))" }}
                   />
@@ -356,7 +366,7 @@ export function DashboardView() {
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-admin-card-border bg-admin-card-bg p-4 shadow-sm lg:rounded-2xl lg:p-6">
+        <div className="min-w-0 overflow-hidden rounded-xl border border-admin-card-border bg-admin-card-bg p-4 shadow-sm lg:rounded-2xl lg:p-6">
           <div className="mb-4 flex items-center justify-between lg:mb-6">
             <h2 className="text-base font-semibold text-foreground lg:text-lg">
               Recent Properties
@@ -440,9 +450,11 @@ export function DashboardView() {
           )}
         </div>
 
-        <div className="rounded-xl border border-admin-card-border bg-admin-card-bg p-4 shadow-sm lg:rounded-2xl lg:p-6">
+        <div className="min-w-0 overflow-hidden rounded-xl border border-admin-card-border bg-admin-card-bg p-4 shadow-sm lg:rounded-2xl lg:p-6">
           <div className="mb-4 flex items-center justify-between lg:mb-6">
-            <h2 className="text-base font-semibold text-foreground lg:text-lg">Recent Leads</h2>
+            <h2 className="text-base font-semibold text-foreground lg:text-lg">
+              Recent Leads
+            </h2>
             <Link
               href="/admin/leads"
               className="text-sm font-semibold text-brand-blue hover:underline"

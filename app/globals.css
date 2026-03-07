@@ -43,37 +43,38 @@
     --brand-orange-muted: 24 95% 96%;
   }
 
+  /* Temporarily disabled: dark theme - same as :root so dark class has no effect */
   .dark {
-    --background: 0 0% 10%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 14%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 14%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 38 39% 52%;
-    --primary-foreground: 0 0% 10%;
-    --brand-gold: 38 39% 58%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 100%;
+    --brand-gold: 38 39% 52%;
     --brand-gold-foreground: 0 0% 10%;
-    --gold: 38 39% 58%;
+    --gold: 38 39% 52%;
     --gold-foreground: 0 0% 10%;
-    --secondary: 0 0% 16%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 18%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 38 39% 24%;
-    --accent-foreground: 38 39% 92%;
-    --destructive: 0 62% 40%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 38 39% 96%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 22%;
-    --input: 0 0% 22%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
     --ring: 38 39% 52%;
-    --brand-blue: 221 83% 60%;
+    --brand-blue: 221 83% 53%;
     --brand-blue-foreground: 0 0% 100%;
-    --brand-blue-hover: 221 83% 65%;
-    --brand-blue-muted: 221 83% 20%;
-    --brand-orange: 24 95% 58%;
+    --brand-blue-hover: 221 83% 48%;
+    --brand-blue-muted: 221 83% 92%;
+    --brand-orange: 24 95% 53%;
     --brand-orange-foreground: 0 0% 100%;
-    --brand-orange-muted: 24 95% 18%;
+    --brand-orange-muted: 24 95% 96%;
   }
 }
 
@@ -125,6 +126,7 @@
   font-family: var(--admin-font-sans);
 }
 
+/* Temporarily removed: dark theme for admin - force light only
 #admin-theme-root.dark {
   --admin-sidebar-bg: 222 47% 11%;
   --admin-sidebar-border: 217 33% 17%;
@@ -141,3 +143,4 @@
   --admin-input-bg: 217 33% 12%;
   --admin-input-border: 217 33% 22%;
 }
+*/

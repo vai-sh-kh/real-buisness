@@ -9,11 +9,9 @@ import { useSettings } from "@/hooks/useSettings";
 const THEME_INIT_SCRIPT = `
 (function(){
   try {
-    var c = document.cookie.match(/admin_theme=([^;]+)/);
-    var t = (c && c[1]) ? c[1] : (typeof localStorage !== 'undefined' ? localStorage.getItem('admin_theme') : null) || 'dark';
-    if (t === 'system') t = 'dark';
+    /* Temporarily force light theme only - dark styles removed */
     var el = document.getElementById('admin-theme-root');
-    if (el) { el.classList.remove('light','dark'); el.classList.add(t); }
+    if (el) { el.classList.remove('light','dark'); el.classList.add('light'); }
   } catch(e) {}
 })();
 `;
