@@ -25,7 +25,6 @@ import { useAuthStore } from "@/store/authStore";
 import { useSettings } from "@/hooks/useSettings";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { createClientSupabase } from "@/lib/supabase/client";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -47,7 +46,6 @@ export function Header() {
 
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const supabase = createClientSupabase();
 
   const displayName = settings?.display_name?.trim() || "Admin User";
   const avatarUrl = settings?.avatar_url;
@@ -55,9 +53,7 @@ export function Header() {
   async function handleLogout() {
     setIsLoggingOut(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-
+      await fetch("/api/auth/logout", { method: "POST" });
       clearAuth();
       router.push("/admin/login");
       toast.success("Logged out successfully");

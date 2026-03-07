@@ -92,6 +92,11 @@ export default function AdminLoginPage() {
     }
   }
 
+  const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    void handleSubmit(onSubmit)(e);
+  };
+
   if (!mounted) return null;
 
   if (isAuthenticated) {
@@ -106,17 +111,73 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-white">
-      {/* Mobile: full-screen dark layout, app-like */}
-      <div className="lg:hidden min-h-[100dvh] w-full flex flex-col bg-[#0f0f0f] relative overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(183,147,84,0.12),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(183,147,84,0.06),transparent_40%)]" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+    <div className="min-h-screen flex flex-col lg:flex-row bg-white">
+      {/* Left panel — desktop only */}
+      <div className="hidden lg:flex lg:w-1/2 min-h-screen w-full">
+        {/* Left panel — premium branded content */}
+        <div className="flex w-full relative overflow-hidden bg-brand-charcoal">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+            alt="Admin login"
+            className="absolute inset-0 h-full w-full object-cover opacity-70"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/95 via-[#1A1A1A]/50 via-40% to-[#1A1A1A]/30" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.06),transparent)]" />
+          <div className="relative z-10 flex flex-col justify-between p-14 w-full">
+            <div className="md:mt-[150px] space-y-10">
+              <div>
+                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 mb-6">
+                  <LayoutDashboard className="h-4 w-4 text-brand-gold" />
+                  <span className="text-sm font-medium text-white/90 tracking-wide uppercase">
+                    Admin Portal
+                  </span>
+                </div>
+                <h2 className="text-5xl xl:text-6xl font-bold text-white leading-[1.1] tracking-tight mb-6">
+                  Manage your
+                  <br />
+                  <span className="bg-gradient-to-r from-brand-gold/90 to-brand-gold bg-clip-text text-transparent">
+                    real estate business
+                  </span>
+                </h2>
+                <p className="text-white/60 text-lg leading-relaxed max-w-md mb-10">
+                  Access your admin panel to manage properties, leads,
+                  categories, and analytics—all in one place.
+                </p>
+              </div>
 
-        <div className="relative z-10 flex flex-col flex-1 min-h-0 pt-[env(safe-area-inset-top)] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-          {/* Minimal header */}
-          <header className="flex items-center justify-between px-4 py-3 shrink-0">
+              <ul className="space-y-5">
+                {FEATURES.map((item, i) => {
+                  const Icon = item.icon;
+                  return (
+                    <li key={i} className="flex items-start gap-4 group/item">
+                      <span className="flex-shrink-0 mt-0.5 flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm border border-white/10 text-amber-400 group-hover/item:bg-amber-500/20 group-hover/item:border-amber-400/30 transition-all duration-300">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <span className="text-base text-white/80 leading-relaxed pt-1 group-hover/item:text-white transition-colors">
+                        {item.text}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            <p className="text-sm text-white/40 tracking-wide">
+              © {new Date().getFullYear()} The Real Business. All rights
+              reserved.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Right panel — single form (visible on mobile and desktop) */}
+      <div className="flex-1 flex flex-col min-h-[100dvh] lg:min-h-screen relative overflow-hidden bg-[#0f0f0f] lg:bg-transparent">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(183,147,84,0.12),transparent_50%)] lg:hidden" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(183,147,84,0.06),transparent_40%)] lg:hidden" />
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/80 to-white hidden lg:block" />
+        <div className="relative z-10 flex flex-col flex-1 min-h-0 pt-[env(safe-area-inset-top)] lg:pt-0 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:pb-0">
+          <header className="flex lg:hidden items-center justify-between px-4 py-3 shrink-0">
             <Link
               href="/"
               className="flex items-center gap-2 min-w-0"
@@ -135,49 +196,59 @@ export default function AdminLoginPage() {
               </span>
             </Link>
             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] font-medium text-brand-gold uppercase tracking-wider">
-              <LayoutDashboard className="h-3 w-3 shrink-0" />
-              Admin
+              <LayoutDashboard className="h-3 w-3 shrink-0" /> Admin
             </span>
           </header>
-
-          {/* Main: form with clear hierarchy */}
-          <main className="flex-1 flex flex-col justify-center px-5 py-4 overflow-auto">
-            <div className="w-full max-w-[340px] mx-auto">
-              <div className="mb-8">
-                <h1 className="text-2xl font-bold text-white tracking-tight mb-2">
+          <main className="flex-1 flex flex-col justify-center px-5 lg:px-12 py-4 overflow-auto">
+            <div className="w-full max-w-[340px] lg:max-w-[500px] mx-auto">
+              <Link
+                href="/"
+                className="hidden lg:inline-flex items-center gap-3 mb-10"
+              >
+                <Image
+                  src="/logo-icon-bg.png"
+                  alt=""
+                  width={48}
+                  height={48}
+                  className="shrink-0 object-contain"
+                  style={{ width: "auto", height: "auto" }}
+                />
+                <span className="mt-5 flex flex-col justify-center font-heading text-lg font-bold uppercase leading-[1.2] tracking-tight text-foreground">
+                  <span>THE REAL</span>
+                  <span>BUSINESS</span>
+                </span>
+              </Link>
+              <div className="mb-8 lg:mb-10">
+                <h1 className="text-2xl lg:text-4xl font-bold text-white lg:text-gray-900 tracking-tight mb-2 lg:mb-3">
                   Sign in
                 </h1>
-                <p className="text-sm text-white/50">
+                <p className="text-sm text-white/50 lg:text-gray-500">
                   Use your admin email and password to continue.
                 </p>
               </div>
 
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="space-y-5"
-                noValidate
-              >
+              <form onSubmit={onFormSubmit} className="space-y-5" noValidate>
                 <div>
                   <label
-                    htmlFor="mobile-email"
-                    className="block text-xs font-medium text-white/70 mb-2"
+                    htmlFor="email"
+                    className="block text-xs lg:text-sm font-medium lg:font-semibold text-white/70 lg:text-gray-900 mb-2"
                   >
                     Email
                   </label>
                   <input
-                    id="mobile-email"
+                    id="email"
                     type="email"
                     placeholder="admin@example.com"
                     autoComplete="email"
                     {...register("email")}
-                    className={`w-full border rounded-xl px-4 py-3.5 text-base text-white placeholder:text-white/35 outline-none focus:ring-2 transition-all touch-manipulation bg-white/5 ${
+                    className={`w-full border rounded-xl px-4 py-3.5 text-base lg:text-sm outline-none focus:ring-2 transition-all touch-manipulation bg-white/5 lg:bg-white placeholder:text-white/35 lg:placeholder:text-gray-400 text-white lg:text-gray-900 border-white/15 lg:border-gray-200 lg:shadow-sm pr-4 lg:pr-12 ${
                       errors.email
-                        ? "border-red-500/80 focus:border-red-500 focus:ring-red-500/20"
-                        : "border-white/15 focus:border-brand-gold focus:ring-brand-gold/25"
+                        ? "border-red-500/80 lg:border-red-500 focus:ring-red-500/20"
+                        : "focus:border-brand-gold focus:ring-brand-gold/25 lg:focus:ring-brand-gold/20"
                     }`}
                   />
                   {errors.email && (
-                    <p className="mt-1.5 text-sm text-red-400">
+                    <p className="mt-1.5 text-sm text-red-400 lg:text-red-600">
                       {errors.email.message}
                     </p>
                   )}
@@ -185,41 +256,41 @@ export default function AdminLoginPage() {
 
                 <div>
                   <label
-                    htmlFor="mobile-password"
-                    className="block text-xs font-medium text-white/70 mb-2"
+                    htmlFor="password"
+                    className="block text-xs lg:text-sm font-medium lg:font-semibold text-white/70 lg:text-gray-900 mb-2"
                   >
                     Password
                   </label>
                   <div className="relative">
                     <input
-                      id="mobile-password"
+                      id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       autoComplete="current-password"
                       {...register("password")}
-                      className={`w-full border rounded-xl px-4 py-3.5 text-base text-white placeholder:text-white/35 outline-none focus:ring-2 transition-all pr-12 touch-manipulation bg-white/5 ${
+                      className={`w-full border rounded-xl px-4 py-3.5 text-base lg:text-sm outline-none focus:ring-2 transition-all pr-12 touch-manipulation bg-white/5 lg:bg-white placeholder:text-white/35 lg:placeholder:text-gray-400 text-white lg:text-gray-900 border-white/15 lg:border-gray-200 lg:shadow-sm ${
                         errors.password
-                          ? "border-red-500/80 focus:border-red-500 focus:ring-red-500/20"
-                          : "border-white/15 focus:border-brand-gold focus:ring-brand-gold/25"
+                          ? "border-red-500/80 lg:border-red-500 focus:ring-red-500/20"
+                          : "focus:border-brand-gold focus:ring-brand-gold/25 lg:focus:ring-brand-gold/20"
                       }`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] flex items-center justify-center text-white/40 hover:text-white/70 active:bg-white/10 rounded-lg transition-colors touch-manipulation"
+                      className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] lg:min-h-0 lg:min-w-0 flex items-center justify-center text-white/40 lg:text-gray-400 hover:text-white/70 lg:hover:text-gray-900 active:bg-white/10 lg:active:bg-transparent rounded-lg transition-colors touch-manipulation"
                       aria-label={
                         showPassword ? "Hide password" : "Show password"
                       }
                     >
                       {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
+                        <EyeOff className="h-5 w-5 lg:h-4 lg:w-4" />
                       ) : (
-                        <Eye className="h-5 w-5" />
+                        <Eye className="h-5 w-5 lg:h-4 lg:w-4" />
                       )}
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="mt-1.5 text-sm text-red-400">
+                    <p className="mt-1.5 text-sm text-red-400 lg:text-red-600">
                       {errors.password.message}
                     </p>
                   )}
@@ -228,220 +299,25 @@ export default function AdminLoginPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full min-h-[52px] bg-brand-gold text-[#0f0f0f] text-base font-semibold py-3.5 rounded-xl hover:bg-brand-gold/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2 touch-manipulation"
+                  className="w-full min-h-[52px] lg:min-h-0 bg-brand-gold lg:bg-brand-charcoal text-[#0f0f0f] lg:text-white text-base lg:text-sm font-semibold py-3.5 rounded-xl hover:bg-brand-gold/90 lg:hover:opacity-90 hover:ring-2 hover:ring-brand-gold/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 lg:disabled:opacity-60 disabled:cursor-not-allowed mt-2 lg:mt-3 touch-manipulation lg:shadow-lg lg:shadow-black/20"
                 >
                   {isSubmitting && (
-                    <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                    <Loader2 className="h-5 w-5 lg:h-4 lg:w-4 animate-spin shrink-0" />
                   )}
                   {isSubmitting ? "Signing in…" : "Sign in"}
                 </button>
               </form>
 
-              <p className="mt-8 text-center">
+              <p className="mt-8 lg:mt-10 text-center">
                 <Link
                   href="/"
-                  className="text-sm text-white/50 hover:text-brand-gold transition-colors touch-manipulation inline-flex items-center gap-1"
+                  className="text-sm text-white/50 lg:text-gray-500 hover:text-brand-gold lg:hover:text-brand-charcoal lg:font-medium lg:hover:text-brand-gold lg:underline underline-offset-2 transition-colors touch-manipulation inline-flex items-center gap-1"
                 >
                   ← Back to site
                 </Link>
               </p>
             </div>
           </main>
-        </div>
-      </div>
-
-      {/* Desktop: split layout */}
-      <div className="hidden lg:flex min-h-screen w-full">
-        {/* Left panel — premium branded content */}
-        <div className="flex lg:w-1/2 relative overflow-hidden bg-brand-charcoal">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
-            alt="Admin login"
-            className="absolute inset-0 h-full w-full object-cover opacity-70"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/95 via-[#1A1A1A]/50 via-40% to-[#1A1A1A]/30" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.06),transparent)]" />
-          <div className="relative z-10 flex flex-col justify-between p-14 w-full">
-            <Link
-              href="/"
-              className="flex items-center gap-3 w-fit transition-transform hover:scale-[1.02] group"
-            >
-              <Image
-                src="/logo-icon-bg.png"
-                alt=""
-                width={56}
-                height={56}
-                className="shrink-0 object-contain"
-                style={{ width: "auto", height: "auto" }}
-              />
-              <span className="mt-5 flex flex-col justify-center font-heading text-[15px] font-bold uppercase leading-[1.2] tracking-tight text-white">
-                <span>THE REAL</span>
-                <span>BUSINESS</span>
-              </span>
-            </Link>
-
-            <div className="space-y-10">
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 mb-6">
-                  <LayoutDashboard className="h-3.5 w-3.5 text-brand-gold" />
-                  <span className="text-xs font-medium text-white/90 tracking-wide uppercase">
-                    Admin Portal
-                  </span>
-                </div>
-                <h2 className="text-4xl xl:text-5xl font-bold text-white leading-[1.1] tracking-tight mb-5">
-                  Manage your
-                  <br />
-                  <span className="bg-gradient-to-r from-brand-gold/90 to-brand-gold bg-clip-text text-transparent">
-                    real estate business
-                  </span>
-                </h2>
-                <p className="text-white/60 text-base leading-relaxed max-w-md mb-10">
-                  Access your admin panel to manage properties, leads,
-                  categories, and analytics—all in one place.
-                </p>
-              </div>
-
-              <ul className="space-y-4">
-                {FEATURES.map((item, i) => {
-                  const Icon = item.icon;
-                  return (
-                    <li key={i} className="flex items-start gap-4 group/item">
-                      <span className="flex-shrink-0 mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm border border-white/10 text-amber-400 group-hover/item:bg-amber-500/20 group-hover/item:border-amber-400/30 transition-all duration-300">
-                        <Icon className="h-4 w-4" />
-                      </span>
-                      <span className="text-sm text-white/80 leading-relaxed pt-1 group-hover/item:text-white transition-colors">
-                        {item.text}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-
-            <p className="text-xs text-white/40 tracking-wide">
-              © {new Date().getFullYear()} The Real Business. All rights
-              reserved.
-            </p>
-          </div>
-        </div>
-
-        {/* Right panel — form */}
-        <div className="flex-1 flex items-center justify-center p-8 lg:p-12 bg-gradient-to-b from-gray-50/80 to-white">
-          <div className="w-full max-w-[400px]">
-            <Link href="/" className="inline-flex items-center gap-3 mb-10">
-              <Image
-                src="/logo-icon-bg.png"
-                alt=""
-                width={48}
-                height={48}
-                className="shrink-0 object-contain"
-                style={{ width: "auto", height: "auto" }}
-              />
-              <span className="mt-5 flex flex-col justify-center font-heading text-[15px] font-bold uppercase leading-[1.2] tracking-tight text-foreground">
-                <span>THE REAL</span>
-                <span>BUSINESS</span>
-              </span>
-            </Link>
-            <div className="mb-10">
-              <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-2">
-                Sign in
-              </h1>
-              <p className="text-sm text-gray-500">
-                Enter your admin credentials to access the dashboard
-              </p>
-            </div>
-
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="space-y-5"
-              noValidate
-            >
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="admin@example.com"
-                  autoComplete="email"
-                  {...register("email")}
-                  className={`w-full border rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 transition-all placeholder:text-gray-400 bg-white shadow-sm ${
-                    errors.email
-                      ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                      : "border-gray-200 focus:border-brand-gold/50 focus:ring-brand-gold/20"
-                  }`}
-                />
-                {errors.email && (
-                  <p className="mt-1.5 text-sm text-red-600">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    autoComplete="current-password"
-                    {...register("password")}
-                    className={`w-full border rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 transition-all placeholder:text-gray-400 pr-12 bg-white shadow-sm ${
-                      errors.password
-                        ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                        : "border-gray-200 focus:border-brand-gold/50 focus:ring-brand-gold/20"
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 transition-colors"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-                {errors.password && (
-                  <p className="mt-1.5 text-sm text-red-600">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-brand-charcoal text-white text-sm font-semibold py-3.5 rounded-xl hover:opacity-90 hover:ring-2 hover:ring-brand-gold/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed mt-3 shadow-lg shadow-black/20"
-              >
-                {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {isSubmitting ? "Signing in..." : "Sign in"}
-              </button>
-            </form>
-
-            <p className="mt-10 text-center text-xs text-gray-500">
-              Protected Admin Area &mdash;{" "}
-              <Link
-                href="/"
-                className="text-brand-charcoal font-medium hover:text-brand-gold hover:underline underline-offset-2 transition-colors"
-              >
-                Back to site
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>

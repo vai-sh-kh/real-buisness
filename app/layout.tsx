@@ -3,6 +3,7 @@ import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
+import { NetworkStatusListener } from "@/components/NetworkStatusListener";
 import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body className={`${inter.className} ${lora.variable}`}>
         <QueryProvider>
           <SmoothScrollProvider>{children}</SmoothScrollProvider>
+          <NetworkStatusListener />
           <Toaster richColors position="top-right" />
         </QueryProvider>
       </body>

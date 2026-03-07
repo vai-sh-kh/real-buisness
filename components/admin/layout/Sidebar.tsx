@@ -9,7 +9,6 @@ import { useAppStore } from "@/store/appStore";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { createClientSupabase } from "@/lib/supabase/client";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -31,14 +30,11 @@ export function Sidebar() {
 
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const supabase = createClientSupabase();
 
   async function handleLogout() {
     setIsLoggingOut(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-
+      await fetch("/api/auth/logout", { method: "POST" });
       clearAuth();
       router.push("/admin/login");
       toast.success("Logged out successfully");

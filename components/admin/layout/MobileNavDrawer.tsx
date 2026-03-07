@@ -16,7 +16,6 @@ import { adminNavItems } from "@/lib/constants/admin-nav";
 import { useAppStore } from "@/store/appStore";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/utils";
-import { createClientSupabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { useState } from "react";
 import {
@@ -35,13 +34,11 @@ export function MobileNavDrawer() {
   const { clearAuth } = useAuthStore();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const supabase = createClientSupabase();
 
   async function handleLogout() {
     setIsLoggingOut(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await fetch("/api/auth/logout", { method: "POST" });
       clearAuth();
       window.location.href = "/admin/login";
       toast.success("Logged out successfully");
