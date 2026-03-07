@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
 import { getLeads, createLead } from "@/lib/queries/leads";
+import { CONNECTION_UNAVAILABLE_MESSAGE } from "@/lib/db-errors";
 import type { Lead } from "@/types";
 
 export async function GET(request: NextRequest) {
@@ -35,7 +36,9 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to fetch leads";
     console.error("[GET /api/admin/leads]", err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status = message === CONNECTION_UNAVAILABLE_MESSAGE ? 503 : 500;
+    const body = status === 503 ? { error: "Service temporarily unavailable. Please try again." } : { error: message };
+    return NextResponse.json(body, { status });
   }
 }
 

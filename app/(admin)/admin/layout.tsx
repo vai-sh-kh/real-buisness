@@ -12,7 +12,7 @@ export default function AdminLayout({
     <AdminClientWrapper>
       <Sidebar />
       <Header />
-      <main className="min-h-full bg-admin-main-bg px-2 py-6 pt-16 pb-20 sm:px-6 lg:px-8 lg:pt-[4.5rem] lg:pb-6">
+      <main className="min-h-full bg-admin-main-bg mx-2 px-2 py-6 pt-16 pb-20 sm:mx-4 sm:px-6 lg:mx-6 lg:px-8 lg:pt-[4.5rem] lg:pb-6">
         {children}
       </main>
       <BottomNav />

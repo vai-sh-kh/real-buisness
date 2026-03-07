@@ -69,8 +69,6 @@ export default function AdminLoginPage() {
 
   useScrollToFirstError(errors);
 
-  if (!mounted || isAuthenticated) return null;
-
   async function onSubmit(data: LoginFormData) {
     try {
       const res = await fetch("/api/auth/login", {
@@ -86,57 +84,83 @@ export default function AdminLoginPage() {
         return;
       }
 
-      setAuthenticated(result.email);
+      setAuthenticated(result.email ?? data.email);
       toast.success("Welcome back!");
-      router.push("/admin/dashboard");
+      router.replace("/admin/dashboard");
     } catch {
       toast.error("Network error. Please try again.");
     }
   }
 
+  if (!mounted) return null;
+
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-charcoal">
+        <div className="flex flex-col items-center gap-4 text-white">
+          <Loader2 className="h-10 w-10 animate-spin text-brand-gold" />
+          <p className="text-sm font-medium">Signing you in…</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex bg-white">
-      {/* Mobile: full-screen SaaS layout */}
-      <div className="lg:hidden min-h-[100dvh] w-full flex flex-col bg-gradient-to-b from-brand-charcoal via-[#252525] to-brand-charcoal">
-        <div className="flex-1 flex flex-col justify-center px-5 py-8 pb-12">
-          <div className="w-full max-w-sm mx-auto">
-            {/* Logo + badge */}
-            <div className="text-center mb-8">
-              <Link
-                href="/"
-                className="inline-flex items-center justify-center gap-3 mb-4"
-              >
-                <Image
-                  src="/logo-icon-bg.png"
-                  alt=""
-                  width={48}
-                  height={48}
-                  className="shrink-0 object-contain"
-                  style={{ width: "auto", height: "auto" }}
-                />
-                <span className="flex flex-col justify-center font-heading text-lg font-bold uppercase leading-[1.2] tracking-tight text-white">
-                  <span>THE REAL</span>
-                  <span>BUSINESS</span>
-                </span>
-              </Link>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-xs font-medium text-white/80">
-                <LayoutDashboard className="h-3.5 w-3.5 text-brand-gold" />
-                Admin Portal
+      {/* Mobile: full-screen dark layout, app-like */}
+      <div className="lg:hidden min-h-[100dvh] w-full flex flex-col bg-[#0f0f0f] relative overflow-hidden">
+        {/* Background */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(183,147,84,0.12),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(183,147,84,0.06),transparent_40%)]" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+        <div className="relative z-10 flex flex-col flex-1 min-h-0 pt-[env(safe-area-inset-top)] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+          {/* Minimal header */}
+          <header className="flex items-center justify-between px-4 py-3 shrink-0">
+            <Link
+              href="/"
+              className="flex items-center gap-2 min-w-0"
+              aria-label="The Real Business"
+            >
+              <Image
+                src="/logo-icon-bg.png"
+                alt=""
+                width={32}
+                height={32}
+                className="shrink-0 object-contain"
+                style={{ width: "auto", height: "auto" }}
+              />
+              <span className="font-heading text-sm font-bold uppercase tracking-tight text-white/90 truncate">
+                The Real Business
               </span>
-            </div>
+            </Link>
+            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] font-medium text-brand-gold uppercase tracking-wider">
+              <LayoutDashboard className="h-3 w-3 shrink-0" />
+              Admin
+            </span>
+          </header>
 
-            {/* Form card */}
-            <div className="rounded-2xl bg-white/95 backdrop-blur-sm shadow-2xl shadow-black/20 p-6 border border-white/10">
-              <h1 className="text-xl font-bold text-gray-900 mb-1">Sign in</h1>
-              <p className="text-sm text-gray-500 mb-6">
-                Enter your credentials to continue
-              </p>
+          {/* Main: form with clear hierarchy */}
+          <main className="flex-1 flex flex-col justify-center px-5 py-4 overflow-auto">
+            <div className="w-full max-w-[340px] mx-auto">
+              <div className="mb-8">
+                <h1 className="text-2xl font-bold text-white tracking-tight mb-2">
+                  Sign in
+                </h1>
+                <p className="text-sm text-white/50">
+                  Use your admin email and password to continue.
+                </p>
+              </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-5"
+                noValidate
+              >
                 <div>
                   <label
                     htmlFor="mobile-email"
-                    className="block text-sm font-medium text-gray-700 mb-1.5"
+                    className="block text-xs font-medium text-white/70 mb-2"
                   >
                     Email
                   </label>
@@ -146,14 +170,14 @@ export default function AdminLoginPage() {
                     placeholder="admin@example.com"
                     autoComplete="email"
                     {...register("email")}
-                    className={`w-full border rounded-xl px-4 py-3.5 text-base outline-none focus:ring-2 transition-all placeholder:text-gray-400 bg-gray-50/80 ${
+                    className={`w-full border rounded-xl px-4 py-3.5 text-base text-white placeholder:text-white/35 outline-none focus:ring-2 transition-all touch-manipulation bg-white/5 ${
                       errors.email
-                        ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                        : "border-gray-200 focus:border-brand-gold focus:ring-brand-gold/20"
+                        ? "border-red-500/80 focus:border-red-500 focus:ring-red-500/20"
+                        : "border-white/15 focus:border-brand-gold focus:ring-brand-gold/25"
                     }`}
                   />
                   {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-1.5 text-sm text-red-400">
                       {errors.email.message}
                     </p>
                   )}
@@ -162,7 +186,7 @@ export default function AdminLoginPage() {
                 <div>
                   <label
                     htmlFor="mobile-password"
-                    className="block text-sm font-medium text-gray-700 mb-1.5"
+                    className="block text-xs font-medium text-white/70 mb-2"
                   >
                     Password
                   </label>
@@ -173,16 +197,19 @@ export default function AdminLoginPage() {
                       placeholder="••••••••"
                       autoComplete="current-password"
                       {...register("password")}
-                      className={`w-full border rounded-xl px-4 py-3.5 text-base outline-none focus:ring-2 transition-all placeholder:text-gray-400 pr-12 bg-gray-50/80 ${
+                      className={`w-full border rounded-xl px-4 py-3.5 text-base text-white placeholder:text-white/35 outline-none focus:ring-2 transition-all pr-12 touch-manipulation bg-white/5 ${
                         errors.password
-                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                          : "border-gray-200 focus:border-brand-gold focus:ring-brand-gold/20"
+                          ? "border-red-500/80 focus:border-red-500 focus:ring-red-500/20"
+                          : "border-white/15 focus:border-brand-gold focus:ring-brand-gold/25"
                       }`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 -m-2 text-gray-400 hover:text-gray-700 active:bg-gray-200/50 rounded-lg transition-colors touch-manipulation"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] flex items-center justify-center text-white/40 hover:text-white/70 active:bg-white/10 rounded-lg transition-colors touch-manipulation"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
                     >
                       {showPassword ? (
                         <EyeOff className="h-5 w-5" />
@@ -192,7 +219,7 @@ export default function AdminLoginPage() {
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-1.5 text-sm text-red-400">
                       {errors.password.message}
                     </p>
                   )}
@@ -201,23 +228,25 @@ export default function AdminLoginPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-brand-charcoal text-white text-base font-semibold py-4 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed mt-2 shadow-lg touch-manipulation"
+                  className="w-full min-h-[52px] bg-brand-gold text-[#0f0f0f] text-base font-semibold py-3.5 rounded-xl hover:bg-brand-gold/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2 touch-manipulation"
                 >
-                  {isSubmitting && <Loader2 className="h-5 w-5 animate-spin" />}
-                  {isSubmitting ? "Signing in..." : "Sign in"}
+                  {isSubmitting && (
+                    <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                  )}
+                  {isSubmitting ? "Signing in…" : "Sign in"}
                 </button>
               </form>
-            </div>
 
-            <p className="mt-6 text-center text-xs text-white/50">
-              <Link
-                href="/"
-                className="text-brand-gold hover:opacity-90 underline underline-offset-2"
-              >
-                ← Back to site
-              </Link>
-            </p>
-          </div>
+              <p className="mt-8 text-center">
+                <Link
+                  href="/"
+                  className="text-sm text-white/50 hover:text-brand-gold transition-colors touch-manipulation inline-flex items-center gap-1"
+                >
+                  ← Back to site
+                </Link>
+              </p>
+            </div>
+          </main>
         </div>
       </div>
 
@@ -229,10 +258,10 @@ export default function AdminLoginPage() {
           <img
             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
             alt="Admin login"
-            className="absolute inset-0 h-full w-full object-cover opacity-35"
+            className="absolute inset-0 h-full w-full object-cover opacity-70"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] via-[#1A1A1A]/90 via-40% to-[#1A1A1A]/70" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.08),transparent)]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/95 via-[#1A1A1A]/50 via-40% to-[#1A1A1A]/30" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.06),transparent)]" />
           <div className="relative z-10 flex flex-col justify-between p-14 w-full">
             <Link
               href="/"
@@ -323,7 +352,11 @@ export default function AdminLoginPage() {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-5"
+              noValidate
+            >
               <div>
                 <label
                   htmlFor="email"

@@ -308,14 +308,14 @@ export function LeadSheet({ open, onOpenChange, lead }: LeadSheetProps) {
                     />
                   </div>
                 </div>
-                <div className="flex gap-3 pt-4">
+                <div className="flex gap-3 pt-4 touch-manipulation">
                   <Button
                     type="button"
                     size="lg"
                     variant="outline"
                     onClick={() => onOpenChange(false)}
                     disabled={isPending}
-                    className="flex-1 rounded-2xl h-14 border-gray-200 font-bold text-gray-500 hover:bg-gray-50 transition-all active:scale-[0.98]"
+                    className="flex-1 rounded-2xl min-h-[44px] h-14 border-gray-200 font-bold text-gray-500 hover:bg-gray-50 transition-all active:scale-[0.98] touch-manipulation"
                   >
                     Discard
                   </Button>
@@ -323,7 +323,7 @@ export function LeadSheet({ open, onOpenChange, lead }: LeadSheetProps) {
                     type="submit"
                     size="lg"
                     disabled={isPending}
-                    className="flex-[2] rounded-2xl h-14 bg-gray-900 hover:bg-gray-800 text-white font-black text-lg shadow-xl shadow-gray-200 transition-all active:scale-[0.98]"
+                    className="flex-[2] rounded-2xl min-h-[44px] h-14 bg-gray-900 hover:bg-gray-800 text-white font-black text-lg shadow-xl shadow-gray-200 transition-all active:scale-[0.98] touch-manipulation"
                   >
                     {updateMutation.isPending && (
                       <Loader2 className="mr-3 h-5 w-5 animate-spin" />
@@ -514,20 +514,20 @@ export function LeadSheet({ open, onOpenChange, lead }: LeadSheetProps) {
             </div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-gray-100 flex gap-3">
+          <div className="absolute bottom-0 left-0 right-0 z-10 p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] bg-white/95 backdrop-blur-md border-t border-gray-100 flex gap-3 shrink-0 touch-manipulation">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isPending}
-              className="flex-1 rounded-xl h-10 font-medium text-gray-600 bg-white border-gray-200 hover:bg-gray-50"
+              className="flex-1 rounded-xl min-h-[44px] h-10 font-medium text-gray-600 bg-white border-gray-200 hover:bg-gray-50 touch-manipulation"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isPending}
-              className="flex-[2] rounded-xl h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98]"
+              className="flex-[2] rounded-xl min-h-[44px] h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98] touch-manipulation"
             >
               {createMutation.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

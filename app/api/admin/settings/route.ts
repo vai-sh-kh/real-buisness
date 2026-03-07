@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
+import { CONNECTION_UNAVAILABLE_MESSAGE } from "@/lib/db-errors";
 import {
   getOrCreateAdminSettings,
   updateAdminSettings,
 } from "@/lib/queries/settings";
 import { adminSettingsSchema } from "@/lib/validations/settings.schema";
-
-const CONNECTION_UNAVAILABLE_MSG =
-  "Database connection unavailable. Please check your configuration (Supabase URL and keys) or try again later.";
 
 export async function GET() {
   try {
@@ -21,7 +19,7 @@ export async function GET() {
       data = await getOrCreateAdminSettings(email);
     } catch (firstErr) {
       const msg = firstErr instanceof Error ? firstErr.message : String(firstErr);
-      if (msg === CONNECTION_UNAVAILABLE_MSG) {
+      if (msg === CONNECTION_UNAVAILABLE_MESSAGE) {
         try {
           data = await getOrCreateAdminSettings(email);
         } catch (retryErr) {
@@ -42,11 +40,11 @@ export async function GET() {
     }
     console.error("[GET /api/admin/settings]", err);
     const message =
-      err instanceof Error && err.message === CONNECTION_UNAVAILABLE_MSG
+      err instanceof Error && err.message === CONNECTION_UNAVAILABLE_MESSAGE
         ? "Service temporarily unavailable. Please try again."
         : "Failed to fetch settings";
     const status =
-      err instanceof Error && err.message === CONNECTION_UNAVAILABLE_MSG
+      err instanceof Error && err.message === CONNECTION_UNAVAILABLE_MESSAGE
         ? 503
         : 500;
     return NextResponse.json({ error: message }, { status });

@@ -481,28 +481,28 @@ export function PropertySheet({
               }
               className="w-full"
             >
-              <TabsList className="mb-6 h-11 rounded-xl bg-gray-100 p-1 flex-wrap">
+              <TabsList className="mb-8 flex h-11 flex-nowrap overflow-x-auto rounded-xl bg-gray-100 p-1 gap-2">
                 <TabsTrigger
                   value="general"
-                  className="rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  className="mb-2 shrink-0 rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
                 >
                   General & Location
                 </TabsTrigger>
                 <TabsTrigger
                   value="assets"
-                  className="rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  className="mb-2 shrink-0 rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
                 >
                   Assets
                 </TabsTrigger>
                 <TabsTrigger
                   value="specs"
-                  className="rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  className="mb-2 shrink-0 rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
                 >
                   Specifications
                 </TabsTrigger>
                 <TabsTrigger
                   value="seo"
-                  className="rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  className="mb-2 shrink-0 rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
                 >
                   SEO Settings
                 </TabsTrigger>
@@ -510,8 +510,8 @@ export function PropertySheet({
 
               <TabsContent value="general" className="mt-0 space-y-12">
                 {/* Basic Info Section */}
-                <section className="space-y-6">
-                  <div className="flex items-center gap-2 mb-4">
+                <section className="space-y-6 mb-10">
+                  <div className="flex items-center gap-2 mb-6">
                     <div className="h-1 w-6 bg-indigo-500 rounded-full" />
                     <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 block">
                       General Information
@@ -693,7 +693,7 @@ export function PropertySheet({
 
                 {/* Location Section */}
                 <section className="space-y-6">
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-2 mb-6">
                     <div className="h-1 w-6 bg-emerald-500 rounded-full" />
                     <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 block">
                       Location Details
@@ -852,7 +852,7 @@ export function PropertySheet({
               <TabsContent value="specs" className="mt-0">
                 {/* Property Specifications */}
                 <section className="space-y-6">
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-2 mb-6">
                     <div className="h-1 w-6 bg-amber-500 rounded-full" />
                     <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 block">
                       Property Specifications
@@ -1131,7 +1131,7 @@ export function PropertySheet({
 
               <TabsContent value="seo" className="mt-0 space-y-12">
                 <section className="space-y-6">
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-2 mb-6">
                     <div className="h-1 w-6 bg-violet-500 rounded-full" />
                     <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 block">
                       SEO Settings
@@ -1197,7 +1197,7 @@ export function PropertySheet({
             </Tabs>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-gray-100 flex gap-3 shrink-0">
+          <div className="absolute bottom-0 left-0 right-0 z-10 p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] bg-white/95 backdrop-blur-md border-t border-gray-100 flex gap-3 shrink-0 touch-manipulation">
             <Button
               type="button"
               variant="outline"
@@ -1210,7 +1210,7 @@ export function PropertySheet({
                 setActiveTab("general");
               }}
               disabled={isPending}
-              className="flex-1 rounded-xl h-10 font-medium text-gray-600 bg-white border-gray-200 hover:bg-gray-50"
+              className="flex-1 rounded-xl min-h-[44px] h-10 font-medium text-gray-600 bg-white border-gray-200 hover:bg-gray-50 touch-manipulation"
             >
               Cancel
             </Button>
@@ -1219,7 +1219,7 @@ export function PropertySheet({
                 type="button"
                 onClick={() => handleSaveAndNext("assets")}
                 disabled={isPending}
-                className="flex-1 rounded-xl h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98]"
+                className="flex-1 rounded-xl min-h-[44px] h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98] touch-manipulation"
               >
                 {isPending ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -1232,7 +1232,7 @@ export function PropertySheet({
                   type="button"
                   variant="outline"
                   onClick={() => setActiveTab("general")}
-                  className="flex-1 rounded-xl h-10 font-medium text-gray-600 bg-white border-gray-200 hover:bg-gray-50"
+                  className="flex-1 rounded-xl min-h-[44px] h-10 font-medium text-gray-600 bg-white border-gray-200 hover:bg-gray-50 touch-manipulation"
                 >
                   Back
                 </Button>
@@ -1240,7 +1240,7 @@ export function PropertySheet({
                   type="button"
                   onClick={() => handleSaveAndNext("specs")}
                   disabled={isPending}
-                  className="flex-1 rounded-xl h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98]"
+                  className="flex-1 rounded-xl min-h-[44px] h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98] touch-manipulation"
                 >
                   {isPending ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -1254,7 +1254,7 @@ export function PropertySheet({
                   type="button"
                   variant="outline"
                   onClick={() => setActiveTab("assets")}
-                  className="flex-1 rounded-xl h-10 font-medium text-gray-600 bg-white border-gray-200 hover:bg-gray-50"
+                  className="flex-1 rounded-xl min-h-[44px] h-10 font-medium text-gray-600 bg-white border-gray-200 hover:bg-gray-50 touch-manipulation"
                 >
                   Back
                 </Button>
@@ -1262,7 +1262,7 @@ export function PropertySheet({
                   type="button"
                   onClick={() => handleSaveAndNext("seo")}
                   disabled={isPending}
-                  className="flex-1 rounded-xl h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98]"
+                  className="flex-1 rounded-xl min-h-[44px] h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98] touch-manipulation"
                 >
                   {isPending ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -1276,14 +1276,14 @@ export function PropertySheet({
                   type="button"
                   variant="outline"
                   onClick={() => setActiveTab("specs")}
-                  className="flex-1 rounded-xl h-10 font-medium text-gray-600 bg-white border-gray-200 hover:bg-gray-50"
+                  className="flex-1 rounded-xl min-h-[44px] h-10 font-medium text-gray-600 bg-white border-gray-200 hover:bg-gray-50 touch-manipulation"
                 >
                   Back
                 </Button>
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 rounded-xl h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98]"
+                  className="flex-1 rounded-xl min-h-[44px] h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98] touch-manipulation"
                 >
                   {isPending ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

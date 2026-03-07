@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getDashboardStats } from "@/lib/queries/dashboard";
-import { toUserFriendlyMessage } from "@/lib/db-errors";
+import { CONNECTION_UNAVAILABLE_MESSAGE, toUserFriendlyMessage } from "@/lib/db-errors";
 
 export async function GET() {
   try {
@@ -18,6 +18,8 @@ export async function GET() {
   } catch (err) {
     const message = toUserFriendlyMessage(err);
     console.error("[GET /api/admin/dashboard]", err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status = message === CONNECTION_UNAVAILABLE_MESSAGE ? 503 : 500;
+    const body = status === 503 ? { error: "Service temporarily unavailable. Please try again." } : { error: message };
+    return NextResponse.json(body, { status });
   }
 }

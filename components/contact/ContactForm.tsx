@@ -168,7 +168,7 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full flex items-center justify-center gap-2 bg-brand-charcoal text-white text-sm font-semibold py-4 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-2 min-h-[44px] bg-brand-charcoal text-white text-sm font-semibold py-4 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed touch-manipulation active:scale-[0.98]"
       >
         {status === "loading" ? (
           <span>Sending...</span>

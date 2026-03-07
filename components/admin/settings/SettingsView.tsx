@@ -87,7 +87,7 @@ export function SettingsView() {
       email_notifications: true,
       lead_alerts: true,
       browser_notifications: true,
-      theme: "system",
+      theme: "dark",
       language: "en",
       timezone: "UTC",
     },

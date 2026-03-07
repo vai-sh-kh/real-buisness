@@ -44,7 +44,7 @@ export function AdminThemeProvider({
     if (stored === "light" || stored === "dark" || stored === "system") {
       return stored;
     }
-    return serverTheme ?? "system";
+    return serverTheme ?? "dark";
   });
 
   const [systemResolved, setSystemResolved] = useState<"light" | "dark">(() =>

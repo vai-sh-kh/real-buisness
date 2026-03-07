@@ -4,7 +4,7 @@ import { getPropertiesForAdmin } from "@/lib/queries/properties";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { propertySchema } from "@/lib/validations/property.schema";
 import { slugify } from "@/lib/utils";
-import { toUserFriendlyMessage } from "@/lib/db-errors";
+import { CONNECTION_UNAVAILABLE_MESSAGE, toUserFriendlyMessage } from "@/lib/db-errors";
 
 export async function GET(request: NextRequest) {
   try {
@@ -48,7 +48,13 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to fetch properties";
     console.error("[GET /api/admin/properties]", err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status =
+      message === CONNECTION_UNAVAILABLE_MESSAGE ? 503 : 500;
+    const body =
+      status === 503
+        ? { error: "Service temporarily unavailable. Please try again." }
+        : { error: message };
+    return NextResponse.json(body, { status });
   }
 }
 

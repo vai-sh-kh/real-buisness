@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
 import { getReportsData } from "@/lib/queries/reports";
-import { toUserFriendlyMessage } from "@/lib/db-errors";
+import { CONNECTION_UNAVAILABLE_MESSAGE, toUserFriendlyMessage } from "@/lib/db-errors";
 
 export async function GET(request: Request) {
   try {
@@ -20,6 +20,8 @@ export async function GET(request: Request) {
   } catch (err) {
     const message = toUserFriendlyMessage(err);
     console.error("[GET /api/admin/reports]", err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status = message === CONNECTION_UNAVAILABLE_MESSAGE ? 503 : 500;
+    const body = status === 503 ? { error: "Service temporarily unavailable. Please try again." } : { error: message };
+    return NextResponse.json(body, { status });
   }
 }

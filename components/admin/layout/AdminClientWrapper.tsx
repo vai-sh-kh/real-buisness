@@ -10,8 +10,8 @@ const THEME_INIT_SCRIPT = `
 (function(){
   try {
     var c = document.cookie.match(/admin_theme=([^;]+)/);
-    var t = (c && c[1]) ? c[1] : (typeof localStorage !== 'undefined' ? localStorage.getItem('admin_theme') : null) || 'system';
-    if (t === 'system') t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var t = (c && c[1]) ? c[1] : (typeof localStorage !== 'undefined' ? localStorage.getItem('admin_theme') : null) || 'dark';
+    if (t === 'system') t = 'dark';
     var el = document.getElementById('admin-theme-root');
     if (el) { el.classList.remove('light','dark'); el.classList.add(t); }
   } catch(e) {}

@@ -437,70 +437,72 @@ export function ReportsView() {
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <LayoutGrid className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 min-h-[44px] gap-1.5 rounded-lg"
-              >
-                Sections
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              {SECTIONS.map((s) => (
-                <DropdownMenuItem
-                  key={s.id}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleSection(s.id);
-                  }}
+        <div className="flex w-full flex-row items-center gap-2 sm:ml-auto sm:w-auto">
+          <div className="flex w-1/2 min-w-0 sm:w-auto sm:shrink-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 min-h-[44px] w-full gap-1.5 rounded-lg sm:w-auto"
                 >
-                  {sections.has(s.id) ? "✓ " : ""}
-                  {s.label}
+                  <LayoutGrid className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  Sections
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                {SECTIONS.map((s) => (
+                  <DropdownMenuItem
+                    key={s.id}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleSection(s.id);
+                    }}
+                  >
+                    {sections.has(s.id) ? "✓ " : ""}
+                    {s.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <div className="flex w-1/2 min-w-0 items-center gap-2 sm:w-auto sm:shrink-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 min-h-[44px] w-full rounded-lg gap-1.5 sm:w-auto"
+                  disabled={!!exporting}
+                >
+                  {exporting ? (
+                    <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+                  ) : (
+                    <Download className="h-4 w-4 shrink-0" />
+                  )}
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem
+                  onClick={() => setExportConfirmFormat("csv")}
+                  disabled={!!exporting}
+                  className="gap-2"
+                >
+                  <FileText className="h-4 w-4" />
+                  Export to CSV
                 </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <div className="flex items-center gap-2 sm:ml-auto">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 min-h-[44px] w-full rounded-lg gap-1.5 sm:w-auto"
-                disabled={!!exporting}
-              >
-                {exporting ? (
-                  <Loader2 className="h-4 w-4 animate-spin shrink-0" />
-                ) : (
-                  <Download className="h-4 w-4 shrink-0" />
-                )}
-                Export
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem
-                onClick={() => setExportConfirmFormat("csv")}
-                disabled={!!exporting}
-                className="gap-2"
-              >
-                <FileText className="h-4 w-4" />
-                Export to CSV
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setExportConfirmFormat("xlsx")}
-                disabled={!!exporting}
-                className="gap-2"
-              >
-                <FileSpreadsheet className="h-4 w-4" />
-                Export to Excel
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem
+                  onClick={() => setExportConfirmFormat("xlsx")}
+                  disabled={!!exporting}
+                  className="gap-2"
+                >
+                  <FileSpreadsheet className="h-4 w-4" />
+                  Export to Excel
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
       {/* Summary Stats */}
@@ -681,12 +683,14 @@ export function ReportsView() {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={categoryBarData}
-                    margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+                    margin={{ top: 5, right: 8, left: 0, bottom: 5 }}
+                    barCategoryGap="12%"
                   >
                     <CartesianGrid
                       strokeDasharray="3 3"
                       vertical={false}
                       stroke="#e5e7eb"
+                      className="dark:stroke-gray-700"
                     />
                     <XAxis
                       dataKey="name"
@@ -695,9 +699,11 @@ export function ReportsView() {
                       tickLine={false}
                     />
                     <YAxis
-                      tick={{ fontSize: 11, fill: "#6b7280" }}
+                      width={28}
+                      tick={{ fontSize: 10, fill: "#6b7280" }}
                       axisLine={false}
                       tickLine={false}
+                      tickFormatter={(v) => (Number(v) === v ? String(v) : v)}
                     />
                     <Tooltip
                       contentStyle={{
@@ -737,12 +743,14 @@ export function ReportsView() {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={sourceBarData}
-                    margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+                    margin={{ top: 5, right: 8, left: 0, bottom: 5 }}
+                    barCategoryGap="12%"
                   >
                     <CartesianGrid
                       strokeDasharray="3 3"
                       vertical={false}
                       stroke="#e5e7eb"
+                      className="dark:stroke-gray-700"
                     />
                     <XAxis
                       dataKey="name"
@@ -751,9 +759,11 @@ export function ReportsView() {
                       tickLine={false}
                     />
                     <YAxis
-                      tick={{ fontSize: 11, fill: "#6b7280" }}
+                      width={28}
+                      tick={{ fontSize: 10, fill: "#6b7280" }}
                       axisLine={false}
                       tickLine={false}
+                      tickFormatter={(v) => (Number(v) === v ? String(v) : v)}
                     />
                     <Tooltip
                       contentStyle={{

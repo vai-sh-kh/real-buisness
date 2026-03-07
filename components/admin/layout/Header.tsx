@@ -4,8 +4,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, LogOut, Settings } from "lucide-react";
 import { useAppStore } from "@/store/appStore";
-import { getAdminPageTitle } from "@/lib/constants/admin-nav";
-import { usePathname } from "next/navigation";
 
 function getGreeting(displayName: string): string {
   const hour = new Date().getHours();
@@ -42,7 +40,6 @@ import { Logo } from "@/components/ui/Logo";
 
 export function Header() {
   const router = useRouter();
-  const pathname = usePathname();
   const { email, clearAuth } = useAuthStore();
   const { sidebarCollapsed } = useAppStore();
   const { data: settingsData } = useSettings();
@@ -71,29 +68,27 @@ export function Header() {
     }
   }
 
-  const pageTitle = getAdminPageTitle(pathname);
-
   return (
     <header
       role="banner"
       className={cn(
-        "fixed top-0 right-0 z-20 flex h-14 min-h-[3.5rem] items-center justify-between border-b border-admin-header-border bg-admin-header-bg backdrop-blur-sm transition-all duration-300 px-3 pt-[env(safe-area-inset-top)] lg:h-[4.5rem] lg:min-h-[4.5rem] lg:px-6",
+        "fixed top-0 right-0 z-20 flex h-16 min-h-[4rem] items-center justify-between border-b border-admin-header-border bg-admin-header-bg backdrop-blur-sm transition-all duration-300 px-3 pt-[env(safe-area-inset-top)] lg:h-[4.5rem] lg:min-h-[4.5rem] lg:px-6",
         "left-0 lg:left-64",
         sidebarCollapsed && "lg:left-16",
       )}
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        {/* Mobile: icon + page title only */}
-        <div className="flex min-w-0 flex-1 items-center gap-2.5 lg:hidden">
+        {/* Mobile: icon + "The Real Business" branding */}
+        <div className="flex min-w-0 flex-1 items-center gap-3 lg:hidden">
           <Logo
             href="/admin/dashboard"
-            height={28}
+            height={36}
             iconOnly
             className="shrink-0"
-            title="Dashboard"
+            title="The Real Business"
           />
-          <p className="truncate text-base font-semibold leading-tight text-black dark:text-foreground sm:text-lg">
-            {pageTitle}
+          <p className="mt-2 truncate text-lg font-semibold leading-tight text-black dark:text-foreground sm:text-xl">
+            The Real Business
           </p>
         </div>
         {/* Desktop: greeting + date */}

@@ -34,6 +34,10 @@ function getFriendlyMessageForConstraint(constraintOrMessage: string): string | 
   return null;
 }
 
+/** User-facing message when DB connection fails (use for 503 responses). */
+export const CONNECTION_UNAVAILABLE_MESSAGE =
+  "Database connection unavailable. Please check your configuration (Supabase URL and keys) or try again later.";
+
 const CONNECTION_ERROR_MESSAGES = [
   "fetch failed",
   "network",
@@ -62,7 +66,7 @@ export function toUserFriendlyMessage(error: unknown): string {
   const normalized = typeof message === "string" ? message : String(message);
 
   if (isConnectionError(normalized)) {
-    return "Database connection unavailable. Please check your configuration (Supabase URL and keys) or try again later.";
+    return CONNECTION_UNAVAILABLE_MESSAGE;
   }
 
   if (code === UNIQUE_VIOLATION_CODE || normalized.includes("violates unique constraint")) {
