@@ -271,7 +271,7 @@ function ReportsSkeleton() {
         </div>
       </div>
       {/* Recent activity */}
-      <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/50">
+      <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
         <div className="mb-6 h-6 w-36 rounded bg-muted" />
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map((i) => (
@@ -562,7 +562,7 @@ export function ReportsView() {
               </p>
               <Link
                 href={item.href}
-                className="mt-2 inline-block text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                className="mt-2 inline-block text-xs font-semibold text-blue-600 hover:underline"
               >
                 View details →
               </Link>
@@ -690,7 +690,7 @@ export function ReportsView() {
                       strokeDasharray="3 3"
                       vertical={false}
                       stroke="#e5e7eb"
-                      className="dark:stroke-gray-700"
+                      className="stroke-gray-300"
                     />
                     <XAxis
                       dataKey="name"
@@ -733,7 +733,7 @@ export function ReportsView() {
             </h2>
             {sourceBarData.length === 0 ? (
               <div className="flex h-[260px] flex-col items-center justify-center rounded-xl bg-muted/50">
-                <Activity className="h-12 w-12 text-gray-300 dark:text-gray-600" />
+                <Activity className="h-12 w-12 text-gray-300" />
                 <p className="mt-1 text-sm text-muted-foreground">
                   No source data
                 </p>
@@ -750,7 +750,7 @@ export function ReportsView() {
                       strokeDasharray="3 3"
                       vertical={false}
                       stroke="#e5e7eb"
-                      className="dark:stroke-gray-700"
+                      className="stroke-gray-300"
                     />
                     <XAxis
                       dataKey="name"
@@ -788,13 +788,13 @@ export function ReportsView() {
 
       {/* Recent Activity */}
       {sections.has("activity") && (
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/50">
+        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <h2 className="mb-6 text-lg font-bold text-foreground">
             Recent Activity
           </h2>
           {!reports?.recent_activity?.length ? (
             <div className="flex flex-col items-center justify-center py-16">
-              <Activity className="h-12 w-12 text-gray-300 dark:text-gray-600" />
+              <Activity className="h-12 w-12 text-gray-300" />
               <p className="mt-2 text-sm text-muted-foreground">
                 No recent activity
               </p>
@@ -813,8 +813,8 @@ export function ReportsView() {
                     className={cn(
                       "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
                       a.type === "property"
-                        ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
-                        : "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400",
+                        ? "bg-blue-50 text-blue-600"
+                        : "bg-amber-50 text-amber-600",
                     )}
                   >
                     {a.type === "property" ? (
@@ -824,7 +824,7 @@ export function ReportsView() {
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-gray-900 dark:text-white">
+                    <p className="font-semibold text-gray-900">
                       {a.title}
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -832,7 +832,7 @@ export function ReportsView() {
                     </p>
                   </div>
                   <div className="shrink-0">
-                    <span className="rounded-lg bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                    <span className="rounded-lg bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
                       {a.type}
                     </span>
                   </div>

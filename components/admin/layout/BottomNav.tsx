@@ -37,7 +37,7 @@ export function BottomNav() {
                 "h-6 w-6 shrink-0",
                 isActive
                   ? "text-admin-sidebar-active-indicator"
-                  : cn(item.color, item.colorDark),
+                  : item.color,
               )}
             />
             <span className="truncate max-w-[4.5rem]">{item.label}</span>

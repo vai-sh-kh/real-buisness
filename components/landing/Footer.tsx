@@ -10,7 +10,7 @@ const pages = [
 ];
 
 const services = [
-  { label: "Buy Property", href: "/properties?type=buy" },
+  { label: "Buy Property", href: "/properties?type=sale" },
   { label: "Rent Property", href: "/properties?type=rent" },
   { label: "Property Valuation", href: "/contact" },
   { label: "Investment Advice", href: "/contact" },
@@ -19,25 +19,22 @@ const services = [
 
 export function Footer() {
   return (
-    <footer className="bg-brand-charcoal text-white pt-16 pb-8">
+    <footer className="bg-brand-charcoal text-white pt-14 sm:pt-16 pb-6 sm:pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-        {/* Top grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-white/10">
-          {/* Brand */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 pb-10 sm:pb-12 border-b border-white/10">
           <div className="lg:col-span-2">
             <div className="mb-4">
-              <Logo href="/" variant="dark" height={40} />
+              <Logo href="/" variant="dark" height={36} />
             </div>
-            <p className="text-white/40 text-sm leading-relaxed max-w-xs mb-7">
+            <p className="text-white/50 text-sm leading-relaxed max-w-sm mb-6 sm:mb-7">
               We provide exceptional real estate services, helping you find the
               perfect property that fits your lifestyle and budget.
             </p>
-            {/* Social */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <a
                 href="#"
                 aria-label="Facebook"
-                className="h-9 w-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-brand-gold hover:border-brand-gold/50 transition-colors"
+                className="h-9 w-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-brand-gold hover:border-brand-gold/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
               >
                 <svg
                   className="h-3.5 w-3.5"
@@ -50,7 +47,7 @@ export function Footer() {
               <a
                 href="#"
                 aria-label="Instagram"
-                className="h-9 w-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-brand-gold hover:border-brand-gold/50 transition-colors"
+                className="h-9 w-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-brand-gold hover:border-brand-gold/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
               >
                 <svg
                   className="h-3.5 w-3.5"
@@ -67,7 +64,7 @@ export function Footer() {
               <a
                 href="#"
                 aria-label="X"
-                className="h-9 w-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-brand-gold hover:border-brand-gold/50 transition-colors"
+                className="h-9 w-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-brand-gold hover:border-brand-gold/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
               >
                 <svg
                   className="h-3.5 w-3.5"
@@ -80,7 +77,7 @@ export function Footer() {
               <a
                 href="#"
                 aria-label="YouTube"
-                className="h-9 w-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-brand-gold hover:border-brand-gold/50 transition-colors"
+                className="h-9 w-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-brand-gold hover:border-brand-gold/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
               >
                 <svg
                   className="h-3.5 w-3.5"
@@ -93,17 +90,16 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Pages */}
           <div>
-            <div className="text-xs uppercase tracking-widest text-white/30 mb-5">
+            <div className="text-xs uppercase tracking-widest text-white/40 mb-4 sm:mb-5">
               Pages
             </div>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5 sm:space-y-3">
               {pages.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/50 hover:text-brand-gold transition-colors"
+                    className="text-sm text-white/50 hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded py-1 inline-block"
                   >
                     {link.label}
                   </Link>
@@ -112,17 +108,16 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Services */}
           <div>
-            <div className="text-xs uppercase tracking-widest text-white/30 mb-5">
+            <div className="text-xs uppercase tracking-widest text-white/40 mb-4 sm:mb-5">
               Services
             </div>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5 sm:space-y-3">
               {services.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/50 hover:text-brand-gold transition-colors"
+                    className="text-sm text-white/50 hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded py-1 inline-block"
                   >
                     {link.label}
                   </Link>
@@ -132,29 +127,28 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-xs text-white/30">
+        <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-xs text-white/30 text-center sm:text-left">
             &copy; {new Date().getFullYear()} The Real Business. All Rights
             Reserved.
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-4 sm:gap-6">
             <a
-              href="mailto:contact@horizonestate.com"
-              className="text-xs text-white/30 hover:text-white/60 transition-colors"
+              href="mailto:contact@therealbusiness.com"
+              className="text-xs text-white/30 hover:text-white/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded"
             >
-              contact@horizonestate.com
+              contact@therealbusiness.com
             </a>
-            <span className="text-white/10">|</span>
+            <span className="text-white/10 hidden sm:inline">|</span>
             <Link
               href="#"
-              className="text-xs text-white/30 hover:text-white/60 transition-colors"
+              className="text-xs text-white/30 hover:text-white/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded"
             >
               Privacy Policy
             </Link>
             <Link
               href="#"
-              className="text-xs text-white/30 hover:text-white/60 transition-colors"
+              className="text-xs text-white/30 hover:text-white/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded"
             >
               Terms
             </Link>

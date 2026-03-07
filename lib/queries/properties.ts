@@ -132,6 +132,13 @@ export async function getPropertiesForAdmin(
   return { data: (data as PropertyWithRelations[]) ?? [], total: count ?? 0 };
 }
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function isPropertyId(id: string): boolean {
+  return UUID_REGEX.test(id);
+}
+
 export async function getPropertyById(id: string): Promise<PropertyWithRelations | null> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
@@ -142,6 +149,27 @@ export async function getPropertyById(id: string): Promise<PropertyWithRelations
 
   if (error) return null;
   return data as PropertyWithRelations;
+}
+
+export async function getPropertyBySlug(slug: string): Promise<PropertyWithRelations | null> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*, category:categories(id,name,slug)")
+    .eq("slug", slug)
+    .single();
+
+  if (error) return null;
+  return data as PropertyWithRelations;
+}
+
+export async function getPropertyByIdOrSlug(
+  identifier: string
+): Promise<PropertyWithRelations | null> {
+  if (isPropertyId(identifier)) {
+    return getPropertyById(identifier);
+  }
+  return getPropertyBySlug(identifier);
 }
 
 export async function getFeaturedProperties(limit = 6): Promise<PropertyWithRelations[]> {

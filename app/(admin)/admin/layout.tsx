@@ -1,13 +1,20 @@
+import { redirect } from "next/navigation";
+import { isAdminAuthenticated } from "@/lib/auth/session";
 import { Sidebar } from "@/components/admin/layout/Sidebar";
 import { Header } from "@/components/admin/layout/Header";
 import { BottomNav } from "@/components/admin/layout/BottomNav";
 import { AdminClientWrapper } from "@/components/admin/layout/AdminClientWrapper";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const isAdmin = await isAdminAuthenticated();
+  if (!isAdmin) {
+    redirect("/admin/login");
+  }
+
   return (
     <AdminClientWrapper>
       <Sidebar />

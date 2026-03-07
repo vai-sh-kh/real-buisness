@@ -102,7 +102,7 @@ export function MobileNavDrawer() {
                             "h-6 w-6 shrink-0",
                             isActive
                               ? "text-admin-sidebar-active-indicator"
-                              : cn(item.color, item.colorDark),
+                              : item.color,
                           )}
                         />
                         <span>{item.label}</span>
@@ -131,7 +131,7 @@ export function MobileNavDrawer() {
                   setMobileNavOpen(false);
                   setShowLogoutDialog(true);
                 }}
-                className="flex min-h-[48px] w-full items-center gap-3.5 rounded-lg px-3 py-3 text-base font-medium text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/10"
+                className="flex min-h-[48px] w-full items-center gap-3.5 rounded-lg px-3 py-3 text-base font-medium text-red-600 transition-colors hover:bg-red-500/10"
               >
                 <LogOut className="h-6 w-6 shrink-0" />
                 <span>Log Out</span>

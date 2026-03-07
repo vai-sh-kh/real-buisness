@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
-import { getPropertyById } from "@/lib/queries/properties";
+import { getPropertyByIdOrSlug } from "@/lib/queries/properties";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { propertySchema } from "@/lib/validations/property.schema";
 import { slugify } from "@/lib/utils";
 import { toUserFriendlyMessage } from "@/lib/db-errors";
 
 type Params = { params: Promise<{ id: string }> };
+
+/** Resolve route param (id or slug) to property id for update/delete */
+async function resolvePropertyId(identifier: string): Promise<string | null> {
+  const property = await getPropertyByIdOrSlug(identifier);
+  return property?.id ?? null;
+}
 
 export async function GET(_req: NextRequest, { params }: Params) {
   try {
@@ -15,8 +21,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = await params;
-  const data = await getPropertyById(id);
+  const { id: identifier } = await params;
+  const data = await getPropertyByIdOrSlug(identifier);
 
   if (!data) {
     return NextResponse.json({ error: "Property not found" }, { status: 404 });
@@ -32,7 +38,11 @@ export async function PUT(request: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = await params;
+  const { id: identifier } = await params;
+  const id = await resolvePropertyId(identifier);
+  if (!id) {
+    return NextResponse.json({ error: "Property not found" }, { status: 404 });
+  }
 
   let body: unknown;
   try {
@@ -86,7 +96,11 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = await params;
+  const { id: identifier } = await params;
+  const id = await resolvePropertyId(identifier);
+  if (!id) {
+    return NextResponse.json({ error: "Property not found" }, { status: 404 });
+  }
   const supabase = createAdminClient();
   const { error } = await supabase.from("properties").delete().eq("id", id);
 

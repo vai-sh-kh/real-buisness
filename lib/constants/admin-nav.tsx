@@ -12,42 +12,36 @@ export const adminNavItems: {
   href: string;
   icon: LucideIcon;
   color: string;
-  colorDark: string;
 }[] = [
   {
     label: "Dashboard",
     href: "/admin/dashboard",
     icon: LayoutDashboard,
     color: "text-blue-500",
-    colorDark: "dark:text-blue-400",
   },
   {
     label: "Properties",
     href: "/admin/properties",
     icon: Home,
     color: "text-emerald-600",
-    colorDark: "dark:text-emerald-400",
   },
   {
     label: "Categories",
     href: "/admin/categories",
     icon: Tags,
     color: "text-amber-600",
-    colorDark: "dark:text-amber-400",
   },
   {
     label: "Leads",
     href: "/admin/leads",
     icon: UserPlus,
     color: "text-violet-600",
-    colorDark: "dark:text-violet-400",
   },
   {
     label: "Reports",
     href: "/admin/reports",
     icon: FileBarChart,
     color: "text-orange-600",
-    colorDark: "dark:text-orange-400",
   },
 ];
 

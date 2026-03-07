@@ -83,7 +83,7 @@ export function Header() {
             className="shrink-0"
             title="The Real Business"
           />
-          <p className="mt-2 truncate text-lg font-semibold leading-tight text-black dark:text-foreground sm:text-xl">
+          <p className="mt-2 truncate text-lg font-semibold leading-tight text-black sm:text-xl">
             The Real Business
           </p>
         </div>
@@ -135,9 +135,9 @@ export function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-56 rounded-xl border border-border bg-popover p-2 pt-3 shadow-lg"
+            className="w-64 min-w-[14rem] rounded-xl border border-border bg-popover p-3 pt-3 shadow-lg"
           >
-            <DropdownMenuLabel className="font-normal mt-0 p-3 pb-2">
+            <DropdownMenuLabel className="font-normal mt-0 px-3 pb-3 pt-0">
               <div className="flex items-center gap-3">
                 {avatarUrl ? (
                   <img
@@ -160,21 +160,21 @@ export function Header() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
+            <DropdownMenuSeparator className="my-1" />
+            <DropdownMenuItem asChild className="py-3">
               <Link
                 href="/admin/settings"
-                className="flex cursor-pointer items-center gap-2 rounded-lg"
+                className="flex cursor-pointer items-center gap-3 rounded-lg"
               >
-                <Settings className="h-4 w-4" />
+                <Settings className="h-4 w-4 shrink-0" />
                 Settings
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => setShowLogoutDialog(true)}
-              className="flex cursor-pointer items-center gap-2 rounded-lg text-destructive focus:bg-destructive/10 focus:text-destructive"
+              className="flex cursor-pointer items-center gap-3 rounded-lg py-3 text-destructive focus:bg-destructive/10 focus:text-destructive"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-4 w-4 shrink-0" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

@@ -2,22 +2,15 @@
 
 import {
   createContext,
-  useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
 } from "react";
-import type { ThemePreference } from "@/types";
-import {
-  getAdminThemeFromStorage,
-  setAdminThemeStorage,
-} from "@/lib/constants/admin-theme";
 
+/** Theme is always light; context kept for minimal compatibility where useAdminTheme is still referenced. */
 interface AdminThemeContextValue {
-  theme: ThemePreference;
-  resolvedTheme: "light" | "dark";
-  setTheme: (theme: ThemePreference) => void;
+  theme: "light";
+  resolvedTheme: "light";
+  setTheme: (_: "light") => void;
 }
 
 const AdminThemeContext = createContext<AdminThemeContextValue | null>(null);
@@ -29,63 +22,18 @@ export function useAdminTheme() {
   return ctx;
 }
 
-interface AdminThemeProviderProps {
-  children: React.ReactNode;
-  /** Initial theme from API/settings (optional) */
-  serverTheme?: ThemePreference;
-}
+const VALUE: AdminThemeContextValue = {
+  theme: "light",
+  resolvedTheme: "light",
+  setTheme: () => {},
+};
 
 export function AdminThemeProvider({
   children,
-  serverTheme,
-}: AdminThemeProviderProps) {
-  const [theme, setThemeState] = useState<ThemePreference>(() => {
-    const stored = getAdminThemeFromStorage();
-    if (stored === "light" || stored === "dark" || stored === "system") {
-      return stored;
-    }
-    return serverTheme ?? "dark";
-  });
-
-  const [systemResolved, setSystemResolved] = useState<"light" | "dark">(() =>
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light",
-  );
-
-  const resolvedTheme = useMemo(() => {
-    if (theme === "system") return systemResolved;
-    return theme;
-  }, [theme, systemResolved]);
-
-  const setTheme = useCallback((newTheme: ThemePreference) => {
-    setThemeState(newTheme);
-    setAdminThemeStorage(newTheme);
-  }, []);
-
-  // Sync with server/API when it loads
-  useEffect(() => {
-    if (serverTheme && serverTheme !== theme) {
-      setThemeState(serverTheme);
-      setAdminThemeStorage(serverTheme);
-    }
-  }, [serverTheme]);
-
-  // Listen for system preference changes when theme is "system"
-  useEffect(() => {
-    if (theme !== "system") return;
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => setSystemResolved(mq.matches ? "dark" : "light");
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, [theme]);
-
-  const value = useMemo<AdminThemeContextValue>(
-    () => ({ theme, resolvedTheme, setTheme }),
-    [theme, resolvedTheme, setTheme],
-  );
-
+}: {
+  children: React.ReactNode;
+}) {
+  const value = useMemo(() => VALUE, []);
   return (
     <AdminThemeContext.Provider value={value}>
       {children}

@@ -6,6 +6,23 @@ import { buildQueryString } from "@/lib/utils";
 import type { PropertyWithRelations, PropertyFilters } from "@/types";
 import type { PropertyFormValues } from "@/lib/validations/property.schema";
 
+export function usePropertyByIdOrSlug(identifier: string | null) {
+  return useQuery({
+    queryKey: ["property", identifier],
+    queryFn: async (): Promise<PropertyWithRelations | null> => {
+      if (!identifier) return null;
+      const res = await fetch(`/api/admin/properties/${identifier}`, {
+        credentials: "include",
+      });
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error("Failed to fetch property");
+      const json = await res.json();
+      return json.data ?? null;
+    },
+    enabled: !!identifier,
+  });
+}
+
 export function useProperties(filters: PropertyFilters = {}) {
   return useQuery<{
     data: PropertyWithRelations[];
@@ -68,8 +85,10 @@ export function useUpdateProperty() {
       if (!res.ok) throw new Error(json.error || "Failed to update property");
       return json.data as PropertyWithRelations;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       qc.invalidateQueries({ queryKey: ["properties"] });
+      qc.invalidateQueries({ queryKey: ["property", variables.id] });
+      qc.invalidateQueries({ queryKey: ["property"] });
       toast.success("Property updated");
     },
     onError: (err: Error) => toast.error(err.message),
@@ -86,8 +105,10 @@ export function useDeleteProperty() {
         throw new Error(json.error || "Failed to delete property");
       }
     },
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       qc.invalidateQueries({ queryKey: ["properties"] });
+      qc.invalidateQueries({ queryKey: ["property", id] });
+      qc.invalidateQueries({ queryKey: ["property"] });
       toast.success("Property deleted");
     },
     onError: (err: Error) => toast.error(err.message),

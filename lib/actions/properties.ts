@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getPropertiesForAdmin,
   getPropertyById,
+  getPropertyByIdOrSlug,
   type AdminListPropertiesOptions,
 } from "@/lib/queries/properties";
 import type { PropertyWithRelations } from "@/types";
@@ -22,6 +23,16 @@ export async function getPropertyByIdAction(
 ): Promise<PropertyWithRelations | null> {
   try {
     return await getPropertyById(id);
+  } catch {
+    return null;
+  }
+}
+
+export async function getPropertyByIdOrSlugAction(
+  identifier: string
+): Promise<PropertyWithRelations | null> {
+  try {
+    return await getPropertyByIdOrSlug(identifier);
   } catch {
     return null;
   }

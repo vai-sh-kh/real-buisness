@@ -5,7 +5,7 @@ import { SettingsView } from "@/components/admin/settings/SettingsView";
 
 export default function SettingsPage() {
   return (
-    <div className="min-h-full bg-[#f5f5f5] dark:bg-admin-main-bg">
+    <div className="min-h-full bg-[#f5f5f5]">
       <PageHeader
         title="Settings"
         subtitle="Manage your profile, notifications, and preferences"

@@ -7,9 +7,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const testimonials = [
   {
     quote:
-      "The Real Business transformed our home buying experience with professionalism and care, making the process smooth and enjoyable. Highly recommended for anyone seeking quality service.",
+      "The Real Business transformed our home buying experience with professionalism and care, making the process smooth and enjoyable. Highly recommended.",
     quote2:
-      "The team at The Real Business exceeded our expectations, delivering exceptional results and personalized attention. Their expertise made our property investment truly successful.",
+      "The team exceeded our expectations, delivering exceptional results and personalized attention. Their expertise made our property investment truly successful.",
     name: "Adriana O'Sullivan",
     handle: "adriana@gmail.com",
     avatar:
@@ -17,9 +17,9 @@ const testimonials = [
   },
   {
     quote:
-      "Needed a quick sale. The Real Business delivered an amazing offer, exceeding our expectations. So grateful for their expertise and the way they guided us through every step.",
+      "Needed a quick sale. The Real Business delivered an amazing offer, exceeding our expectations. So grateful for their expertise and guidance.",
     quote2:
-      "The entire team was responsive, knowledgeable, and truly cared about finding us the right outcome. I couldn't have asked for a better real estate partner.",
+      "The entire team was responsive, knowledgeable, and truly cared about finding us the right outcome. I couldn't have asked for a better partner.",
     name: "John Miles",
     handle: "john.m@gmail.com",
     avatar:
@@ -27,9 +27,9 @@ const testimonials = [
   },
   {
     quote:
-      "Professional, fast, and reliable. They handled everything and we got our dream home in under 30 days. The process was incredibly seamless.",
+      "Professional, fast, and reliable. They handled everything and we got our dream home in under 30 days. Incredibly seamless.",
     quote2:
-      "From the very first consultation to the final paperwork, The Real Business's attention to detail and commitment to excellence was truly outstanding.",
+      "From the first consultation to the final paperwork, their attention to detail and commitment to excellence was outstanding.",
     name: "Marcus Johnson",
     handle: "marcus.j@gmail.com",
     avatar:
@@ -39,7 +39,7 @@ const testimonials = [
 
 export function Testimonials() {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: "-60px" });
   const [active, setActive] = useState(0);
 
   const prev = () =>
@@ -50,113 +50,112 @@ export function Testimonials() {
   const t = testimonials[active];
 
   return (
-    <section className="py-24 bg-gray-50" ref={ref}>
+    <section
+      className="py-16 sm:py-20 lg:py-24 bg-gray-50"
+      ref={ref}
+      aria-labelledby="testimonials-heading"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-        {/* Footer info row */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10">
-          {/* Left: branding info */}
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 sm:gap-10">
           <div className="lg:w-64 shrink-0">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
-              <div className="text-xs text-gray-400 tracking-widest mb-2">
-                Main Street Plaza, Downtown Business District
+              <div className="text-xs text-gray-400 tracking-widest mb-1">
+                Main Street Plaza, Downtown
               </div>
               <div className="text-xs text-gray-400">+1 (555) 123-4567</div>
             </motion.div>
           </div>
 
-          {/* Right: Testimonial block */}
-          <div className="flex-1">
-            <motion.div
+          <div className="flex-1 min-w-0">
+            <motion.span
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.5 }}
-              className="mb-3"
+              transition={{ duration: 0.4 }}
+              className="text-xs sm:text-sm text-brand-gold/80 tracking-widest"
             >
-              <span className="text-sm text-brand-gold/80 tracking-widest">
-                /Testimonial
-              </span>
-            </motion.div>
+              /Testimonials
+            </motion.span>
 
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              id="testimonials-heading"
+              initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, delay: 0.1 }}
-              className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-charcoal mb-10 leading-tight"
+              transition={{ duration: 0.5, delay: 0.06 }}
+              className="font-heading text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-brand-charcoal mt-1 mb-8 sm:mb-10 leading-tight"
             >
               What our clients say
             </motion.h2>
 
-            {/* Active testimonial */}
             <motion.div
               key={active}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="grid md:grid-cols-2 gap-8 mb-8"
+              transition={{ duration: 0.35 }}
+              className="grid md:grid-cols-2 gap-6 sm:gap-8 mb-8"
             >
-              {/* Reviewer info + first quote */}
               <div>
-                <div className="flex items-center gap-3 mb-5">
+                <div className="flex items-center gap-3 mb-4 sm:mb-5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={t.avatar}
-                    alt={t.name}
+                    alt=""
                     className="h-10 w-10 rounded-full object-cover"
                   />
-                  <div>
-                    <p className="text-sm font-semibold text-brand-charcoal">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-brand-charcoal truncate">
                       {t.name}
                     </p>
-                    <p className="text-xs text-gray-400">{t.handle}</p>
+                    <p className="text-xs text-gray-400 truncate">{t.handle}</p>
                   </div>
                 </div>
                 <p className="text-sm text-gray-700 leading-relaxed">
                   {t.quote}
                 </p>
               </div>
-
-              {/* Second paragraph */}
-              <div className="pt-15 md:pt-0">
-                <p className="text-sm text-gray-500 leading-relaxed md:mt-16">
+              <div className="md:pt-0 pt-2">
+                <p className="text-sm text-gray-500 leading-relaxed md:mt-12">
                   {t.quote2}
                 </p>
               </div>
             </motion.div>
 
-            {/* Navigation */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <button
+                type="button"
                 onClick={prev}
-                className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-brand-charcoal hover:border-brand-charcoal hover:text-white transition-all"
-                aria-label="Previous"
+                className="h-10 w-10 sm:h-9 sm:w-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-brand-charcoal hover:border-brand-charcoal hover:text-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2"
+                aria-label="Previous testimonial"
               >
-                <ChevronLeft className="h-3.5 w-3.5" />
+                <ChevronLeft className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
               </button>
 
-              {/* Progress bar */}
-              <div className="flex-1 h-px bg-gray-200 relative">
+              <div className="flex-1 h-px bg-gray-200 relative min-w-0">
                 <div
-                  className="absolute top-0 left-0 h-full bg-brand-charcoal transition-all duration-500"
+                  className="absolute top-0 left-0 h-full bg-brand-charcoal transition-all duration-400"
                   style={{
                     width: `${((active + 1) / testimonials.length) * 100}%`,
                   }}
                 />
               </div>
 
-              <span className="text-xs text-gray-400 tabular-nums">
+              <span
+                className="text-xs text-gray-400 tabular-nums shrink-0"
+                aria-live="polite"
+              >
                 {active + 1} / {testimonials.length}
               </span>
 
               <button
+                type="button"
                 onClick={next}
-                className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-brand-charcoal hover:border-brand-charcoal hover:text-white transition-all"
-                aria-label="Next"
+                className="h-10 w-10 sm:h-9 sm:w-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-brand-charcoal hover:border-brand-charcoal hover:text-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2"
+                aria-label="Next testimonial"
               >
-                <ChevronRight className="h-3.5 w-3.5" />
+                <ChevronRight className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
               </button>
             </div>
           </div>

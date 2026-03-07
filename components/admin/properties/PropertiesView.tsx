@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   Plus,
@@ -37,7 +39,6 @@ import {
 } from "@/components/ui/sheet";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -45,18 +46,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  ProfileDetailModal,
-  ProfileSectionLabel,
-  ProfileFieldLabel,
-} from "@/components/admin/ProfileDetailModal";
 import { DataTable } from "@/components/admin/data-table/DataTable";
 import { DataTablePagination } from "@/components/admin/data-table/DataTablePagination";
 import { PropertySheet } from "./PropertySheet";
 import { useProperties, useDeleteProperty } from "@/hooks/useProperties";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { formatDate, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type {
   PropertyWithRelations,
   PropertyStatus,
@@ -89,6 +85,7 @@ export function PropertiesView({
 }: {
   header?: PropertiesViewHeaderConfig;
 } = {}) {
+  const router = useRouter();
   const isMobile = useIsMobile();
   // ─── Local client-side state for filters, pagination, search ───
   const [page, setPage] = useState(1);
@@ -106,8 +103,6 @@ export function PropertiesView({
   const [editProperty, setEditProperty] = useState<
     PropertyWithRelations | undefined
   >();
-  const [viewProperty, setViewProperty] =
-    useState<PropertyWithRelations | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
@@ -240,7 +235,7 @@ export function PropertiesView({
       cell: ({ row }) => {
         const property = row.original;
         return (
-          <div className="flex justify-end">
+          <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -248,6 +243,15 @@ export function PropertiesView({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/admin/properties/${property.id}`);
+                  }}
+                >
+                  <Eye className="h-3.5 w-3.5 mr-2" />
+                  View
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
@@ -565,44 +569,49 @@ export function PropertiesView({
                       className="flex flex-col overflow-hidden rounded-xl border border-admin-card-border bg-admin-card-bg shadow-sm transition-shadow hover:shadow-md"
                     >
                       <div className="flex gap-3 p-2 sm:p-4">
-                        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-admin-card-border bg-muted">
-                          {property.cover_image_url ? (
-                            <img
-                              src={property.cover_image_url}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center">
-                              <Building2 className="h-8 w-8 text-muted-foreground" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="truncate text-sm font-semibold text-foreground">
-                            {property.title}
-                          </h3>
-                          <p className="mt-0.5 text-xs text-muted-foreground">
-                            {property.price
-                              ? `₹${Number(property.price).toLocaleString("en-IN")}`
-                              : "—"}
-                            {property.city ? ` · ${property.city}` : ""}
-                          </p>
-                          <div className="mt-2 flex flex-wrap items-center gap-2">
-                            <Badge
-                              variant={STATUS_COLORS[property.status]}
-                              className="text-xs"
-                            >
-                              {property.status.charAt(0).toUpperCase() +
-                                property.status.slice(1)}
-                            </Badge>
-                            {property.type && (
-                              <span className="text-xs text-muted-foreground capitalize">
-                                {property.type}
-                              </span>
+                        <Link
+                          href={`/admin/properties/${property.id}`}
+                          className="flex min-w-0 flex-1 gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-admin-card-border bg-muted">
+                            {property.cover_image_url ? (
+                              <img
+                                src={property.cover_image_url}
+                                alt=""
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center">
+                                <Building2 className="h-8 w-8 text-muted-foreground" />
+                              </div>
                             )}
                           </div>
-                        </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="truncate text-sm font-semibold text-foreground">
+                              {property.title}
+                            </h3>
+                            <p className="mt-0.5 text-xs text-muted-foreground">
+                              {property.price
+                                ? `₹${Number(property.price).toLocaleString("en-IN")}`
+                                : "—"}
+                              {property.city ? ` · ${property.city}` : ""}
+                            </p>
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                              <Badge
+                                variant={STATUS_COLORS[property.status]}
+                                className="text-xs"
+                              >
+                                {property.status.charAt(0).toUpperCase() +
+                                  property.status.slice(1)}
+                              </Badge>
+                              {property.type && (
+                                <span className="text-xs text-muted-foreground capitalize">
+                                  {property.type}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </Link>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -615,6 +624,14 @@ export function PropertiesView({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() =>
+                                router.push(`/admin/properties/${property.id}`)
+                              }
+                            >
+                              <Eye className="mr-2 h-3.5 w-3.5" />
+                              View
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
                                 setEditProperty(property);
@@ -640,10 +657,12 @@ export function PropertiesView({
                           variant="outline"
                           size="sm"
                           className="w-full min-h-[44px] gap-2 rounded-lg"
-                          onClick={() => setViewProperty(property)}
+                          asChild
                         >
-                          <Eye className="h-4 w-4" />
-                          View details
+                          <Link href={`/admin/properties/${property.id}`}>
+                            <Eye className="h-4 w-4" />
+                            View details
+                          </Link>
                         </Button>
                       </div>
                     </div>
@@ -675,6 +694,9 @@ export function PropertiesView({
                   emptyIcon={
                     <Building2 className="mb-4 h-10 w-10 text-muted-foreground/50" />
                   }
+                  onRowClick={(row) =>
+                    router.push(`/admin/properties/${row.original.id}`)
+                  }
                 />
               </div>
               <div className="border-t border-admin-card-border bg-muted/30 p-4">
@@ -700,148 +722,6 @@ export function PropertiesView({
         onOpenChange={handleSheetOpenChange}
         property={editProperty}
       />
-
-      <ProfileDetailModal
-        open={!!viewProperty}
-        onOpenChange={(open) => !open && setViewProperty(null)}
-        title="Property Profile"
-        subtitle="Full breakdown of listing information and status"
-        icon={<Building2 className="h-10 w-10 text-indigo-300" />}
-        onEdit={
-          viewProperty
-            ? () => {
-                setEditProperty(viewProperty);
-                setSheetOpen(true);
-                setViewProperty(null);
-              }
-            : undefined
-        }
-        editLabel="Edit Listing"
-        dismissLabel="Dismiss Profile"
-      >
-        {viewProperty && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div>
-                <ProfileSectionLabel>Property</ProfileSectionLabel>
-                <p className="text-xl font-semibold text-foreground">
-                  {viewProperty.title}
-                </p>
-                <div className="mt-3 p-4 rounded-xl bg-muted/50 border border-border">
-                  <ProfileFieldLabel>Location</ProfileFieldLabel>
-                  <p className="text-sm text-foreground">
-                    {[
-                      viewProperty.address,
-                      viewProperty.city,
-                      viewProperty.state,
-                      viewProperty.zip_code,
-                    ]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <ProfileSectionLabel>Specifications</ProfileSectionLabel>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="p-3 rounded-xl bg-muted/50 border border-border">
-                    <ProfileFieldLabel>Area</ProfileFieldLabel>
-                    <p className="text-sm font-medium text-foreground">
-                      {viewProperty.area_sqft
-                        ? `${viewProperty.area_sqft} sqft`
-                        : "—"}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-muted/50 border border-border">
-                    <ProfileFieldLabel>Bedrooms</ProfileFieldLabel>
-                    <p className="text-sm font-medium text-foreground">
-                      {viewProperty.bedrooms ?? "—"}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-muted/50 border border-border">
-                    <ProfileFieldLabel>Bathrooms</ProfileFieldLabel>
-                    <p className="text-sm font-medium text-foreground">
-                      {viewProperty.bathrooms ?? "—"}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-muted/50 border border-border">
-                    <ProfileFieldLabel>Floors</ProfileFieldLabel>
-                    <p className="text-sm font-medium text-foreground">
-                      {viewProperty.floors ?? "—"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <ProfileSectionLabel>Description</ProfileSectionLabel>
-                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                  {viewProperty.description ||
-                    "No description provided for this listing."}
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-6 text-left">
-              <div>
-                <ProfileSectionLabel>Pricing & Status</ProfileSectionLabel>
-                <div className="space-y-3">
-                  <div className="p-4 rounded-xl bg-muted/50 border border-border">
-                    <ProfileFieldLabel>Price</ProfileFieldLabel>
-                    <p className="text-xl font-semibold text-foreground">
-                      ₹{Number(viewProperty.price).toLocaleString("en-IN")}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge
-                      variant={STATUS_COLORS[viewProperty.status]}
-                      className="rounded-lg"
-                    >
-                      {viewProperty.status}
-                    </Badge>
-                    <Badge variant="outline" className="rounded-lg capitalize">
-                      {viewProperty.type}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Category:{" "}
-                    {viewProperty.category &&
-                    typeof viewProperty.category === "object" &&
-                    "name" in viewProperty.category
-                      ? (viewProperty.category as { name: string }).name
-                      : "—"}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <ProfileSectionLabel>Timeline</ProfileSectionLabel>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="p-4 rounded-xl bg-muted/50 border border-border">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wider block mb-1">
-                      Created
-                    </span>
-                    <p className="text-sm font-medium text-foreground">
-                      {formatDate(viewProperty.created_at)}
-                    </p>
-                  </div>
-                  {viewProperty.updated_at && (
-                    <div className="p-4 rounded-xl bg-muted/50 border border-border">
-                      <span className="text-xs text-muted-foreground uppercase tracking-wider block mb-1">
-                        Updated
-                      </span>
-                      <p className="text-sm font-medium text-foreground">
-                        {formatDate(viewProperty.updated_at)}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </ProfileDetailModal>
 
       <AlertDialog
         open={!!deleteId}

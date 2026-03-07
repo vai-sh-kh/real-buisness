@@ -4,7 +4,6 @@ import { useAppStore } from "@/store/appStore";
 import { cn } from "@/lib/utils";
 import { AdminThemeProvider } from "@/components/admin/settings/AdminThemeContext";
 import { AdminThemeApplicator } from "@/components/admin/settings/AdminThemeApplicator";
-import { useSettings } from "@/hooks/useSettings";
 
 const THEME_INIT_SCRIPT = `
 (function(){
@@ -22,8 +21,6 @@ export function AdminClientWrapper({
   children: React.ReactNode;
 }) {
   const { sidebarCollapsed } = useAppStore();
-  const { data } = useSettings();
-  const serverTheme = data?.data?.theme;
 
   return (
     <div
@@ -35,7 +32,7 @@ export function AdminClientWrapper({
         dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}
         suppressHydrationWarning
       />
-      <AdminThemeProvider serverTheme={serverTheme}>
+      <AdminThemeProvider>
         <AdminThemeApplicator />
         <div
           className={cn(
@@ -45,7 +42,7 @@ export function AdminClientWrapper({
           )}
         >
           <div className="flex flex-1 flex-col overflow-hidden">
-            <div className="flex-1 overflow-y-auto">{children}</div>
+            <div className="flex-1 overflow-y-auto overflow-x-hidden bg-admin-main-bg">{children}</div>
           </div>
         </div>
       </AdminThemeProvider>

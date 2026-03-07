@@ -30,7 +30,7 @@ export function PageHeader({
   backLabel = "Back",
 }: PageHeaderProps) {
   return (
-    <header className="border-b border-[#e5e5e5] bg-[#f5f5f5] px-2 pt-4 pb-3 dark:border-admin-card-border dark:bg-admin-main-bg sm:px-6 sm:pt-5 lg:px-8 lg:pt-6">
+    <header className="border-b border-[#e5e5e5] bg-[#f5f5f5] px-2 pt-4 pb-3 sm:px-6 sm:pt-5 lg:px-8 lg:pt-6">
       <div className="flex flex-row flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           {backHref && (
@@ -55,12 +55,12 @@ export function PageHeader({
                   {item.href ? (
                     <Link
                       href={item.href}
-                      className="font-medium transition-colors hover:text-gray-900 dark:hover:text-gray-100"
+                      className="font-medium transition-colors hover:text-gray-900"
                     >
                       {item.label}
                     </Link>
                   ) : (
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                    <span className="font-medium text-gray-900">
                       {item.label}
                     </span>
                   )}
@@ -68,7 +68,7 @@ export function PageHeader({
               ))}
             </nav>
           )}
-          <h1 className="text-xl font-semibold tracking-tight text-[#1a1a1a] dark:text-foreground sm:text-2xl lg:text-3xl">
+          <h1 className="text-xl font-semibold tracking-tight text-[#1a1a1a] sm:text-2xl lg:text-3xl">
             {title}
           </h1>
           {subtitle && (

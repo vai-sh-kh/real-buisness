@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Settings, LogOut, Loader2 } from "lucide-react";
+import { Settings, LogOut, Loader2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/appStore";
 import { useAuthStore } from "@/store/authStore";
@@ -113,7 +113,7 @@ export function Sidebar() {
                       "h-6 w-6 shrink-0",
                       isActive
                         ? "text-admin-sidebar-active-indicator"
-                        : cn(item.color, item.colorDark),
+                        : item.color,
                     )}
                   />
                   {!sidebarCollapsed && <span>{item.label}</span>}
@@ -126,6 +126,19 @@ export function Sidebar() {
 
       {/* Bottom Footer Items */}
       <div className="mt-auto px-3 pb-4 pt-4 border-t border-admin-sidebar-border space-y-2">
+        <Link
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            "flex items-center gap-3.5 rounded-lg px-3 py-3 text-base font-medium transition-colors text-admin-sidebar-text-muted hover:bg-admin-sidebar-hover hover:text-admin-sidebar-text",
+            sidebarCollapsed && "justify-center px-0",
+          )}
+          title={sidebarCollapsed ? "View site" : undefined}
+        >
+          <ExternalLink className="h-6 w-6 shrink-0" />
+          {!sidebarCollapsed && <span>View site</span>}
+        </Link>
         <Link
           href="/admin/settings"
           className={cn(
@@ -143,7 +156,7 @@ export function Sidebar() {
         <button
           onClick={() => setShowLogoutDialog(true)}
           className={cn(
-            "w-full flex items-center gap-3.5 rounded-lg px-3 py-3 text-base font-medium transition-colors text-red-600 hover:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/10",
+            "w-full flex items-center gap-3.5 rounded-lg px-3 py-3 text-base font-medium transition-colors text-red-600 hover:bg-red-500/10",
             sidebarCollapsed && "justify-center px-0",
           )}
           title={sidebarCollapsed ? "Log Out" : undefined}

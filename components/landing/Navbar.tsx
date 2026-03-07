@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/ui/Logo";
 
@@ -31,35 +31,45 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isTransparent
           ? "bg-transparent"
           : "bg-white/95 backdrop-blur-md border-b border-gray-100",
       )}
     >
-      <nav className="mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between max-w-7xl">
-        {/* Logo */}
-        <Logo
-          variant={isTransparent ? "dark" : "light"}
-          height={32}
-          className={isTransparent ? undefined : "h-8"}
-        />
+      <nav className="mx-auto px-4 sm:px-6 lg:px-10 h-14 sm:h-16 flex items-center justify-between max-w-7xl">
+        <div className="flex min-w-0 flex-1 items-center gap-3 shrink-0">
+          <Logo
+            href="/"
+            height={36}
+            iconOnly
+            className="shrink-0"
+            title="The Real Business"
+          />
+          <p
+            className={cn(
+              "hidden sm:block truncate text-lg font-semibold leading-tight sm:text-xl",
+              isTransparent ? "text-white" : "text-brand-charcoal",
+            )}
+          >
+            The Real Business
+          </p>
+        </div>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-7">
+        <div className="hidden md:flex items-center gap-6 lg:gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "text-sm transition-colors",
+                "text-base transition-colors py-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2",
                 isTransparent
                   ? cn(
-                      "text-white/60 hover:text-white",
-                      pathname === link.href && "text-white font-medium",
+                      "text-white/80 hover:text-white",
+                      pathname === link.href && "text-white font-semibold",
                     )
                   : cn(
-                      "text-gray-500 hover:text-brand-charcoal",
+                      "text-gray-600 hover:text-brand-charcoal",
                       pathname === link.href &&
                         "text-brand-charcoal font-semibold",
                     ),
@@ -70,82 +80,69 @@ export function Navbar() {
           ))}
         </div>
 
-        {/* Right: Admin + CTA */}
-        <div className="hidden md:flex items-center gap-4">
-          <Link
-            href="/admin/login"
-            className={cn(
-              "text-xs transition-colors",
-              isTransparent
-                ? "text-white/40 hover:text-white/60"
-                : "text-gray-400 hover:text-gray-600",
-            )}
-          >
-            Admin
-          </Link>
+        <div className="hidden md:flex items-center gap-3 lg:gap-4">
           <Link
             href="/contact"
             className={cn(
-              "text-sm font-semibold px-5 py-2 rounded-full transition-colors",
+              "text-base font-semibold px-5 py-3 sm:px-6 rounded-full transition-opacity min-h-[44px] flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2",
               isTransparent
                 ? "bg-brand-gold text-white hover:opacity-90"
                 : "bg-brand-charcoal text-white hover:opacity-90",
             )}
           >
             Get Started
+            <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
           </Link>
         </div>
 
-        {/* Mobile toggle */}
         <button
+          type="button"
           className={cn(
-            "md:hidden p-1",
+            "md:hidden p-2.5 -mr-2.5 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2",
             isTransparent ? "text-white" : "text-brand-charcoal",
           )}
           onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileOpen}
         >
           {mobileOpen ? (
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" aria-hidden />
           ) : (
-            <Menu className="h-5 w-5" />
+            <Menu className="h-5 w-5" aria-hidden />
           )}
         </button>
       </nav>
 
-      {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
-          <div className="px-6 py-5 space-y-1">
+        <div
+          className="md:hidden bg-white border-t border-gray-100 shadow-lg"
+          role="dialog"
+          aria-label="Mobile menu"
+        >
+          <div className="px-4 py-4 space-y-0 max-h-[calc(100vh-3.5rem)] overflow-y-auto">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "block text-sm py-3 border-b border-gray-50 last:border-0 transition-colors",
+                  "flex items-center text-base py-3.5 px-2 rounded-lg min-h-[44px] border-b border-gray-50 last:border-0 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-inset",
                   pathname === link.href
-                    ? "text-brand-charcoal font-semibold"
-                    : "text-gray-600 hover:text-brand-charcoal",
+                    ? "text-brand-charcoal font-semibold bg-gray-50/50"
+                    : "text-gray-600 hover:text-brand-charcoal hover:bg-gray-50/50",
                 )}
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="pt-3 flex gap-3">
-              <Link
-                href="/admin/login"
-                className="flex-1 text-center text-xs border border-gray-200 rounded-full py-2.5 text-gray-500"
-                onClick={() => setMobileOpen(false)}
-              >
-                Admin
-              </Link>
+            <div className="pt-4">
               <Link
                 href="/contact"
-                className="flex-1 text-center text-sm bg-brand-charcoal text-white font-semibold rounded-full py-2.5 hover:bg-brand-charcoal/90"
+                className="flex items-center justify-center gap-2 w-full text-base bg-brand-charcoal text-white font-semibold rounded-full py-3.5 hover:bg-brand-charcoal/90 min-h-[44px]"
                 onClick={() => setMobileOpen(false)}
               >
                 Get Started
+                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
               </Link>
             </div>
           </div>

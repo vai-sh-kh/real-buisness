@@ -4,7 +4,7 @@ import { LeadsView } from "@/components/admin/leads/LeadsView";
 
 export default function LeadsPage() {
   return (
-    <div className="min-h-full bg-[#f5f5f5] dark:bg-admin-main-bg">
+    <div className="min-h-full bg-[#f5f5f5]">
       <LeadsView
         header={{
           title: "Leads",

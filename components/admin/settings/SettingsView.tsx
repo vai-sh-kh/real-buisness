@@ -27,7 +27,6 @@ import {
   adminSettingsSchema,
   type AdminSettingsFormValues,
 } from "@/lib/validations/settings.schema";
-import type { ThemePreference } from "@/types";
 import {
   Bell,
   User,
@@ -37,22 +36,8 @@ import {
   Mail,
   Lock,
   Info,
-  Sun,
-  Moon,
-  Monitor,
 } from "lucide-react";
-import { useAdminTheme } from "./AdminThemeContext";
 import { cn } from "@/lib/utils";
-
-const THEMES: {
-  value: ThemePreference;
-  label: string;
-  icon: React.ElementType;
-}[] = [
-  { value: "system", label: "System", icon: Monitor },
-  { value: "light", label: "Light", icon: Sun },
-  { value: "dark", label: "Dark", icon: Moon },
-];
 
 const LANGUAGES = [
   { value: "en", label: "English" },
@@ -73,7 +58,6 @@ const TIMEZONES = [
 export function SettingsView() {
   const { data, isLoading } = useSettings();
   const updateMutation = useUpdateSettings();
-  const { theme, setTheme } = useAdminTheme();
   const searchParams = useSearchParams();
   const settings = data?.data;
 
@@ -87,7 +71,7 @@ export function SettingsView() {
       email_notifications: true,
       lead_alerts: true,
       browser_notifications: true,
-      theme: "dark",
+      theme: "light",
       language: "en",
       timezone: "UTC",
     },
@@ -341,47 +325,14 @@ export function SettingsView() {
 
         {/* General Tab */}
         <TabsContent value="general" className="mt-0">
-          <Card className="border-gray-200 shadow-sm dark:border-gray-800 dark:bg-gray-900/50">
+          <Card className="border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg">General preferences</CardTitle>
-              <CardDescription className="dark:text-gray-400">
+              <CardDescription>
                 Customize appearance and regional settings.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-3">
-                <Label>Theme</Label>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Choose light, dark, or follow your system preference.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  {THEMES.map((t) => {
-                    const Icon = t.icon;
-                    const isActive = (watch("theme") ?? theme) === t.value;
-                    return (
-                      <button
-                        key={t.value}
-                        type="button"
-                        onClick={() => {
-                          const v = t.value as ThemePreference;
-                          setValue("theme", v);
-                          setTheme(v);
-                          updateMutation.mutate({ theme: v });
-                        }}
-                        className={cn(
-                          "flex items-center gap-3 rounded-xl border-2 px-4 py-3 transition-all min-w-[120px]",
-                          isActive
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-background hover:border-muted-foreground/30",
-                        )}
-                      >
-                        <Icon className="h-5 w-5 shrink-0" />
-                        <span className="font-medium">{t.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
               <div className="space-y-2">
                 <Label>Language</Label>
                 <Select
@@ -448,7 +399,7 @@ export function SettingsView() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-950/30 p-4">
+              <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50/50 p-4">
                 <Lock className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                 <div>
                   <Label className="text-xs text-amber-700">Password</Label>
@@ -466,7 +417,7 @@ export function SettingsView() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-950/30 p-4">
+              <div className="flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50/50 p-4">
                 <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
                 <div>
                   <Label className="text-xs text-blue-700">Security</Label>

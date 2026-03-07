@@ -164,8 +164,8 @@ export function DashboardView() {
             icon: Building2,
             href: "/admin/properties",
             color: "emerald",
-            bg: "bg-emerald-50 dark:bg-emerald-500/10",
-            iconColor: "text-emerald-600 dark:text-emerald-400",
+            bg: "bg-emerald-50",
+            iconColor: "text-emerald-600",
           },
           {
             title: "Active Listings",
@@ -174,8 +174,8 @@ export function DashboardView() {
             icon: TrendingUp,
             href: "/admin/properties",
             color: "emerald",
-            bg: "bg-emerald-50 dark:bg-emerald-500/10",
-            iconColor: "text-emerald-600 dark:text-emerald-400",
+            bg: "bg-emerald-50",
+            iconColor: "text-emerald-600",
           },
           {
             title: "Total Leads",
@@ -184,8 +184,8 @@ export function DashboardView() {
             icon: UserPlus,
             href: "/admin/leads",
             color: "blue",
-            bg: "bg-blue-50 dark:bg-blue-500/10",
-            iconColor: "text-blue-600 dark:text-blue-400",
+            bg: "bg-blue-50",
+            iconColor: "text-blue-600",
           },
           {
             title: "New Leads",
@@ -194,8 +194,8 @@ export function DashboardView() {
             icon: UserPlus,
             href: "/admin/leads",
             color: "blue",
-            bg: "bg-blue-50 dark:bg-blue-500/10",
-            iconColor: "text-blue-600 dark:text-blue-400",
+            bg: "bg-blue-50",
+            iconColor: "text-blue-600",
           },
         ].map((item) => (
           <Link
@@ -247,14 +247,14 @@ export function DashboardView() {
             </Link>
           </div>
           {propertyStatusData.length === 0 ? (
-            <div className="flex h-48 flex-col items-center justify-center rounded-xl bg-gray-50 sm:h-64 sm:min-h-[280px]">
+            <div className="flex h-64 flex-col items-center justify-center rounded-xl bg-gray-50 sm:min-h-[280px]">
               <BarChart3 className="h-12 w-12 text-muted-foreground/50" />
               <p className="mt-1 text-sm text-muted-foreground">
                 No property data yet
               </p>
             </div>
           ) : (
-            <div className="h-48 min-w-0 sm:h-64 lg:h-[280px]">
+            <div className="h-64 min-w-0 sm:h-64 lg:h-[280px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -320,7 +320,7 @@ export function DashboardView() {
                     horizontal={true}
                     vertical={true}
                     stroke="hsl(var(--border))"
-                    className="dark:stroke-gray-600"
+                    className="stroke-gray-400"
                   />
                   <XAxis
                     type="number"
@@ -386,7 +386,7 @@ export function DashboardView() {
               </p>
               <Link
                 href="/admin/properties"
-                className="mt-2 text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                className="mt-2 text-sm font-semibold text-blue-600 hover:underline"
               >
                 Add your first property
               </Link>
@@ -394,56 +394,55 @@ export function DashboardView() {
           ) : (
             <ul className="space-y-4">
               {stats.recent_properties.map((p) => (
-                <li
-                  key={p.id}
-                  className="flex items-center justify-between gap-4 rounded-xl border border-admin-card-border p-3 transition-colors hover:bg-muted/30"
-                >
-                  <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-admin-card-border bg-muted">
-                      {p.cover_image_url ? (
-                        <img
-                          src={p.cover_image_url}
-                          alt=""
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-blue-600 dark:text-blue-400">
-                          <Building2 className="h-4 w-4" />
-                        </div>
-                      )}
+                <li key={p.id}>
+                  <Link
+                    href={`/admin/properties/${p.id}`}
+                    className="group flex items-center justify-between gap-4 rounded-xl border border-admin-card-border p-3 transition-colors hover:bg-muted/30"
+                  >
+                    <div className="flex min-w-0 flex-1 items-center gap-3">
+                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-admin-card-border bg-muted">
+                        {p.cover_image_url ? (
+                          <img
+                            src={p.cover_image_url}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-blue-600">
+                            <Building2 className="h-4 w-4" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <span className="block truncate text-sm font-semibold text-foreground group-hover:text-brand-blue">
+                          {p.title}
+                        </span>
+                        <p className="truncate text-xs text-gray-500">
+                          {p.city}
+                        </p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <Link
-                        href={`/admin/properties/${p.id}/edit`}
-                        className="block truncate text-sm font-semibold text-foreground hover:text-brand-blue"
-                      >
-                        {p.title}
-                      </Link>
-                      <p className="truncate text-xs text-gray-500 dark:text-gray-400">
-                        {p.city}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex shrink-0 flex-col items-end">
-                    <span
-                      className={cn(
-                        "rounded-lg px-2 py-0.5 text-xs font-semibold capitalize",
-                        p.status === "active" &&
-                          "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400",
+                    <div className="flex shrink-0 flex-col items-end">
+                      <span
+                        className={cn(
+                          "rounded-lg px-2 py-0.5 text-xs font-semibold capitalize",
+                          p.status === "active" &&
+"bg-emerald-100 text-emerald-700",
                         p.status === "sold" &&
-                          "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400",
+                            "bg-blue-100 text-blue-700",
                         p.status === "rented" &&
-                          "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-400",
+                            "bg-violet-100 text-violet-700",
                         p.status === "draft" &&
-                          "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400",
-                      )}
-                    >
-                      {p.status}
-                    </span>
-                    <span className="mt-1 text-[11px] text-muted-foreground">
-                      {formatDate(p.created_at)}
-                    </span>
-                  </div>
+                            "bg-gray-100 text-gray-600",
+                        )}
+                      >
+                        {p.status}
+                      </span>
+                      <span className="mt-1 text-[11px] text-muted-foreground">
+                        {formatDate(p.created_at)}
+                      </span>
+                    </div>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -468,7 +467,7 @@ export function DashboardView() {
               <p className="mt-2 text-sm text-muted-foreground">No leads yet</p>
               <Link
                 href="/admin/leads"
-                className="mt-2 text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                className="mt-2 text-sm font-semibold text-blue-600 hover:underline"
               >
                 Add your first lead
               </Link>
@@ -481,14 +480,14 @@ export function DashboardView() {
                   className="flex items-center justify-between gap-4 rounded-xl border border-admin-card-border p-3 transition-colors hover:bg-muted/30"
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-50 font-bold text-amber-600 dark:bg-amber-500/10 dark:text-amber-400">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-50 font-bold text-amber-600">
                       {l.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold text-foreground">
                         {l.name}
                       </p>
-                      <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+                      <p className="truncate text-xs text-gray-500">
                         {l.email ?? "—"}
                       </p>
                     </div>
@@ -498,15 +497,15 @@ export function DashboardView() {
                       className={cn(
                         "rounded-lg px-2 py-0.5 text-xs font-semibold capitalize",
                         l.status === "new" &&
-                          "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400",
+                          "bg-blue-100 text-blue-700",
                         l.status === "contacted" &&
-                          "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400",
+                          "bg-emerald-100 text-emerald-700",
                         l.status === "qualified" &&
-                          "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-400",
+                          "bg-violet-100 text-violet-700",
                         l.status === "converted" &&
-                          "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400",
+                          "bg-green-100 text-green-700",
                         l.status === "lost" &&
-                          "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400",
+                          "bg-gray-100 text-gray-600",
                       )}
                     >
                       {l.status}

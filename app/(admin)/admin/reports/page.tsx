@@ -5,7 +5,7 @@ import { ReportsView } from "@/components/admin/reports/ReportsView";
 
 export default function ReportsPage() {
   return (
-    <div className="min-h-full bg-[#f5f5f5] dark:bg-admin-main-bg">
+    <div className="min-h-full bg-[#f5f5f5]">
       <PageHeader
         title="Reports & Analytics"
         subtitle="Performance metrics, distributions, and recent activity"

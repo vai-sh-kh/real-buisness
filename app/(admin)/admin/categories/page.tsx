@@ -4,7 +4,7 @@ import { CategoriesView } from "@/components/admin/categories/CategoriesView";
 
 export default function CategoriesPage() {
   return (
-    <div className="min-h-full bg-[#f5f5f5] dark:bg-admin-main-bg">
+    <div className="min-h-full bg-[#f5f5f5]">
       <CategoriesView
         header={{
           title: "Categories",
