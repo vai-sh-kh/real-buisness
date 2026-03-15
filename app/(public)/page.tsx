@@ -1,10 +1,11 @@
 import { Hero } from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
-import { FeaturedProperties } from "@/components/landing/FeaturedProperties";
+import { HomeExploreProperties } from "@/components/landing/HomeExploreProperties";
 import { StatsBar } from "@/components/landing/StatsBar";
 import { OurVision } from "@/components/landing/OurVision";
 import { Testimonials } from "@/components/landing/Testimonials";
-import { CTA } from "@/components/landing/CTA";
+import { HomeWhyUs } from "@/components/landing/HomeWhyUs";
+import { AskLeon } from "@/components/landing/AskLeon";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -18,11 +19,12 @@ export default function LandingPage() {
     <>
       <Hero />
       <HowItWorks />
-      <FeaturedProperties />
+      <HomeExploreProperties />
       <StatsBar />
       <OurVision />
       <Testimonials />
-      <CTA />
+      <HomeWhyUs />
+      <AskLeon />
     </>
   );
 }

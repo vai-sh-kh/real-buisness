@@ -69,6 +69,17 @@ export const CONTACT = {
   },
 } as const;
 
+/** Ask Leon — expert Q&A / quick-help section (home page). */
+export const ASK_LEON = {
+  title: "Ask Leon",
+  tagline: "Got a question?",
+  description:
+    "Leon is our lead real estate advisor. Get quick answers about neighborhoods, pricing, or your next move—no obligation.",
+  ctaLabel: "Chat with Leon",
+  /** Use WhatsApp as primary; fallback to contact page. */
+  useWhatsApp: true,
+} as const;
+
 export const LEGAL_LINKS = {
   privacy: "/privacy",
   terms: "/terms",

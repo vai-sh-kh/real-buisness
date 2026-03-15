@@ -34,13 +34,13 @@ export function OurVision() {
 
   return (
     <section
-      className="py-16 sm:py-20 lg:py-24 bg-white"
+      className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white overflow-hidden"
       ref={ref}
       aria-labelledby="vision-heading"
     >
       <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
-        <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-20 items-center">
-          <div>
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-20 items-center">
+          <div className="min-w-0 order-2 lg:order-1">
             <motion.span
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
@@ -59,7 +59,7 @@ export function OurVision() {
                 ease: [0.22, 1, 0.36, 1],
                 delay: 0.06,
               }}
-              className="font-heading text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-brand-charcoal mt-2 sm:mt-3 mb-4 sm:mb-5 leading-tight"
+              className="font-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-brand-charcoal mt-2 sm:mt-3 mb-3 sm:mb-5 leading-tight"
             >
               Our vision is to create innovative, sustainable communities
             </motion.h2>
@@ -75,13 +75,14 @@ export function OurVision() {
               exceptional real estate solutions.
             </motion.p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
               {features.map((feature, i) => (
                 <motion.div
                   key={feature.title}
                   initial={{ opacity: 0, y: 12 }}
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.5, delay: 0.2 + i * 0.06 }}
+                  className="min-w-0"
                 >
                   <h3 className="font-semibold text-brand-charcoal text-sm sm:text-base mb-1.5">
                     {feature.title}
@@ -91,7 +92,7 @@ export function OurVision() {
                   </p>
                   <Link
                     href="/about"
-                    className="inline-flex items-center gap-1.5 min-h-[44px] text-sm sm:text-base font-medium text-brand-charcoal hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 rounded"
+                    className="inline-flex items-center gap-1.5 min-h-[44px] py-2 text-sm sm:text-base font-medium text-brand-charcoal hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 rounded"
                   >
                     Learn more{" "}
                     <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -101,17 +102,17 @@ export function OurVision() {
             </div>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{
-              duration: 0.7,
-              ease: [0.22, 1, 0.36, 1],
-              delay: 0.15,
-            }}
-            className="relative order-first lg:order-last"
-          >
-            <div className="aspect-[3/4] max-h-[480px] lg:max-h-none rounded-xl sm:rounded-2xl overflow-hidden bg-muted">
+            <motion.div
+              initial={{ opacity: 0, x: 24 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+                delay: 0.15,
+              }}
+              className="relative order-1 lg:order-last min-w-0"
+            >
+            <div className="aspect-[3/4] max-h-[280px] sm:max-h-[360px] md:max-h-[420px] lg:max-h-none rounded-xl sm:rounded-2xl overflow-hidden bg-muted">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"

@@ -51,13 +51,13 @@ export function Testimonials() {
 
   return (
     <section
-      className="py-16 sm:py-20 lg:py-24 bg-muted"
+      className="py-12 sm:py-16 md:py-20 lg:py-24 bg-muted overflow-hidden"
       ref={ref}
       aria-labelledby="testimonials-heading"
     >
       <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 sm:gap-10">
-          <div className="lg:w-64 shrink-0">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 sm:gap-8 lg:gap-10">
+          <div className="lg:w-64 shrink-0 min-w-0">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -87,7 +87,7 @@ export function Testimonials() {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.06 }}
-              className="font-heading text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-brand-charcoal mt-1 mb-8 sm:mb-10 leading-tight"
+              className="font-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-brand-charcoal mt-1 mb-6 sm:mb-8 lg:mb-10 leading-tight"
             >
               What our clients say
             </motion.h2>
@@ -97,7 +97,7 @@ export function Testimonials() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35 }}
-              className="grid md:grid-cols-2 gap-6 sm:gap-8 mb-8"
+              className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8"
             >
               <div>
                 <div className="flex items-center gap-3 mb-4 sm:mb-5">
@@ -118,12 +118,12 @@ export function Testimonials() {
                     </p>
                   </div>
                 </div>
-                <p className="text-base text-foreground leading-relaxed">
+                <p className="text-sm sm:text-base text-foreground leading-relaxed">
                   {t.quote}
                 </p>
               </div>
               <div className="md:pt-0 pt-2">
-                <p className="text-base text-muted-foreground leading-relaxed md:mt-12">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed md:mt-12">
                   {t.quote2}
                 </p>
               </div>

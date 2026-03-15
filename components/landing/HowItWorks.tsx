@@ -30,19 +30,19 @@ export function HowItWorks() {
 
   return (
     <section
-      className="py-16 sm:py-20 lg:py-24 bg-white"
+      className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white overflow-hidden"
       ref={ref}
       aria-labelledby="how-it-works-heading"
     >
       <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 sm:mb-16 gap-6">
-          <div>
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-10 sm:mb-12 lg:mb-16 gap-4 sm:gap-6">
+          <div className="min-w-0">
             <motion.h2
               id="how-it-works-heading"
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="font-heading text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-brand-charcoal leading-tight max-w-lg"
+              className="font-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-brand-charcoal leading-tight max-w-lg"
             >
               We help you find the home that will be yours
             </motion.h2>
@@ -50,7 +50,7 @@ export function HowItWorks() {
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="text-muted-foreground text-sm sm:text-base max-w-md mt-4 lg:mt-0 lg:max-w-xs leading-relaxed"
+              className="text-muted-foreground text-sm sm:text-base max-w-md mt-3 sm:mt-4 lg:mt-0 lg:max-w-xs leading-relaxed"
             >
               Harmony, style, and care — so you live in a place that truly
               matters to you.
@@ -58,7 +58,7 @@ export function HowItWorks() {
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-0">
           {steps.map((step, i) => (
             <motion.article
               key={step.number}
@@ -69,16 +69,16 @@ export function HowItWorks() {
                 ease: [0.22, 1, 0.36, 1],
                 delay: 0.08 + i * 0.1,
               }}
-              className="relative pr-0 lg:pr-8 xl:pr-12 pb-8 lg:pb-0 last:pb-0 border-b lg:border-b-0 lg:border-r border-border last:border-0"
+              className="relative pr-0 lg:pr-8 xl:pr-12 pb-6 sm:pb-8 lg:pb-0 last:pb-0 border-b lg:border-b-0 lg:border-r border-border last:border-0 min-w-0"
             >
-              <div className="h-px w-12 bg-brand-gold/50 mb-5 sm:mb-6" />
+              <div className="h-px w-12 bg-brand-gold/50 mb-4 sm:mb-5 lg:mb-6" />
               <span className="text-xs text-brand-gold font-semibold tracking-widest uppercase">
                 {step.number}
               </span>
-              <h3 className="text-lg sm:text-xl font-bold text-brand-charcoal mt-2 mb-3">
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-brand-charcoal mt-2 mb-2 sm:mb-3">
                 {step.title}
               </h3>
-              <p className="text-base text-muted-foreground leading-relaxed max-w-sm">
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-sm">
                 {step.description}
               </p>
             </motion.article>
