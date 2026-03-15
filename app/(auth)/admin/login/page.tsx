@@ -181,34 +181,10 @@ export default function AdminLoginPage() {
         </div>
       </div>
 
-      {/* Right panel — single form (visible on mobile and desktop) */}
-      <div className="flex-1 flex flex-col min-h-[100dvh] lg:min-h-screen relative overflow-hidden bg-[#0f0f0f] lg:bg-transparent">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(183,147,84,0.12),transparent_50%)] lg:hidden" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(183,147,84,0.06),transparent_40%)] lg:hidden" />
+      {/* Right panel — single form (visible on mobile and desktop). Mobile: white, no sidebar/header. */}
+      <div className="flex-1 flex flex-col min-h-[100dvh] lg:min-h-screen relative overflow-hidden bg-white lg:bg-transparent">
         <div className="absolute inset-0 bg-gradient-to-b from-gray-50/80 to-white hidden lg:block" />
         <div className="relative z-10 flex flex-col flex-1 min-h-0 pt-[env(safe-area-inset-top)] lg:pt-0 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:pb-0">
-          <header className="flex lg:hidden items-center justify-between px-4 py-3 shrink-0">
-            <Link
-              href="/"
-              className="flex items-center gap-2 min-w-0"
-              aria-label="The Real Business"
-            >
-              <Image
-                src="/logo-icon-bg.png"
-                alt=""
-                width={32}
-                height={32}
-                className="shrink-0 object-contain"
-                style={{ width: "auto", height: "auto" }}
-              />
-              <span className="font-heading text-sm font-bold uppercase tracking-tight text-white/90 truncate">
-                The Real Business
-              </span>
-            </Link>
-            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] font-medium text-brand-gold uppercase tracking-wider">
-              <LayoutDashboard className="h-3 w-3 shrink-0" /> Admin
-            </span>
-          </header>
           <main className="flex-1 flex flex-col justify-center px-5 lg:px-12 py-4 overflow-auto">
             <div className="w-full max-w-[340px] lg:max-w-[500px] mx-auto">
               <Link
@@ -229,10 +205,10 @@ export default function AdminLoginPage() {
                 </span>
               </Link>
               <div className="mb-8 lg:mb-10">
-                <h1 className="text-2xl lg:text-4xl font-bold text-white lg:text-gray-900 tracking-tight mb-2 lg:mb-3">
+                <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 tracking-tight mb-2 lg:mb-3">
                   Sign in
                 </h1>
-                <p className="text-sm text-white/50 lg:text-gray-500">
+                <p className="text-sm text-gray-500">
                   Use your admin email and password to continue.
                 </p>
               </div>
@@ -241,7 +217,7 @@ export default function AdminLoginPage() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-xs lg:text-sm font-medium lg:font-semibold text-white/70 lg:text-gray-900 mb-2"
+                    className="block text-xs lg:text-sm font-medium lg:font-semibold text-gray-900 mb-2"
                   >
                     Email
                   </label>
@@ -251,14 +227,14 @@ export default function AdminLoginPage() {
                     placeholder="admin@example.com"
                     autoComplete="email"
                     {...register("email")}
-                    className={`w-full border rounded-xl px-4 py-3.5 text-base lg:text-sm outline-none focus:ring-2 transition-all touch-manipulation bg-white/5 lg:bg-white placeholder:text-white/35 lg:placeholder:text-gray-400 text-white lg:text-gray-900 border-white/15 lg:border-gray-200 lg:shadow-sm pr-4 lg:pr-12 ${
+                    className={`w-full border rounded-xl px-4 py-3.5 text-base lg:text-sm outline-none focus:ring-2 transition-all touch-manipulation bg-white placeholder:text-gray-400 text-gray-900 border-gray-200 shadow-sm pr-4 lg:pr-12 ${
                       errors.email
-                        ? "border-red-500/80 lg:border-red-500 focus:ring-red-500/20"
+                        ? "border-red-500 focus:ring-red-500/20"
                         : "focus:border-brand-gold focus:ring-brand-gold/25 lg:focus:ring-brand-gold/20"
                     }`}
                   />
                   {errors.email && (
-                    <p className="mt-1.5 text-sm text-red-400 lg:text-red-600">
+                    <p className="mt-1.5 text-sm text-red-600">
                       {errors.email.message}
                     </p>
                   )}
@@ -267,7 +243,7 @@ export default function AdminLoginPage() {
                 <div>
                   <label
                     htmlFor="password"
-                    className="block text-xs lg:text-sm font-medium lg:font-semibold text-white/70 lg:text-gray-900 mb-2"
+                    className="block text-xs lg:text-sm font-medium lg:font-semibold text-gray-900 mb-2"
                   >
                     Password
                   </label>
@@ -278,16 +254,16 @@ export default function AdminLoginPage() {
                       placeholder="••••••••"
                       autoComplete="current-password"
                       {...register("password")}
-                      className={`w-full border rounded-xl px-4 py-3.5 text-base lg:text-sm outline-none focus:ring-2 transition-all pr-12 touch-manipulation bg-white/5 lg:bg-white placeholder:text-white/35 lg:placeholder:text-gray-400 text-white lg:text-gray-900 border-white/15 lg:border-gray-200 lg:shadow-sm ${
+                      className={`w-full border rounded-xl px-4 py-3.5 text-base lg:text-sm outline-none focus:ring-2 transition-all pr-12 touch-manipulation bg-white placeholder:text-gray-400 text-gray-900 border-gray-200 shadow-sm ${
                         errors.password
-                          ? "border-red-500/80 lg:border-red-500 focus:ring-red-500/20"
+                          ? "border-red-500 focus:ring-red-500/20"
                           : "focus:border-brand-gold focus:ring-brand-gold/25 lg:focus:ring-brand-gold/20"
                       }`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] lg:min-h-0 lg:min-w-0 flex items-center justify-center text-white/40 lg:text-gray-400 hover:text-white/70 lg:hover:text-gray-900 active:bg-white/10 lg:active:bg-transparent rounded-lg transition-colors touch-manipulation"
+                      className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] lg:min-h-0 lg:min-w-0 flex items-center justify-center text-gray-400 hover:text-gray-900 rounded-lg transition-colors touch-manipulation"
                       aria-label={
                         showPassword ? "Hide password" : "Show password"
                       }
@@ -300,7 +276,7 @@ export default function AdminLoginPage() {
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="mt-1.5 text-sm text-red-400 lg:text-red-600">
+                    <p className="mt-1.5 text-sm text-red-600">
                       {errors.password.message}
                     </p>
                   )}
@@ -321,7 +297,7 @@ export default function AdminLoginPage() {
               <p className="mt-8 lg:mt-10 text-center">
                 <Link
                   href="/"
-                  className="text-sm text-white/50 lg:text-gray-500 hover:text-brand-gold lg:hover:text-brand-charcoal lg:font-medium lg:hover:text-brand-gold lg:underline underline-offset-2 transition-colors touch-manipulation inline-flex items-center gap-1"
+                  className="text-sm text-gray-500 hover:text-brand-gold font-medium hover:underline underline-offset-2 transition-colors touch-manipulation inline-flex items-center gap-1"
                 >
                   ← Back to site
                 </Link>
