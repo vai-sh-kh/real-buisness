@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import { CONTACT } from "@/lib/constants/site";
 
 export const metadata: Metadata = {
   title: "How It Works — The Real Business",
@@ -111,7 +112,7 @@ export default function HowItWorksPage() {
               href="/contact"
               className="inline-flex items-center justify-center gap-2 min-h-[44px] border border-brand-charcoal text-brand-charcoal text-base font-semibold px-7 py-3.5 rounded-full hover:bg-brand-charcoal hover:text-white transition-colors"
             >
-              Contact us
+              {CONTACT.contactUsLabel}
             </Link>
           </div>
         </div>

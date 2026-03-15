@@ -27,7 +27,7 @@ const faqs = [
   },
 ];
 
-function FAQItem({ faq, index }: { faq: typeof faqs[0]; index: number }) {
+function FAQItem({ faq, index }: { faq: (typeof faqs)[0]; index: number }) {
   const [open, setOpen] = useState(index === 1);
 
   return (
@@ -36,7 +36,9 @@ function FAQItem({ faq, index }: { faq: typeof faqs[0]; index: number }) {
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between py-4 text-left gap-4"
       >
-        <span className="text-sm font-medium text-black leading-snug">{faq.question}</span>
+        <span className="text-sm font-medium text-black leading-snug">
+          {faq.question}
+        </span>
         <motion.div
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -55,7 +57,9 @@ function FAQItem({ faq, index }: { faq: typeof faqs[0]; index: number }) {
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <p className="pb-4 text-sm text-gray-500 leading-relaxed pr-6">{faq.answer}</p>
+            <p className="pb-4 text-sm text-gray-500 leading-relaxed pr-6">
+              {faq.answer}
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -82,6 +86,8 @@ export function FAQ() {
             <img
               src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=700&q=80"
               alt="Property"
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover"
             />
           </motion.div>
@@ -92,7 +98,9 @@ export function FAQ() {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-black mb-6">General FAQs</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-black mb-6">
+              General FAQs
+            </h2>
             <div>
               {faqs.map((faq, i) => (
                 <FAQItem key={faq.question} faq={faq} index={i} />

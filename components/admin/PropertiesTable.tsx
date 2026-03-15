@@ -116,7 +116,7 @@ function propertyToFormValues(
   };
 }
 
-type SortOption = "newest" | "price_asc" | "price_desc" | "views";
+type SortOption = "newest" | "price_asc" | "price_desc";
 const PAGE_SIZES = [10, 25, 50];
 const STATUS_ALL = "__all__";
 const CATEGORY_NONE = "__none__";
@@ -151,7 +151,6 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
         newest: { sort_by: "created_at", sort_order: "desc" },
         price_asc: { sort_by: "price", sort_order: "asc" },
         price_desc: { sort_by: "price", sort_order: "desc" },
-        views: { sort_by: "views", sort_order: "desc" },
       };
       const result = await getPropertiesListAction({
         search: search || undefined,
@@ -321,7 +320,6 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
               <SelectItem value="newest">Newest</SelectItem>
               <SelectItem value="price_asc">Price (low)</SelectItem>
               <SelectItem value="price_desc">Price (high)</SelectItem>
-              <SelectItem value="views">Views</SelectItem>
             </SelectContent>
           </Select>
           <Button

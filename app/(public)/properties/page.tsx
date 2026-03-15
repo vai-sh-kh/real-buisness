@@ -1,5 +1,4 @@
-import { Suspense } from "react";
-import { PropertiesClient } from "@/components/properties/PropertiesClient";
+import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Metadata } from "next";
 
@@ -32,10 +31,17 @@ function PropertiesLoading() {
   );
 }
 
+const PropertiesClient = dynamic(
+  () =>
+    import("@/components/properties/PropertiesClient").then((mod) => ({
+      default: mod.PropertiesClient,
+    })),
+  {
+    loading: () => <PropertiesLoading />,
+    ssr: true,
+  },
+);
+
 export default function PropertiesPage() {
-  return (
-    <Suspense fallback={<PropertiesLoading />}>
-      <PropertiesClient />
-    </Suspense>
-  );
+  return <PropertiesClient />;
 }

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   const min_price = searchParams.get("min_price");
   const max_price = searchParams.get("max_price");
   const bedrooms = searchParams.get("bedrooms");
-  const sort = (searchParams.get("sort") as "newest" | "price_asc" | "price_desc" | "views") ?? "newest";
+  const sort = (searchParams.get("sort") as "newest" | "price_asc" | "price_desc") ?? "newest";
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const limit = parseInt(searchParams.get("limit") ?? "12", 10);
   const search = searchParams.get("search") ?? undefined;

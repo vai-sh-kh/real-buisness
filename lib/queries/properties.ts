@@ -28,7 +28,7 @@ export interface PublicPropertiesOptions {
   min_price?: number;
   max_price?: number;
   bedrooms?: number;
-  sort?: "newest" | "price_asc" | "price_desc" | "views";
+  sort?: "newest" | "price_asc" | "price_desc";
 }
 
 export async function getProperties(
@@ -70,9 +70,6 @@ export async function getProperties(
       break;
     case "price_desc":
       query = query.order("price", { ascending: false });
-      break;
-    case "views":
-      query = query.order("views", { ascending: false });
       break;
     default:
       query = query.order("created_at", { ascending: false });

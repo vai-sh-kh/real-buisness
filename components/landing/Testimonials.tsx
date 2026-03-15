@@ -105,6 +105,8 @@ export function Testimonials() {
                   <img
                     src={t.avatar}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     className="h-10 w-10 rounded-full object-cover"
                   />
                   <div className="min-w-0">

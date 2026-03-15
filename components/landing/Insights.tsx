@@ -34,7 +34,13 @@ const articles = [
   },
 ];
 
-function ArticleCard({ article, delay }: { article: typeof articles[0]; delay: number }) {
+function ArticleCard({
+  article,
+  delay,
+}: {
+  article: (typeof articles)[0];
+  delay: number;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
@@ -51,11 +57,17 @@ function ArticleCard({ article, delay }: { article: typeof articles[0]; delay: n
         <img
           src={article.image}
           alt={article.title}
+          loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </div>
-      <h3 className="font-semibold text-black text-sm leading-snug mb-2">{article.title}</h3>
-      <p className="text-xs text-gray-500 leading-relaxed mb-3">{article.description}</p>
+      <h3 className="font-semibold text-black text-sm leading-snug mb-2">
+        {article.title}
+      </h3>
+      <p className="text-xs text-gray-500 leading-relaxed mb-3">
+        {article.description}
+      </p>
       <a
         href="#"
         className="text-xs font-semibold text-black underline underline-offset-2 hover:no-underline"
@@ -88,7 +100,11 @@ export function Insights() {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {articles.map((article, i) => (
-            <ArticleCard key={article.title} article={article} delay={i * 0.1} />
+            <ArticleCard
+              key={article.title}
+              article={article}
+              delay={i * 0.1}
+            />
           ))}
         </div>
       </div>

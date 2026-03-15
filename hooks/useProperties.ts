@@ -11,7 +11,7 @@ const PER_PAGE = 12;
 export interface PublicPropertyFilters {
   page?: number;
   limit?: number;
-  sort?: "newest" | "price_asc" | "price_desc" | "views";
+  sort?: "newest" | "price_asc" | "price_desc";
   type?: "sale" | "rent";
   category_id?: string;
   city?: string;

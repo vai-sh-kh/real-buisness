@@ -116,6 +116,8 @@ export function OurVision() {
               <img
                 src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
                 alt="Modern sustainable home"
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover"
               />
             </div>

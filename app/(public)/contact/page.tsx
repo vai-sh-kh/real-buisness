@@ -99,7 +99,7 @@ export default function ContactPage() {
     <>
       <PageHero
         title="Get In Touch"
-        imageSrc="/hero-home.jpg"
+        imageSrc="/hero-contact.jpg"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Contact" }]}
         description="Whether you're looking to buy, sell, rent, or have a question—our team is here to help. Reach out and we'll get back to you soon."
       />
@@ -303,21 +303,21 @@ export default function ContactPage() {
               transition={{ delay: 0.2 }}
               className="flex flex-col h-full"
             >
-              <div className="bg-muted p-8 rounded-2xl border border-border mb-8">
-                <h3 className="font-heading text-2xl font-bold text-foreground mb-6">
+              <div className="bg-muted p-4 sm:p-6 lg:p-8 rounded-2xl border border-border mb-8">
+                <h3 className="font-heading text-2xl font-bold text-foreground mb-4 sm:mb-6">
                   Contact Information
                 </h3>
 
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-brand-gold shrink-0 shadow-sm">
-                      <MapPin size={20} />
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center text-brand-gold shrink-0 shadow-sm">
+                      <MapPin size={18} className="sm:w-5 sm:h-5" />
                     </div>
-                    <div>
-                      <h4 className="font-bold text-foreground mb-1">
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-foreground mb-0.5 sm:mb-1 text-sm sm:text-base">
                         Head Office
                       </h4>
-                      <p className="text-gray-600">
+                      <p className="text-gray-600 text-[13px] sm:text-base leading-snug">
                         123 Luxury Avenue, Suite 500
                         <br />
                         New York, NY 10022
@@ -325,13 +325,15 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-brand-gold shrink-0 shadow-sm">
-                      <Phone size={20} />
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center text-brand-gold shrink-0 shadow-sm">
+                      <Phone size={18} className="sm:w-5 sm:h-5" />
                     </div>
-                    <div>
-                      <h4 className="font-bold text-foreground mb-1">Phone</h4>
-                      <p className="text-gray-600">
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-foreground mb-0.5 sm:mb-1 text-sm sm:text-base">
+                        Phone
+                      </h4>
+                      <p className="text-gray-600 text-[13px] sm:text-base leading-snug">
                         +1 (555) 123-4567
                         <br />
                         +1 (555) 987-6543
@@ -339,13 +341,15 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-brand-gold shrink-0 shadow-sm">
-                      <Mail size={20} />
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center text-brand-gold shrink-0 shadow-sm">
+                      <Mail size={18} className="sm:w-5 sm:h-5" />
                     </div>
-                    <div>
-                      <h4 className="font-bold text-foreground mb-1">Email</h4>
-                      <p className="text-gray-600">
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-foreground mb-0.5 sm:mb-1 text-sm sm:text-base">
+                        Email
+                      </h4>
+                      <p className="text-gray-600 text-[13px] sm:text-base leading-snug">
                         hello@therealbusiness.com
                         <br />
                         support@therealbusiness.com
@@ -353,15 +357,15 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-brand-gold shrink-0 shadow-sm">
-                      <Clock size={20} />
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center text-brand-gold shrink-0 shadow-sm">
+                      <Clock size={18} className="sm:w-5 sm:h-5" />
                     </div>
-                    <div>
-                      <h4 className="font-bold text-foreground mb-1">
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-foreground mb-0.5 sm:mb-1 text-sm sm:text-base">
                         Working Hours
                       </h4>
-                      <p className="text-gray-600">
+                      <p className="text-gray-600 text-[13px] sm:text-base leading-snug">
                         Monday - Friday: 9:00 AM - 6:00 PM
                         <br />
                         Saturday: 10:00 AM - 4:00 PM

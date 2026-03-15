@@ -1,7 +1,7 @@
 import { MapPin, Bed, Bath, Maximize2, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { PropertyWithRelations } from "@/types";
-import { formatPrice, getPriceTypeLabel } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 
 interface PropertyCardProps {
   property: PropertyWithRelations;
@@ -17,6 +17,8 @@ export function PropertyCard({ property }: PropertyCardProps) {
           <img
             src={property.cover_image_url}
             alt={property.title}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
@@ -106,11 +108,15 @@ export function PropertyCard({ property }: PropertyCardProps) {
           <div>
             <p className="text-xl font-bold text-brand-charcoal">
               {formatPrice(property.price)}
+              <span className="text-sm font-medium text-muted-foreground">
+                {property.price_type === "percent" ? " Per cent" : " Total"}
+              </span>
             </p>
-            <p className="text-xs text-muted-foreground">
-              {getPriceTypeLabel(property.price_type)}
-              {property.price_label ? ` · ${property.price_label}` : ""}
-            </p>
+            {property.price_label && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {property.price_label}
+              </p>
+            )}
           </div>
           {property.category && (
             <Badge variant="secondary" className="text-xs">

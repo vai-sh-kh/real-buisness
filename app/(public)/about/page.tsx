@@ -6,224 +6,333 @@ import {
   Star,
   Lightbulb,
   Heart,
+  MapPin,
+  Phone,
+  Mail,
+  MessageCircle,
+  CheckCircle2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { SITE_NAME } from "@/lib/constants/site";
+import {
+  SITE_NAME,
+  CONTACT,
+  ABOUT,
+  SOCIAL_LINKS,
+} from "@/lib/constants/site";
+import { SocialIcon } from "@/components/ui/SocialIcon";
 
-const HERO_IMAGE_URL =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuD4XzkesJf4GAdQLSUfhopuSdW1qG2qG5AXd12hAF9QK4AduZcDB5IsZBYLYj75jHshqfYSetG0VG6imPUcfnUYXWu-Kzaj1_6oL-ieQHl7wgmdLBm1JDVmKyJP2I1wP2DeCjN9_ug2cJ7SeyNRMGBoeXqxXM1OP9pbP_Wbd_gbvRMKxC-KeAz6dY8Wo1GzGCCKkJFAlNXPsuFKgF8P7snspE40jPsDAdK1FTx2zG95569M6ai4hhSqnz6Lwht5eRv-qNqDVU2xW9T6";
+const HERO_BANNER = "/hero-about.jpg";
+const STORY_IMAGE = "/about-story.jpg";
+
+const valueIcons = [Shield, Star, Lightbulb, Heart];
 
 export const metadata: Metadata = {
   title: `About Us — ${SITE_NAME}`,
   description: `Learn about ${SITE_NAME}'s mission, vision, and our legacy of excellence in luxury real estate. Your trusted partner for premium property consulting.`,
 };
 
-const mission =
-  "To provide unparalleled real estate services that empower our clients to achieve their lifestyle aspirations through expertise, transparency, and personalized care.";
-
-const vision =
-  "To be the global benchmark for excellence in luxury real estate, continuously innovating and shaping the future of sophisticated living.";
-
-const values = [
-  {
-    title: "Integrity",
-    description:
-      "Honesty and transparency are the foundations of every relationship we build.",
-    icon: Shield,
-  },
-  {
-    title: "Excellence",
-    description:
-      "We settle for nothing less than the highest quality in service and presentation.",
-    icon: Star,
-  },
-  {
-    title: "Innovation",
-    description:
-      "Leveraging the latest technology to stay ahead in the dynamic property market.",
-    icon: Lightbulb,
-  },
-  {
-    title: "Client First",
-    description:
-      "Your goals are our priority. We are committed to your long-term success.",
-    icon: Heart,
-  },
-];
-
-const stats = [
-  { value: "$2.4B+", label: "Total Sales" },
-  { value: "1.5k+", label: "Properties Sold" },
-  { value: "120+", label: "Expert Agents" },
-  { value: "99%", label: "Client Satisfaction" },
-];
-
 export default function AboutPage() {
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative h-[320px] xs:h-[400px] sm:h-[500px] md:h-[600px] flex items-center justify-center overflow-hidden bg-white">
+      {/* Hero */}
+      <section className="relative min-h-[380px] xs:min-h-[440px] sm:min-h-[520px] flex items-center justify-center overflow-hidden bg-brand-charcoal">
         <div className="absolute inset-0">
           <Image
-            src={HERO_IMAGE_URL}
-            alt="Modern luxury villa with pool at sunset"
+            src={HERO_BANNER}
+            alt=""
             fill
             className="object-cover"
             priority
             sizes="100vw"
           />
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              background: "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5))",
-            }}
-          />
+          <div className="absolute inset-0 bg-brand-charcoal/60" />
         </div>
-        <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-4xl xs:text-5xl md:text-6xl font-black mb-3 sm:mb-4">About Us</h1>
-          <div className="flex items-center justify-center gap-2 text-base font-medium opacity-90">
+        <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
+          <nav className="flex items-center justify-center gap-2 text-sm font-medium text-white/80 mb-6 sm:mb-8">
             <Link href="/" className="hover:text-brand-gold transition-colors">
               Home
             </Link>
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4 shrink-0" />
             <span className="text-brand-gold">About Us</span>
-          </div>
+          </nav>
+          <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight mb-4">
+            About Us
+          </h1>
+          <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto">
+            {ABOUT.tagline}
+          </p>
         </div>
       </section>
 
-      {/* Company Story Section */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-10 max-w-7xl mx-auto bg-white">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-6">
-            <span className="text-brand-gold font-bold tracking-widest uppercase text-sm">
-              Our Legacy
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold leading-tight text-brand-charcoal">
-              Crafting a Legacy of Excellence in Luxury Real Estate
-            </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed">
-              Founded on the principles of integrity and architectural
-              brilliance, {SITE_NAME} has been the cornerstone of premium
-              property consulting for over two decades. We specialize in
-              curating experiences that transcend simple transactions.
-            </p>
-            <p className="text-muted-foreground text-lg leading-relaxed">
-              Our journey began with a single vision: to redefine what it means
-              to live in luxury. Today, we stand as a global leader, connecting
-              discerning clients with the world&apos;s most exceptional living
-              spaces.
-            </p>
-            <p className="text-muted-foreground text-sm italic pt-2">
-              We have replaced our former &quot;Our Team&quot; section with a
-              dedicated{" "}
+      {/* Company story — from ABOUT + CONTACT */}
+      <section className="py-16 sm:py-20 lg:py-24 bg-white border-b border-border">
+        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div>
+              <span className="inline-block text-brand-gold font-semibold tracking-widest uppercase text-xs mb-4">
+                Our legacy
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-charcoal leading-tight mb-6">
+                Crafting a legacy of excellence in real estate
+              </h2>
+              <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+                {ABOUT.shortStory}
+              </p>
+              {ABOUT.storyParagraphs.map((para, i) => (
+                <p
+                  key={i}
+                  className="text-muted-foreground text-lg leading-relaxed mb-6"
+                >
+                  {para}
+                </p>
+              ))}
+              <ul className="space-y-2 mb-8">
+                {[
+                  "Residential and luxury sales",
+                  "Rentals and lease management",
+                  "Valuations and investment advisory",
+                  "Full-service property management",
+                ].map((item, i) => (
+                  <li
+                    key={i}
+                    className="flex items-center gap-3 text-brand-charcoal font-medium"
+                  >
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-brand-gold" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
               <Link
                 href="/services"
-                className="text-brand-gold font-semibold hover:underline"
+                className="inline-flex items-center justify-center gap-2 min-h-[48px] px-8 py-3 rounded-xl bg-brand-gold text-white font-semibold hover:bg-brand-gold/90 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
               >
-                Services
-              </Link>{" "}
-              page—so you can see exactly how we can help with buying, selling,
-              rentals, valuations, and more.
-            </p>
-            <div className="pt-4">
-              <Link
-                href="/services"
-                className="inline-flex items-center justify-center min-h-[44px] border-2 border-brand-gold text-brand-gold px-8 py-3 rounded-lg font-bold hover:bg-brand-gold hover:text-white transition-all"
-              >
-                Explore Our Services
+                Explore our services
+                <ChevronRight className="h-5 w-5" />
               </Link>
             </div>
-          </div>
-          <div className="relative">
-            <div className="aspect-[4/5] rounded-xl overflow-hidden shadow-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAm2cpyJgC8sT_9hmRdwNBpe6UdFQvWw2QUSeiWN0WMCS-p2m1-Y-gm4dgbosXU8L1p_pvGxAK9YWvMhXOD6fT9xVDHV2A1rPFbOgZHWlQZ2FVB4HhQCOPKL_o0VA2VS47SFpF7-VXXLaXBxq6twwtPb_yoy-ku4O72RDKSUil8pZo1LDGL1ur5pGlOmrrX8rV9YY-ujE3wXNduenb5IBDgDj35OktOroGSbN9C0zmmASgpLNpdWtHDRrZLyde542Uk7GERKAT5HjHD"
-                alt="Sophisticated modern interior design"
-                className="w-full h-full object-cover"
-              />
+            <div className="relative">
+              <div className="relative aspect-[4/5] max-h-[560px] rounded-2xl overflow-hidden border border-border shadow-xl">
+                <Image
+                  src={STORY_IMAGE}
+                  alt="Our approach to real estate"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
+              <div className="absolute -bottom-6 -left-4 sm:left-0 bg-brand-gold p-6 sm:p-8 rounded-2xl shadow-lg">
+                <p className="text-4xl sm:text-5xl font-black text-white">
+                  {ABOUT.yearsExperience}+
+                </p>
+                <p className="text-sm font-semibold text-white/90 uppercase tracking-wider mt-1">
+                  Years of experience
+                </p>
+              </div>
             </div>
-            <div className="absolute -bottom-6 -left-6 bg-brand-gold p-8 rounded-xl hidden md:block">
-              <p className="text-4xl font-black text-white">25+</p>
-              <p className="text-sm font-bold text-white/80 uppercase tracking-wider">
-                Years of Experience
+          </div>
+        </div>
+      </section>
+
+      {/* Stats — from ABOUT */}
+      <section className="py-12 sm:py-16 bg-muted/50">
+        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 text-center">
+            {ABOUT.stats.map((stat) => (
+              <div key={stat.label}>
+                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-brand-gold mb-2">
+                  {stat.value}
+                </p>
+                <p className="text-sm font-semibold uppercase text-muted-foreground tracking-wider">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mission & Vision — from ABOUT */}
+      <section className="py-16 sm:py-20 lg:py-24 bg-white">
+        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+            <div className="rounded-2xl border border-border bg-muted/30 p-8 sm:p-10 flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-2xl bg-brand-gold/15 flex items-center justify-center text-brand-gold mb-6">
+                <Rocket className="w-9 h-9" />
+              </div>
+              <h3 className="text-2xl font-bold text-brand-charcoal mb-4">
+                Our Mission
+              </h3>
+              <p className="text-muted-foreground text-base leading-relaxed max-w-md">
+                {ABOUT.mission}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border bg-muted/30 p-8 sm:p-10 flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-2xl bg-brand-gold/15 flex items-center justify-center text-brand-gold mb-6">
+                <Eye className="w-9 h-9" />
+              </div>
+              <h3 className="text-2xl font-bold text-brand-charcoal mb-4">
+                Our Vision
+              </h3>
+              <p className="text-muted-foreground text-base leading-relaxed max-w-md">
+                {ABOUT.vision}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="bg-brand-gold/10 py-12 sm:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center">
-          {stats.map((stat) => (
-            <div key={stat.label}>
-              <p className="text-4xl font-black text-brand-gold mb-2">
-                {stat.value}
-              </p>
-              <p className="text-sm font-bold uppercase text-muted-foreground tracking-widest">
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Mission & Vision Cards */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-10 max-w-7xl mx-auto bg-white">
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-muted p-8 sm:p-10 rounded-xl border border-border shadow-sm flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-brand-gold/20 rounded-full flex items-center justify-center text-brand-gold mb-6">
-              <Rocket className="w-10 h-10" />
-            </div>
-            <h3 className="text-2xl font-bold mb-4 text-brand-charcoal">
-              Our Mission
-            </h3>
-            <p className="text-muted-foreground text-base leading-relaxed">{mission}</p>
-          </div>
-          <div className="bg-muted p-8 sm:p-10 rounded-xl border border-border shadow-sm flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-brand-gold/20 rounded-full flex items-center justify-center text-brand-gold mb-6">
-              <Eye className="w-10 h-10" />
-            </div>
-            <h3 className="text-2xl font-bold mb-4 text-brand-charcoal">
-              Our Vision
-            </h3>
-            <p className="text-muted-foreground text-base leading-relaxed">{vision}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Our Values Section */}
-      <section className="py-16 sm:py-20 bg-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-          <div className="text-center mb-16">
-            <span className="text-brand-gold font-bold tracking-widest uppercase text-sm">
-              Core Values
+      {/* Values — from ABOUT */}
+      <section className="py-16 sm:py-20 lg:py-24 bg-muted/40">
+        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
+          <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+            <span className="text-brand-gold font-semibold tracking-widest uppercase text-xs">
+              Core values
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold mt-2 text-brand-charcoal">
-              The Pillars of Our Success
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-charcoal mt-2 mb-4">
+              The pillars of our success
             </h2>
+            <p className="text-muted-foreground text-lg">
+              What we stand for and how we work with every client.
+            </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {values.map((value) => {
-              const Icon = value.icon;
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {ABOUT.values.map((value, i) => {
+              const Icon = valueIcons[i];
               return (
                 <div
                   key={value.title}
-                  className="group bg-white p-8 rounded-xl border border-border hover:border-brand-gold/40 transition-all shadow-sm"
+                  className="group bg-white rounded-2xl p-6 sm:p-8 border border-border shadow-sm hover:border-brand-gold/30 hover:shadow-md transition-all"
                 >
-                  <Icon className="w-10 h-10 text-brand-gold mb-4 group-hover:scale-110 transition-transform inline-block" />
-                  <h4 className="text-xl font-bold mb-2 text-brand-charcoal">
+                  <div className="w-14 h-14 rounded-2xl bg-brand-gold/15 flex items-center justify-center text-brand-gold mb-5 group-hover:bg-brand-gold/25 transition-colors">
+                    <Icon className="w-7 h-7" />
+                  </div>
+                  <h4 className="text-xl font-bold text-brand-charcoal mb-2">
                     {value.title}
                   </h4>
-                  <p className="text-base text-muted-foreground leading-relaxed">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
                     {value.description}
                   </p>
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact / Find us — from CONTACT */}
+      <section className="py-16 sm:py-20 lg:py-24 bg-white border-t border-border">
+        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+            <div>
+              <span className="inline-block text-brand-gold font-semibold tracking-widest uppercase text-xs mb-4">
+                Get in touch
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-charcoal mb-6">
+                Where to find us
+              </h2>
+              <p className="text-muted-foreground text-lg mb-8">
+                We would love to hear from you. Reach out via phone, email,
+                WhatsApp, or visit us at our office.
+              </p>
+              <ul className="space-y-5">
+                <li className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-brand-gold/15 flex items-center justify-center text-brand-gold shrink-0">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-brand-charcoal">
+                      {CONTACT.address.line1}
+                    </p>
+                    <p className="text-muted-foreground">
+                      {CONTACT.address.city}
+                    </p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-brand-gold/15 flex items-center justify-center text-brand-gold shrink-0">
+                    <Phone className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <a
+                      href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}
+                      className="font-semibold text-brand-charcoal hover:text-brand-gold transition-colors"
+                    >
+                      {CONTACT.phone}
+                    </a>
+                    {CONTACT.phoneSecondary && (
+                      <p className="text-muted-foreground text-sm mt-0.5">
+                        {CONTACT.phoneSecondary}
+                      </p>
+                    )}
+                  </div>
+                </li>
+                <li className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-brand-gold/15 flex items-center justify-center text-brand-gold shrink-0">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <a
+                      href={`mailto:${CONTACT.email}`}
+                      className="font-semibold text-brand-charcoal hover:text-brand-gold transition-colors"
+                    >
+                      {CONTACT.email}
+                    </a>
+                  </div>
+                </li>
+              </ul>
+              <div className="mt-8 pt-8 border-t border-border">
+                <p className="text-sm font-semibold text-brand-charcoal mb-2">
+                  Working hours
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  {CONTACT.workingHours.weekdays}
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  {CONTACT.workingHours.saturday}
+                </p>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-border bg-muted/30 p-8 sm:p-10">
+              <h3 className="text-xl font-bold text-brand-charcoal mb-6">
+                Connect with us
+              </h3>
+              <div className="flex flex-wrap gap-4">
+                <a
+                  href={CONTACT.whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 min-h-[48px] px-6 rounded-xl bg-brand-gold text-white font-semibold hover:bg-brand-gold/90 transition-colors w-full sm:w-auto"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  {CONTACT.whatsappLabel}
+                </a>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center justify-center gap-2 min-h-[48px] px-6 rounded-xl border-2 border-brand-gold text-brand-gold font-semibold hover:bg-brand-gold hover:text-white transition-colors w-full sm:w-auto"
+                >
+                  {CONTACT.contactUsLabel}
+                </Link>
+              </div>
+              <p className="text-sm text-muted-foreground mt-6 mb-4">
+                Follow us on social
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {SOCIAL_LINKS.map((social) => (
+                  <a
+                    key={social.platform}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.ariaLabel}
+                    className="h-11 w-11 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-brand-gold hover:border-brand-gold/50 transition-colors"
+                  >
+                    <SocialIcon platform={social.platform} className="h-5 w-5" />
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>

@@ -53,11 +53,15 @@ export function FilterSelect({
         onValueChange={(v) => onValueChange(v === "__none__" ? "" : v)}
       >
         <SelectTrigger
-          className={cn(filterTriggerClass, icon && "pl-10", triggerClassName)}
+          className={cn(
+            filterTriggerClass,
+            icon && "relative pl-10",
+            triggerClassName,
+          )}
           aria-label={ariaLabel ?? label}
         >
           {icon && (
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground [&>svg]:h-4 [&>svg]:w-4 [&>svg]:shrink-0">
               {icon}
             </span>
           )}

@@ -3,23 +3,24 @@
 import {
   MapPin,
   Home,
+  LayoutGrid,
   Banknote,
   Search,
   Bed,
   Bath,
   Maximize2,
-  Heart,
   AlertCircle,
   SearchX,
   SlidersHorizontal,
   Sparkles,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { formatPrice, getPriceTypeLabel } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 import type { PropertyWithRelations } from "@/types";
 import type { Category } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -38,7 +39,6 @@ const SORT_OPTIONS = [
   { value: "newest", label: "Newest First" },
   { value: "price_asc", label: "Price: Low to High" },
   { value: "price_desc", label: "Price: High to Low" },
-  { value: "views", label: "Most Viewed" },
 ] as const;
 
 const PRICE_RANGES = [
@@ -57,6 +57,15 @@ const PRICE_RANGES = [
     max: 5_00_00_000,
   },
   { value: "5cr+", label: "₹5 Cr +", min: 5_00_00_000, max: undefined },
+];
+
+const BEDROOM_OPTIONS = [
+  { value: "", label: "Any" },
+  { value: "1", label: "1+" },
+  { value: "2", label: "2+" },
+  { value: "3", label: "3+" },
+  { value: "4", label: "4+" },
+  { value: "5", label: "5+" },
 ];
 
 function CardSkeleton() {
@@ -129,20 +138,12 @@ function PropertyCard({
                 </span>
               )}
             </div>
-            <span className="absolute bottom-3 right-3 bg-brand-gold text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+            <span className="absolute bottom-3 right-3 bg-brand-gold text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md whitespace-nowrap">
               {formatPrice(property.price)}
+              <span className="font-medium opacity-90">
+                {property.price_type === "percent" ? " · Per cent" : " · Total"}
+              </span>
             </span>
-            <span className="absolute bottom-3 left-3 text-[10px] text-white/90 font-medium">
-              {getPriceTypeLabel(property.price_type)}
-            </span>
-            <button
-              type="button"
-              onClick={(e) => e.preventDefault()}
-              className="absolute top-3 right-3 min-h-[44px] min-w-[44px] flex items-center justify-center p-2 bg-white/90 rounded-full text-foreground hover:bg-white hover:text-brand-charcoal transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold"
-              aria-label="Save to favourites"
-            >
-              <Heart className="h-4 w-4" />
-            </button>
           </div>
           <div className="p-4 sm:p-5 flex flex-col flex-1">
             <h3 className="font-semibold text-brand-charcoal text-base sm:text-[15px] leading-snug mb-1 group-hover:text-brand-gold transition-colors line-clamp-2">
@@ -332,18 +333,18 @@ export function PropertiesClient() {
 
   return (
     <>
-      {/* Filters: search + filters side by side, badge count, clear button, less gap below */}
-      <section className="pt-8 pb-6 sm:pt-10 sm:pb-8 bg-white border-b border-border">
-        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
+      {/* Filters: mobile-app style on small screens */}
+      <section className="pt-4 pb-4 sm:pt-8 sm:pb-6 md:pt-10 md:pb-8 bg-white border-b border-border md:bg-white">
+        <div className="max-w-[1680px] mx-auto px-3 xs:px-4 sm:px-6 lg:px-16 xl:px-24">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="bg-muted rounded-2xl p-4 sm:p-5 border border-border"
+            transition={{ duration: 0.3 }}
+            className="rounded-xl p-3 bg-muted/60 border border-border/80 md:rounded-2xl md:p-5 md:border md:border-border md:bg-muted"
           >
-            {/* Mobile: search + Filters button with count badge + Clear */}
-            <div className="flex flex-col gap-3 md:hidden">
-              <div className="flex gap-2">
+            {/* Mobile: compact search + Filters, app-style */}
+            <div className="flex flex-col gap-2.5 md:hidden">
+              <div className="flex gap-2 items-center">
                 <div className="relative flex-1 min-w-0">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <input
@@ -351,14 +352,14 @@ export function PropertiesClient() {
                     placeholder="Search properties..."
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
-                    className="w-full min-h-[48px] pl-10 pr-4 py-3 text-base bg-white border border-border rounded-xl text-brand-charcoal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
+                    className="w-full h-11 pl-9 pr-3 text-[15px] bg-background border border-border rounded-xl text-brand-charcoal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all shadow-sm"
                     aria-label="Search properties"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={() => setFilterSheetOpen(true)}
-                  className="relative flex items-center justify-center gap-2 min-h-[48px] px-4 bg-white border border-border rounded-xl text-brand-charcoal font-medium hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-brand-gold/50 shrink-0"
+                  className="relative flex items-center justify-center gap-1.5 h-11 px-3.5 bg-background border border-border rounded-xl text-brand-charcoal font-medium text-sm active:bg-muted focus:outline-none focus:ring-2 focus:ring-brand-gold/50 shrink-0 shadow-sm"
                   aria-label={
                     filterCount
                       ? `Filters (${filterCount} active)`
@@ -366,9 +367,9 @@ export function PropertiesClient() {
                   }
                 >
                   <SlidersHorizontal className="h-4 w-4" aria-hidden />
-                  Filters
+                  <span className="hidden xs:inline">Filters</span>
                   {filterCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-brand-gold text-white text-xs font-bold">
+                    <span className="absolute -top-0.5 -right-0.5 flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-brand-gold text-white text-[10px] font-bold">
                       {filterCount > 9 ? "9+" : filterCount}
                     </span>
                   )}
@@ -378,46 +379,50 @@ export function PropertiesClient() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="min-h-[44px] w-full rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-brand-charcoal hover:bg-white focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
+                  className="relative flex items-center justify-center gap-2 h-9 w-full rounded-lg border border-border/80 text-xs font-medium text-muted-foreground active:bg-muted focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
                 >
-                  Clear all filters
+                  <X className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  <span>Clear all filters</span>
+                  <span className="flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-brand-gold text-white text-[10px] font-bold ml-0.5">
+                    {filterCount > 9 ? "9+" : filterCount}
+                  </span>
                 </button>
               )}
             </div>
 
-            {/* Desktop: search + filters in one row + badge + Clear */}
-            <div className="hidden md:flex flex-wrap items-end gap-3">
-              <div className="flex flex-col gap-1.5 min-w-[200px] flex-1 max-w-md">
+            {/* Desktop: search + filters in one row + badge + Clear — fixed for web */}
+            <div className="hidden md:flex flex-wrap items-end gap-4">
+              <div className="flex flex-col gap-1.5 min-w-[320px] flex-1 max-w-2xl shrink-0">
                 <label className="block text-sm font-medium text-foreground">
                   Search
                 </label>
-                <div className="relative">
+                <div className="relative min-h-[48px] flex">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <input
                     type="search"
                     placeholder="Search properties..."
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
-                    className="w-full min-h-[48px] pl-10 pr-4 py-3 text-base bg-white border border-border rounded-xl text-brand-charcoal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
+                    className="w-full h-12 pl-10 pr-4 text-base bg-white border border-border rounded-xl text-brand-charcoal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
                   />
                 </div>
               </div>
-              <div className="flex flex-col gap-1.5 w-[160px]">
+              <div className="flex flex-col gap-1.5 min-w-[140px] w-[160px] shrink-0">
                 <label className="block text-sm font-medium text-foreground">
                   Location
                 </label>
-                <div className="relative">
+                <div className="relative min-h-[48px] flex">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <input
                     type="text"
                     placeholder="City"
                     value={cityInput}
                     onChange={(e) => setCityInput(e.target.value)}
-                    className="w-full min-h-[48px] pl-10 pr-4 py-3 text-base bg-white border border-border rounded-xl text-brand-charcoal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
+                    className="w-full h-12 pl-10 pr-4 text-base bg-white border border-border rounded-xl text-brand-charcoal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
                   />
                 </div>
               </div>
-              <div className="w-[130px]">
+              <div className="min-w-[120px] w-[130px] shrink-0">
                 <FilterSelect
                   label="Type"
                   value={type}
@@ -428,9 +433,10 @@ export function PropertiesClient() {
                     { value: "rent", label: "Rent" },
                   ]}
                   icon={<Home className="h-4 w-4" />}
+                  triggerClassName="h-12 min-h-[48px] bg-white"
                 />
               </div>
-              <div className="w-[160px]">
+              <div className="min-w-[140px] w-[160px] shrink-0">
                 <FilterSelect
                   label="Category"
                   value={category_id}
@@ -441,10 +447,11 @@ export function PropertiesClient() {
                     { value: "", label: "All" },
                     ...categories.map((c) => ({ value: c.id, label: c.name })),
                   ]}
-                  icon={<Home className="h-4 w-4" />}
+                  icon={<LayoutGrid className="h-4 w-4" />}
+                  triggerClassName="h-12 min-h-[48px] bg-white"
                 />
               </div>
-              <div className="w-[140px]">
+              <div className="min-w-[160px] w-[200px] shrink-0">
                 <FilterSelect
                   label="Price"
                   value={priceRange}
@@ -453,27 +460,27 @@ export function PropertiesClient() {
                     value: r.value,
                     label: r.label,
                   }))}
+                  placeholder="Any"
                   icon={<Banknote className="h-4 w-4" />}
+                  triggerClassName="h-12 min-h-[48px] bg-white"
                 />
               </div>
               {hasFilters && (
-                <>
-                  <div className="flex items-end h-[48px]">
-                    <span
-                      className="flex min-w-[22px] h-[22px] items-center justify-center rounded-full bg-brand-gold text-white text-xs font-bold"
-                      title={`${filterCount} filter${filterCount !== 1 ? "s" : ""} active`}
-                    >
-                      {filterCount > 9 ? "9+" : filterCount}
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={clearFilters}
-                    className="min-h-[48px] px-4 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-brand-charcoal hover:bg-white focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="flex items-center justify-center gap-2 h-12 min-h-[48px] px-4 rounded-xl border border-border bg-white text-sm font-medium text-muted-foreground hover:text-brand-charcoal hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
+                  title={`Clear ${filterCount} filter${filterCount !== 1 ? "s" : ""}`}
+                >
+                  <X className="h-4 w-4 shrink-0" aria-hidden />
+                  <span>Clear</span>
+                  <span
+                    className="flex min-w-[22px] h-[22px] items-center justify-center rounded-full bg-brand-gold text-white text-xs font-bold"
+                    aria-hidden
                   >
-                    Clear
-                  </button>
-                </>
+                    {filterCount > 9 ? "9+" : filterCount}
+                  </span>
+                </button>
               )}
             </div>
           </motion.div>
@@ -486,8 +493,8 @@ export function PropertiesClient() {
           side="bottom"
           className="rounded-t-2xl max-h-[85vh] overflow-y-auto"
         >
-          <SheetHeader>
-            <SheetTitle>Filters</SheetTitle>
+          <SheetHeader className="flex flex-row items-center justify-center text-left sm:text-center pb-2">
+            <SheetTitle className="text-lg font-semibold">Filters</SheetTitle>
           </SheetHeader>
           <div className="grid gap-4 py-4">
             <div className="flex flex-col gap-1.5">
@@ -527,7 +534,7 @@ export function PropertiesClient() {
                 { value: "", label: "All Categories" },
                 ...categories.map((c) => ({ value: c.id, label: c.name })),
               ]}
-              icon={<Home className="h-4 w-4" />}
+              icon={<LayoutGrid className="h-4 w-4" />}
               triggerClassName="bg-muted"
             />
             <FilterSelect
@@ -541,8 +548,31 @@ export function PropertiesClient() {
               icon={<Banknote className="h-4 w-4" />}
               triggerClassName="bg-muted"
             />
+            <FilterSelect
+              label="Bedrooms"
+              value={bedrooms}
+              onValueChange={(v) => updateParams({ bedrooms: v || undefined })}
+              options={BEDROOM_OPTIONS}
+              icon={<Bed className="h-4 w-4" />}
+              triggerClassName="bg-muted"
+            />
+            <FilterSelect
+              label="Sort by"
+              value={sort}
+              onValueChange={(v) =>
+                updateParams({
+                  sort: v as (typeof SORT_OPTIONS)[number]["value"],
+                })
+              }
+              options={SORT_OPTIONS.map((o) => ({
+                value: o.value,
+                label: o.label,
+              }))}
+              icon={<SlidersHorizontal className="h-4 w-4" />}
+              triggerClassName="bg-muted"
+            />
           </div>
-          <SheetFooter className="flex-row gap-3 sm:gap-3">
+          <SheetFooter className="flex flex-row flex-wrap items-center justify-end gap-3 pt-2">
             {hasFilters && (
               <button
                 type="button"
@@ -550,15 +580,19 @@ export function PropertiesClient() {
                   clearFilters();
                   setFilterSheetOpen(false);
                 }}
-                className="min-h-[48px] px-6 rounded-xl border border-border text-muted-foreground font-semibold hover:text-brand-charcoal hover:bg-muted focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
+                className="flex items-center justify-center gap-2 shrink-0 min-h-[48px] px-6 rounded-xl border border-border text-muted-foreground font-semibold hover:text-brand-charcoal hover:bg-muted focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
               >
-                Clear all
+                <X className="h-4 w-4 shrink-0" aria-hidden />
+                <span>Clear all</span>
+                <span className="flex min-w-[22px] h-[22px] items-center justify-center rounded-full bg-brand-gold text-white text-xs font-bold">
+                  {filterCount > 9 ? "9+" : filterCount}
+                </span>
               </button>
             )}
             <button
               type="button"
               onClick={() => setFilterSheetOpen(false)}
-              className="min-h-[48px] px-6 bg-brand-charcoal text-white font-semibold rounded-xl hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
+              className="shrink-0 min-h-[48px] px-6 bg-brand-charcoal text-white font-semibold rounded-xl hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
             >
               Done
             </button>
@@ -566,16 +600,16 @@ export function PropertiesClient() {
         </SheetContent>
       </Sheet>
 
-      {/* Results (reduced top padding so no large gap below filters) */}
-      <section className="pt-8 pb-16 sm:pt-10 sm:pb-20 lg:pt-12 lg:pb-24 bg-muted/50">
-        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
+      {/* Results: mobile-app style spacing and layout */}
+      <section className="pt-4 pb-12 sm:pt-6 sm:pb-16 md:pt-10 md:pb-20 lg:pt-12 lg:pb-24 bg-muted/40 md:bg-muted/50">
+        <div className="max-w-[1680px] mx-auto px-3 xs:px-4 sm:px-6 lg:px-16 xl:px-24">
           {isLoading && (
             <>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10">
-                <Skeleton className="h-5 w-40" />
-                <Skeleton className="h-10 w-32" />
+              <div className="flex items-center justify-between gap-3 mb-4 md:mb-8">
+                <Skeleton className="h-4 w-28 md:h-5 md:w-40" />
+                <Skeleton className="h-9 w-24 md:h-10 md:w-32" />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-14">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-10 md:mb-14">
                 {Array.from({ length: 9 }).map((_, i) => (
                   <CardSkeleton key={i} />
                 ))}
@@ -587,7 +621,7 @@ export function PropertiesClient() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col items-center justify-center py-16 sm:py-24 text-center"
+              className="flex flex-col items-center justify-center py-12 sm:py-16 md:py-24 text-center px-4"
             >
               <div className="rounded-full bg-destructive/10 p-4 mb-4">
                 <AlertCircle
@@ -615,7 +649,7 @@ export function PropertiesClient() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col items-center justify-center py-16 sm:py-24 text-center"
+              className="flex flex-col items-center justify-center py-12 sm:py-16 md:py-24 text-center px-4"
             >
               <div className="rounded-full bg-muted p-4 mb-4">
                 <SearchX
@@ -645,16 +679,22 @@ export function PropertiesClient() {
 
           {!isLoading && !errorMessage && properties.length > 0 && (
             <>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10">
-                <p className="text-muted-foreground text-base">
-                  Showing{" "}
+              {/* Single compact row on mobile, app-style */}
+              <div className="flex items-center justify-between gap-3 mb-4 md:mb-8">
+                <p className="text-muted-foreground text-sm md:text-base shrink-0">
                   <span className="font-semibold text-brand-charcoal">
-                    {properties.length} of {total}
-                  </span>{" "}
-                  properties
+                    {properties.length}
+                  </span>
+                  <span className="md:inline"> of </span>
+                  <span className="font-semibold text-brand-charcoal">
+                    {total}
+                  </span>
+                  <span className="hidden sm:inline"> properties</span>
                 </p>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-muted-foreground">Sort by:</span>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="text-muted-foreground text-xs md:text-sm shrink-0 hidden xs:inline">
+                    Sort:
+                  </span>
                   <FilterSelect
                     value={sort}
                     onValueChange={(v) =>
@@ -667,12 +707,12 @@ export function PropertiesClient() {
                       label: o.label,
                     }))}
                     placeholder="Sort"
-                    triggerClassName="min-h-[44px] w-auto min-w-[160px] border-0 bg-transparent font-semibold"
+                    triggerClassName="h-9 md:min-h-[44px] w-full min-w-0 max-w-[140px] xs:max-w-[160px] border border-border/80 md:border border-border bg-background md:bg-muted rounded-lg md:rounded-xl text-sm font-semibold shadow-sm md:shadow-none"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-14">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-10 md:mb-14">
                 {properties.map((property, index) => (
                   <PropertyCard
                     key={property.id}
@@ -684,7 +724,7 @@ export function PropertiesClient() {
 
               <div
                 ref={loadMoreRef}
-                className="min-h-[24px] flex items-center justify-center py-8"
+                className="min-h-[20px] flex items-center justify-center py-6 md:py-8"
               >
                 {isFetchingNextPage && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">

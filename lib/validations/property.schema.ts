@@ -9,12 +9,12 @@ function isValidMapUrl(value: string): boolean {
     if (url.protocol !== "https:") return false;
     const host = url.hostname.toLowerCase();
     const path = url.pathname.toLowerCase();
+    const isGoogleMapsHost =
+      host === "www.google.com" || host === "google.com" || host === "maps.google.com";
     // Embed URL: https://www.google.com/maps/embed?pb=...
-    if (
-      (host === "www.google.com" || host === "google.com" || host === "maps.google.com") &&
-      path.includes("/maps/embed")
-    )
-      return true;
+    if (isGoogleMapsHost && path.includes("/maps/embed")) return true;
+    // View URL with embed: https://www.google.com/maps?q=lat,lng&output=embed (valid, normalized to embed later)
+    if (isGoogleMapsHost && (path === "/maps" || path === "/maps/")) return true;
     // Share links: maps.app.goo.gl, goo.gl/maps
     if (host === "maps.app.goo.gl" || host === "goo.gl") return true;
     // maps.google.com with any path
