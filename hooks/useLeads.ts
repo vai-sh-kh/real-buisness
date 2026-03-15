@@ -91,3 +91,31 @@ export function useDeleteLead() {
     onError: (err: Error) => toast.error(err.message),
   });
 }
+
+/** Public contact form submission — POSTs to /api/leads, shows toast, invalidates admin leads list */
+export function useSubmitContactForm() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: {
+      name: string;
+      email: string;
+      phone?: string | null;
+      message: string;
+      source?: Lead["source"];
+    }) => {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...body, source: body.source ?? "website" }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to send message");
+      return json.data as Lead;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["leads"] });
+      toast.success("Message sent! We'll get back to you soon.");
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+}

@@ -11,12 +11,12 @@ export function Hero() {
   const [search, setSearch] = useState("");
 
   return (
-    <section className="relative w-full min-h-screen flex flex-col overflow-hidden bg-brand-charcoal">
+    <section className="relative w-full min-h-screen overflow-hidden bg-brand-charcoal hidden md:flex md:flex-col">
       {/* Background */}
       <div className="absolute inset-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=80"
+          src="/hero-home.jpg"
           alt=""
           className="h-full w-full object-cover"
         />

@@ -57,7 +57,7 @@ export default function AdminLoginPage() {
     const redirectParam = searchParams.get("redirect");
     // If we were sent here by the server (redirect param), our session is invalid — clear client state so we show the form instead of "Signing you in..."
     if (redirectParam) {
-      clearAuth();
+      if (isAuthenticated) clearAuth();
       return;
     }
     if (isAuthenticated) {
@@ -128,7 +128,7 @@ export default function AdminLoginPage() {
         <div className="flex w-full relative overflow-hidden bg-brand-charcoal">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+            src="/hero-home.jpg"
             alt="Admin login"
             className="absolute inset-0 h-full w-full object-cover opacity-70"
           />
@@ -285,7 +285,7 @@ export default function AdminLoginPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full min-h-[52px] lg:min-h-0 bg-brand-gold lg:bg-brand-charcoal text-[#0f0f0f] lg:text-white text-base lg:text-sm font-semibold py-3.5 rounded-xl hover:bg-brand-gold/90 lg:hover:opacity-90 hover:ring-2 hover:ring-brand-gold/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 lg:disabled:opacity-60 disabled:cursor-not-allowed mt-2 lg:mt-3 touch-manipulation lg:shadow-lg lg:shadow-black/20"
+                  className="w-full min-h-[52px] lg:min-h-0 bg-brand-gold lg:bg-brand-charcoal text-white text-base lg:text-sm font-semibold py-3.5 rounded-xl hover:bg-brand-gold/90 lg:hover:opacity-90 hover:ring-2 hover:ring-brand-gold/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 lg:disabled:opacity-60 disabled:cursor-not-allowed mt-2 lg:mt-3 touch-manipulation lg:shadow-lg lg:shadow-black/20"
                 >
                   {isSubmitting && (
                     <Loader2 className="h-5 w-5 lg:h-4 lg:w-4 animate-spin shrink-0" />

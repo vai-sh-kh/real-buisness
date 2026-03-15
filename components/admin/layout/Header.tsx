@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Loader2, LogOut, Menu } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
 import { useAppStore } from "@/store/appStore";
 
 function getGreeting(displayName: string): string {
@@ -38,7 +38,7 @@ import { Logo } from "@/components/ui/Logo";
 export function Header() {
   const router = useRouter();
   const { email, clearAuth } = useAuthStore();
-  const { sidebarCollapsed, toggleMobileNav } = useAppStore();
+  const { sidebarCollapsed } = useAppStore();
 
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -69,16 +69,8 @@ export function Header() {
       )}
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        {/* Mobile: hamburger + icon + "The Real Business" branding */}
+        {/* Mobile: icon + "The Real Business" branding */}
         <div className="flex min-w-0 flex-1 items-center gap-3 lg:hidden">
-          <button
-            type="button"
-            onClick={() => toggleMobileNav()}
-            className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-lg hover:bg-muted transition-colors"
-            aria-label="Open menu"
-          >
-            <Menu className="h-6 w-6 text-foreground" />
-          </button>
           <Logo
             href="/admin/dashboard"
             height={36}

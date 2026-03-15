@@ -7,7 +7,7 @@ import Image from "next/image";
 export function AdminFullScreenLoader() {
   return (
     <div
-      className="flex min-h-screen flex-col items-center justify-center gap-6 bg-[hsl(220,14%,96%)] px-4"
+      className="flex min-h-screen flex-col items-center justify-center gap-6 bg-white px-4"
       style={{ minHeight: "100dvh" }}
     >
       <div className="flex flex-col items-center gap-4">

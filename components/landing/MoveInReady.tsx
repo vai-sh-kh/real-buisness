@@ -9,8 +9,7 @@ const featuredHomes = [
     title: "The Futuristic House",
     description:
       "Our expertise ensures you get the true value your property deserves. Sell your property seamlessly and efficiently, opening a new chapter with peace of mind and financial security.",
-    image:
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=900&q=80",
+    image: "/hero-home.jpg",
   },
   {
     num: "02",
@@ -57,7 +56,9 @@ function HomeCard({
           {home.num}
         </span>
         <div>
-          <h3 className="text-base font-bold text-brand-charcoal mb-2">{home.title}</h3>
+          <h3 className="text-base font-bold text-brand-charcoal mb-2">
+            {home.title}
+          </h3>
           <p className="text-sm text-gray-500 leading-relaxed">
             {home.description}
           </p>

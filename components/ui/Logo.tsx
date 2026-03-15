@@ -34,14 +34,18 @@ export function Logo({
       }
       width={iconOnly ? height : height * 4}
       height={height}
-      className={cn("object-contain object-left", className)}
+      className={cn("block object-contain object-center", className)}
       style={{ height, width: "auto" }}
       priority
     />
   );
 
   return (
-    <Link href={href} className={cn("inline-flex", className)} title={title}>
+    <Link
+      href={href}
+      className={cn("inline-flex items-center justify-center", className)}
+      title={title}
+    >
       {img}
     </Link>
   );

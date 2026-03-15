@@ -26,7 +26,7 @@ export function PageHeaderSkeleton({
             <Skeleton className="h-3.5 w-20 rounded" />
           </div>
           <Skeleton className="h-7 w-48 rounded sm:h-8 sm:w-56 lg:h-9 lg:w-64" />
-          <Skeleton className="h-4 w-72 max-w-full rounded" />
+          <Skeleton className="hidden h-4 w-72 max-w-full rounded md:block" />
         </div>
       </div>
     </header>

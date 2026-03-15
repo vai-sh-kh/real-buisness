@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Send, CheckCircle } from "lucide-react";
+import { LEGAL_LINKS } from "@/lib/constants/site";
 
 export function ContactForm() {
   const [status, setStatus] = useState<
@@ -181,12 +183,12 @@ export function ContactForm() {
 
       <p className="text-xs text-gray-400 text-center">
         By submitting this form, you agree to our{" "}
-        <a
-          href="#"
+        <Link
+          href={LEGAL_LINKS.privacy}
           className="underline hover:text-brand-gold transition-colors"
         >
           Privacy Policy
-        </a>
+        </Link>
         .
       </p>
     </form>

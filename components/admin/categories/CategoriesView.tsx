@@ -321,11 +321,7 @@ export function CategoriesView({
             <>
               <div className="flex w-full items-center gap-2">
                 <div className="relative flex-1">
-                  {isFetching ? (
-                    <Loader2 className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin text-muted-foreground" />
-                  ) : (
-                    <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
-                  )}
+                  <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
                   <Input
                     placeholder="Search categories..."
                     value={rawSearch}
@@ -333,7 +329,7 @@ export function CategoriesView({
                       setRawSearch(e.target.value);
                       setPage(1);
                     }}
-                    className={cn("h-10 rounded-xl pl-9", isFetching && "pr-9")}
+                    className="h-10 rounded-xl pl-9"
                   />
                 </div>
                 <Button
@@ -429,11 +425,7 @@ export function CategoriesView({
           ) : (
             <div className="flex w-full flex-col items-center gap-3 sm:flex-row">
               <div className="relative w-full sm:flex-1">
-                {isFetching ? (
-                  <Loader2 className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin text-muted-foreground" />
-                ) : (
-                  <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
-                )}
+                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
                 <Input
                   placeholder="Search categories..."
                   value={rawSearch}
@@ -441,7 +433,7 @@ export function CategoriesView({
                     setRawSearch(e.target.value);
                     setPage(1);
                   }}
-                  className={cn("h-10 rounded-xl pl-9", isFetching && "pr-9")}
+                  className="h-10 rounded-xl pl-9"
                 />
               </div>
               <Select
