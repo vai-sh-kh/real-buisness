@@ -10,7 +10,8 @@ export interface BreadcrumbItem {
 
 interface PageHeaderProps {
   title: string;
-  subtitle?: string;
+  /** Subtitle text or custom JSX (e.g. colored location · status · type) */
+  subtitle?: React.ReactNode;
   breadcrumbs?: BreadcrumbItem[];
   actions?: React.ReactNode;
   /** Optional date display - removed from pages, kept for backwards compat */
@@ -72,7 +73,9 @@ export function PageHeader({
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
+            <div className="mt-1 text-sm text-muted-foreground [&>p]:inline [&>p]:m-0">
+              {subtitle}
+            </div>
           )}
         </div>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-3">

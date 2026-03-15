@@ -154,9 +154,35 @@ export function PropertyDetailClient({
     { label: property.title.length > 28 ? "Details" : property.title },
   ];
 
-  const subtitle = [property.city, property.status, property.type]
-    .filter(Boolean)
-    .join(" · ");
+  const subtitle = (
+    <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+      {property.city && (
+        <span className="font-medium text-amber-800">{property.city}</span>
+      )}
+      {property.city && (property.status || property.type) && (
+        <span className="text-muted-foreground">·</span>
+      )}
+      {property.status && (
+        <Badge
+          variant={STATUS_COLORS[property.status]}
+          className="text-xs font-medium"
+        >
+          {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
+        </Badge>
+      )}
+      {property.status && property.type && (
+        <span className="text-muted-foreground">·</span>
+      )}
+      {property.type && (
+        <Badge
+          variant="outline"
+          className="text-xs font-medium capitalize border-amber-200 bg-amber-50 text-amber-800"
+        >
+          {property.type}
+        </Badge>
+      )}
+    </span>
+  );
 
   const viewOnSiteHref = property.slug ? `/properties/${property.slug}` : null;
 
@@ -366,25 +392,28 @@ export function PropertyDetailClient({
           </section>
 
           {/* Specifications */}
-          <section className={CARD_CLASS}>
+          <section className={cn(CARD_CLASS, "border-l-4 border-l-amber-500")}>
             <ProfileSectionLabel
               className={cn(
                 "flex items-center gap-1.5 sm:gap-2",
                 SECTION_LABEL_CLASS,
+                "text-amber-800",
               )}
             >
-              <LayoutGrid className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+              <LayoutGrid className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4 text-amber-600" />
               Specifications
             </ProfileSectionLabel>
             <div className="mt-2 grid grid-cols-2 gap-2 sm:mt-3 sm:gap-3 sm:grid-cols-3">
               {specItems.map(({ label, value }) => (
                 <div
                   key={label}
-                  className="rounded-lg border border-admin-card-border bg-muted/30 p-2.5 sm:p-3 min-w-0"
+                  className="rounded-lg border border-amber-200/80 bg-amber-50/60 p-2.5 sm:p-3 min-w-0"
                 >
                   <p className="text-sm">
-                    <span className={FIELD_LABEL_CLASS}>{label}: </span>
-                    <span className={VALUE_CLASS}>
+                    <span className="text-xs sm:text-sm text-amber-900/80 font-medium">
+                      {label}:{" "}
+                    </span>
+                    <span className={cn("text-sm sm:text-base font-semibold", VALUE_CLASS)}>
                       {formatDetailValue(value)}
                     </span>
                   </p>
@@ -414,7 +443,7 @@ export function PropertyDetailClient({
                 <div className="mt-1 flex flex-wrap gap-1.5 sm:gap-2">
                   {property.amenities.map((a, i) => (
                     <Badge
-                      key={a}
+                      key={`${String(a)}-${i}`}
                       variant="outline"
                       className={cn(
                         "rounded-lg border text-xs sm:text-sm font-medium",
@@ -426,7 +455,9 @@ export function PropertyDetailClient({
                   ))}
                 </div>
               ) : (
-                <p className={cn("mt-0.5", VALUE_CLASS)}>{EMPTY_PLACEHOLDER}</p>
+                <p className={cn("mt-0.5 text-muted-foreground", VALUE_CLASS)}>
+                  {EMPTY_PLACEHOLDER}
+                </p>
               )}
             </div>
             <div>
