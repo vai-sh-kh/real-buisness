@@ -88,12 +88,12 @@ export function Hero() {
           </Link>
         </motion.div>
 
-        {/* Search: card-style on mobile with 48px touch targets */}
+        {/* Search: anchored to bottom of hero */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-5 sm:mt-5 md:mt-6 flex-shrink-0"
+          className="mt-auto pt-5 sm:pt-6 md:pt-8 flex-shrink-0"
         >
           <div className="bg-white rounded-xl sm:rounded-xl md:rounded-2xl p-3 sm:p-2.5 flex flex-col sm:flex-row items-stretch gap-3 sm:gap-2 shadow-xl border border-white/10">
             <div className="flex bg-muted rounded-lg sm:rounded-lg p-1 shrink-0">
