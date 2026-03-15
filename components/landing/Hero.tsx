@@ -34,9 +34,9 @@ export function Hero() {
         <div className="absolute inset-0 bg-brand-charcoal/55" />
       </div>
 
-      <div className="relative z-10 flex flex-col flex-1 min-h-0 max-w-[1680px] mx-auto w-full px-4 xs:px-5 sm:px-6 lg:px-16 xl:px-24 py-5 sm:py-8 md:py-10 pb-[env(safe-area-inset-bottom)]">
-        {/* Content: heading only */}
-        <div className="flex-shrink-0">
+      <div className="relative z-10 flex flex-col flex-1 min-h-0 max-w-[1680px] mx-auto w-full px-4 xs:px-5 sm:px-6 lg:px-16 xl:px-24 pt-5 sm:pt-8 md:pt-10 pb-[env(safe-area-inset-bottom)]">
+        {/* Text above the white box — clear separation from search */}
+        <div className="flex-shrink-0 mb-4 sm:mb-6 md:mb-8">
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -63,37 +63,36 @@ export function Hero() {
             <br />
             you will call <span className="italic font-light">home.</span>
           </motion.h1>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.35 }}
+            className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-4 sm:mt-4 text-white/70 text-[13px] sm:text-sm"
+          >
+            <span className="tabular-nums">{ABOUT.yearsExperience}+ years</span>
+            <span className="text-white/40" aria-hidden>
+              ·
+            </span>
+            <span>Buy · Rent · Invest</span>
+            <span className="text-white/40" aria-hidden>
+              ·
+            </span>
+            <Link
+              href="/about"
+              className="text-brand-gold font-medium hover:text-brand-gold/90 active:opacity-80 py-1 -my-1 px-1 rounded focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 focus:ring-offset-brand-charcoal transition-colors"
+            >
+              Our story
+            </Link>
+          </motion.div>
         </div>
 
-        {/* Trust line: readable and tappable on mobile */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.35 }}
-          className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-4 sm:mt-4 text-white/70 text-[13px] sm:text-sm"
-        >
-          <span className="tabular-nums">{ABOUT.yearsExperience}+ years</span>
-          <span className="text-white/40" aria-hidden>
-            ·
-          </span>
-          <span>Buy · Rent · Invest</span>
-          <span className="text-white/40" aria-hidden>
-            ·
-          </span>
-          <Link
-            href="/about"
-            className="text-brand-gold font-medium hover:text-brand-gold/90 active:opacity-80 py-1 -my-1 px-1 rounded focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 focus:ring-offset-brand-charcoal transition-colors"
-          >
-            Our story
-          </Link>
-        </motion.div>
-
-        {/* Search: anchored to bottom of hero */}
+        {/* Search: white box at bottom */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-auto pt-5 sm:pt-6 md:pt-8 flex-shrink-0"
+          className="mt-auto pt-10 sm:pt-12 md:pt-16 pb-6 sm:pb-8 lg:pb-10 flex-shrink-0"
         >
           <div className="bg-white rounded-xl sm:rounded-xl md:rounded-2xl p-3 sm:p-2.5 flex flex-col sm:flex-row items-stretch gap-3 sm:gap-2 shadow-xl border border-white/10">
             <div className="flex bg-muted rounded-lg sm:rounded-lg p-1 shrink-0">

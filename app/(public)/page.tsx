@@ -5,7 +5,6 @@ import { StatsBar } from "@/components/landing/StatsBar";
 import { OurVision } from "@/components/landing/OurVision";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { HomeWhyUs } from "@/components/landing/HomeWhyUs";
-import { AskLeon } from "@/components/landing/AskLeon";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -24,7 +23,6 @@ export default function LandingPage() {
       <OurVision />
       <Testimonials />
       <HomeWhyUs />
-      <AskLeon />
     </>
   );
 }
