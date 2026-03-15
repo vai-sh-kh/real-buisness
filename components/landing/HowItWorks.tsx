@@ -34,7 +34,7 @@ export function HowItWorks() {
       ref={ref}
       aria-labelledby="how-it-works-heading"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+      <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 sm:mb-16 gap-6">
           <div>
             <motion.h2
@@ -50,7 +50,7 @@ export function HowItWorks() {
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="text-gray-500 text-sm sm:text-base max-w-md mt-4 lg:mt-0 lg:max-w-xs leading-relaxed"
+              className="text-muted-foreground text-sm sm:text-base max-w-md mt-4 lg:mt-0 lg:max-w-xs leading-relaxed"
             >
               Harmony, style, and care — so you live in a place that truly
               matters to you.
@@ -69,7 +69,7 @@ export function HowItWorks() {
                 ease: [0.22, 1, 0.36, 1],
                 delay: 0.08 + i * 0.1,
               }}
-              className="relative pr-0 lg:pr-8 xl:pr-12 pb-8 lg:pb-0 last:pb-0 border-b lg:border-b-0 lg:border-r border-gray-100 last:border-0"
+              className="relative pr-0 lg:pr-8 xl:pr-12 pb-8 lg:pb-0 last:pb-0 border-b lg:border-b-0 lg:border-r border-border last:border-0"
             >
               <div className="h-px w-12 bg-brand-gold/50 mb-5 sm:mb-6" />
               <span className="text-xs text-brand-gold font-semibold tracking-widest uppercase">
@@ -78,7 +78,7 @@ export function HowItWorks() {
               <h3 className="text-lg sm:text-xl font-bold text-brand-charcoal mt-2 mb-3">
                 {step.title}
               </h3>
-              <p className="text-sm text-gray-500 leading-relaxed max-w-sm">
+              <p className="text-base text-muted-foreground leading-relaxed max-w-sm">
                 {step.description}
               </p>
             </motion.article>

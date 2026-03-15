@@ -20,7 +20,7 @@ export function StatsBar() {
       ref={ref}
       aria-label="Company statistics"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+      <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10">
           {stats.map((stat, i) => (
             <motion.div

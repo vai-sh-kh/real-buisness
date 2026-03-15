@@ -203,6 +203,13 @@ export function PropertiesView({
       cell: ({ row }) => (
         <span className="text-sm text-foreground font-medium">
           ₹{Number(row.original.price).toLocaleString("en-IN")}
+          <span className="ml-1 text-muted-foreground font-normal">
+            (
+            {row.original.price_type === "percent"
+              ? "Per cent"
+              : "Total amount"}
+            )
+          </span>
         </span>
       ),
     },
@@ -602,7 +609,7 @@ export function PropertiesView({
                             </h3>
                             <p className="mt-0.5 text-xs text-muted-foreground">
                               {property.price
-                                ? `₹${Number(property.price).toLocaleString("en-IN")}`
+                                ? `₹${Number(property.price).toLocaleString("en-IN")} (${property.price_type === "percent" ? "Per cent" : "Total amount"})`
                                 : "—"}
                               {property.city ? ` · ${property.city}` : ""}
                             </p>
@@ -618,6 +625,11 @@ export function PropertiesView({
                                 <span className="text-xs text-muted-foreground capitalize">
                                   {property.type}
                                 </span>
+                              )}
+                              {property.is_featured && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Featured
+                                </Badge>
                               )}
                             </div>
                           </div>

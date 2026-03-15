@@ -58,8 +58,10 @@ export interface Property {
   short_description: string | null;
   type: PropertyType;
   status: PropertyStatus;
+  is_featured: boolean;
   category_id: string | null;
   price: number;
+  price_type?: "total" | "percent";
   price_label: string | null;
   area_sqft: number | null;
   bedrooms: number | null;

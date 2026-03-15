@@ -32,10 +32,12 @@ export const propertySchema = z.object({
   short_description: z.string().max(160, "Please keep to 160 characters or less").nullable().optional(),
   type: z.enum(["sale", "rent"], { required_error: "Please select type (sale or rent)" }),
   status: z.enum(["active", "sold", "rented", "draft"]).default("active"),
+  is_featured: z.boolean().default(false),
   category_id: z.string().uuid().nullable().optional(),
   price: z
     .number({ required_error: "Please enter the price", invalid_type_error: "Please enter a valid number for price" })
     .min(0, "Please enter 0 or more for price"),
+  price_type: z.enum(["total", "percent"]).default("total"),
   price_label: z.string().nullable().optional(),
   area_sqft: z.number().min(0).nullable().optional(),
   bedrooms: z.number().int().min(0).nullable().optional(),

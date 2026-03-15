@@ -33,8 +33,8 @@ export default function HowItWorksPage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-black pt-20 pb-24 px-4 sm:px-6 lg:px-10 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
+      <section className="bg-brand-charcoal pt-20 pb-24 px-4 sm:px-6 lg:px-16 xl:px-24 overflow-hidden">
+        <div className="max-w-[1680px] mx-auto">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10">
             <div>
               <p className="text-white/40 text-xs tracking-[0.2em] uppercase mb-6 flex items-center gap-3">
@@ -48,7 +48,7 @@ export default function HowItWorksPage() {
               </h1>
             </div>
             <div className="lg:max-w-xs">
-              <p className="text-white/50 text-sm leading-relaxed">
+              <p className="text-white/50 text-base leading-relaxed">
                 From first search to keys in hand — we make your property
                 journey simple, transparent, and successful.
               </p>
@@ -58,42 +58,44 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Steps */}
-      <section className="py-24 bg-white px-4 sm:px-6 lg:px-10">
-        <div className="max-w-4xl mx-auto">
-          <div className="space-y-16 sm:space-y-20">
-            {steps.map((step) => (
-              <div
-                key={step.number}
-                className="flex flex-col sm:flex-row gap-8 sm:gap-12 border-b border-gray-100 pb-16 sm:pb-20 last:border-0 last:pb-0"
-              >
-                <div className="sm:w-24 shrink-0">
-                  <span className="text-xs text-brand-gold font-semibold tracking-widest uppercase">
-                    {step.number}
-                  </span>
-                  <div className="h-px w-12 bg-brand-gold/50 mt-2" />
+      <section className="py-24 bg-white px-4 sm:px-6 lg:px-16 xl:px-24">
+        <div className="max-w-[1680px] mx-auto">
+          <div className="max-w-4xl mx-auto">
+            <div className="space-y-16 sm:space-y-20">
+              {steps.map((step) => (
+                <div
+                  key={step.number}
+                  className="flex flex-col sm:flex-row gap-8 sm:gap-12 border-b border-border pb-16 sm:pb-20 last:border-0 last:pb-0"
+                >
+                  <div className="sm:w-24 shrink-0">
+                    <span className="text-xs text-brand-gold font-semibold tracking-widest uppercase">
+                      {step.number}
+                    </span>
+                    <div className="h-px w-12 bg-brand-gold/50 mt-2" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-brand-charcoal mb-4">
+                      {step.title}
+                    </h2>
+                    <p className="text-muted-foreground text-base leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-brand-charcoal mb-4">
-                    {step.title}
-                  </h2>
-                  <p className="text-gray-500 text-sm sm:text-base leading-relaxed">
-                    {step.description}
-                  </p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gray-50 px-4 sm:px-6 lg:px-10">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-8">
+      <section className="py-20 bg-muted px-4 sm:px-6 lg:px-16 xl:px-24">
+        <div className="max-w-[1680px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-8">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-brand-charcoal mb-3">
               Ready to find your home?
             </h2>
-            <p className="text-gray-500 text-sm max-w-md">
+            <p className="text-muted-foreground text-base max-w-md">
               Browse our properties or get in touch — we&apos;re here to help
               every step of the way.
             </p>
@@ -101,13 +103,13 @@ export default function HowItWorksPage() {
           <div className="flex flex-wrap items-center gap-4">
             <Link
               href="/properties"
-              className="inline-flex items-center gap-2 bg-brand-charcoal text-white text-sm font-semibold px-7 py-3.5 rounded-full hover:opacity-90 transition-opacity"
+              className="inline-flex items-center justify-center gap-2 min-h-[44px] bg-brand-charcoal text-white text-base font-semibold px-7 py-3.5 rounded-full hover:opacity-90 transition-opacity"
             >
               View properties <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 border border-brand-charcoal text-brand-charcoal text-sm font-semibold px-7 py-3.5 rounded-full hover:bg-brand-charcoal hover:text-white transition-colors"
+              className="inline-flex items-center justify-center gap-2 min-h-[44px] border border-brand-charcoal text-brand-charcoal text-base font-semibold px-7 py-3.5 rounded-full hover:bg-brand-charcoal hover:text-white transition-colors"
             >
               Contact us
             </Link>

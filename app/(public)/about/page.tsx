@@ -1,271 +1,230 @@
-import { ArrowRight } from "lucide-react";
+import {
+  ChevronRight,
+  Rocket,
+  Eye,
+  Shield,
+  Star,
+  Lightbulb,
+  Heart,
+} from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { SITE_NAME } from "@/lib/constants/site";
+
+const HERO_IMAGE_URL =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuD4XzkesJf4GAdQLSUfhopuSdW1qG2qG5AXd12hAF9QK4AduZcDB5IsZBYLYj75jHshqfYSetG0VG6imPUcfnUYXWu-Kzaj1_6oL-ieQHl7wgmdLBm1JDVmKyJP2I1wP2DeCjN9_ug2cJ7SeyNRMGBoeXqxXM1OP9pbP_Wbd_gbvRMKxC-KeAz6dY8Wo1GzGCCKkJFAlNXPsuFKgF8P7snspE40jPsDAdK1FTx2zG95569M6ai4hhSqnz6Lwht5eRv-qNqDVU2xW9T6";
 
 export const metadata: Metadata = {
-  title: "About Us — The Real Business",
-  description:
-    "Learn about The Real Business's mission to create innovative, sustainable communities and exceptional real estate experiences.",
+  title: `About Us — ${SITE_NAME}`,
+  description: `Learn about ${SITE_NAME}'s mission, vision, and our legacy of excellence in luxury real estate. Your trusted partner for premium property consulting.`,
 };
+
+const mission =
+  "To provide unparalleled real estate services that empower our clients to achieve their lifestyle aspirations through expertise, transparency, and personalized care.";
+
+const vision =
+  "To be the global benchmark for excellence in luxury real estate, continuously innovating and shaping the future of sophisticated living.";
 
 const values = [
   {
-    title: "Innovative Living Spaces",
+    title: "Integrity",
     description:
-      "Blending technology with modern design to create exceptional, forward-thinking homes that redefine what it means to live well.",
+      "Honesty and transparency are the foundations of every relationship we build.",
+    icon: Shield,
   },
   {
-    title: "Sustainable Communities",
+    title: "Excellence",
     description:
-      "Building eco-friendly neighborhoods that enhance quality of life and environmental responsibility for generations to come.",
+      "We settle for nothing less than the highest quality in service and presentation.",
+    icon: Star,
   },
   {
-    title: "Exceptional Service",
+    title: "Innovation",
     description:
-      "Delivering top-tier properties and unmatched service. We guide every client through a seamless real estate experience.",
+      "Leveraging the latest technology to stay ahead in the dynamic property market.",
+    icon: Lightbulb,
   },
   {
-    title: "Quality Craftsmanship",
+    title: "Client First",
     description:
-      "Ensuring meticulous attention to detail and superior construction. Every property we represent meets the highest standards.",
-  },
-  {
-    title: "Client-First Approach",
-    description:
-      "Your goals are our goals. We listen first, then act — ensuring every decision is aligned with your vision and budget.",
-  },
-  {
-    title: "Transparent Process",
-    description:
-      "No surprises, no hidden fees. We believe in honest communication and clarity at every step of your property journey.",
+      "Your goals are our priority. We are committed to your long-term success.",
+    icon: Heart,
   },
 ];
 
 const stats = [
-  { value: "500+", label: "Properties Listed" },
-  { value: "1,200+", label: "Happy Clients" },
-  { value: "15+", label: "Years of Experience" },
-  { value: "98%", label: "Client Satisfaction" },
-];
-
-const milestones = [
-  {
-    year: "2009",
-    title: "Founded",
-    description:
-      "The Real Business was founded with a mission to redefine real estate through design and innovation.",
-  },
-  {
-    year: "2013",
-    title: "500th Client",
-    description:
-      "Reached our 500th satisfied client milestone, expanding across three major metropolitan areas.",
-  },
-  {
-    year: "2018",
-    title: "Digital Transformation",
-    description:
-      "Launched our digital platform with virtual tours and online property management.",
-  },
-  {
-    year: "2024",
-    title: "National Expansion",
-    description:
-      "Expanded to cover 20+ cities nationwide with over 500 active listings at any time.",
-  },
+  { value: "$2.4B+", label: "Total Sales" },
+  { value: "1.5k+", label: "Properties Sold" },
+  { value: "120+", label: "Expert Agents" },
+  { value: "99%", label: "Client Satisfaction" },
 ];
 
 export default function AboutPage() {
   return (
     <>
-      {/* Hero */}
-      <section className="bg-black pt-20 pb-24 px-4 sm:px-6 lg:px-10 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10">
-            <div>
-              <p className="text-white/40 text-xs tracking-[0.2em] uppercase mb-6 flex items-center gap-3">
-                <span className="h-px w-8 bg-white/20 inline-block" />
-                About Us
-              </p>
-              <h1 className="text-5xl sm:text-6xl lg:text-[80px] font-bold text-white leading-[0.95] tracking-tight max-w-3xl">
-                We&apos;re on a mission
-                <br />
-                to redefine
-                <br />
-                <span className="italic font-light">real estate.</span>
-              </h1>
-            </div>
-            <div className="lg:max-w-xs">
-              <p className="text-white/50 text-sm leading-relaxed">
-                Since 2009, The Real Business has been connecting people with
-                exceptional properties and communities. We believe every home
-                should reflect its owner&apos;s vision.
-              </p>
-            </div>
+      {/* Hero Section */}
+      <section className="relative h-[320px] xs:h-[400px] sm:h-[500px] md:h-[600px] flex items-center justify-center overflow-hidden bg-white">
+        <div className="absolute inset-0">
+          <Image
+            src={HERO_IMAGE_URL}
+            alt="Modern luxury villa with pool at sunset"
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
+          />
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              background: "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5))",
+            }}
+          />
+        </div>
+        <div className="relative z-10 text-center text-white px-4">
+          <h1 className="text-4xl xs:text-5xl md:text-6xl font-black mb-3 sm:mb-4">About Us</h1>
+          <div className="flex items-center justify-center gap-2 text-base font-medium opacity-90">
+            <Link href="/" className="hover:text-brand-gold transition-colors">
+              Home
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-brand-gold">About Us</span>
           </div>
         </div>
       </section>
 
-      {/* About image + story */}
-      <section className="py-24 bg-white px-4 sm:px-6 lg:px-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Image */}
-            <div className="relative">
-              <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
-                  alt="The Real Business office and team"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              {/* Floating card */}
-              <div className="absolute -bottom-6 -right-4 lg:-right-8 bg-white rounded-2xl p-5 shadow-xl max-w-[200px]">
-                <div className="text-3xl font-bold text-black">15+</div>
-                <div className="text-xs text-gray-500 mt-1">
-                  Years transforming real estate
-                </div>
-              </div>
-            </div>
-
-            {/* Story text */}
-            <div>
-              <span className="text-sm text-gray-400 tracking-widest">
-                /Our Story
-              </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mt-3 mb-6 leading-tight">
-                Built on trust,
-                <br />
-                driven by results
-              </h2>
-              <div className="space-y-4 text-sm text-gray-500 leading-relaxed">
-                <p>
-                  The Real Business was founded in 2009 with a single guiding
-                  principle: that finding a home should be an inspiring journey,
-                  not a stressful ordeal. We started with a small team of
-                  passionate real estate professionals who believed that every
-                  client deserved expert guidance and genuine care.
-                </p>
-                <p>
-                  Over the years, we&apos;ve grown into a nationally recognized
-                  real estate company with deep roots in the communities we
-                  serve. Our portfolio spans luxury residences, family homes,
-                  investment properties, and commercial spaces.
-                </p>
-                <p>
-                  Today, we leverage cutting-edge technology — from virtual
-                  tours to AI-powered property matching — to deliver a seamless,
-                  modern real estate experience without losing the human touch
-                  that makes all the difference.
-                </p>
-              </div>
+      {/* Company Story Section */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-10 max-w-7xl mx-auto bg-white">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="space-y-6">
+            <span className="text-brand-gold font-bold tracking-widest uppercase text-sm">
+              Our Legacy
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold leading-tight text-brand-charcoal">
+              Crafting a Legacy of Excellence in Luxury Real Estate
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Founded on the principles of integrity and architectural
+              brilliance, {SITE_NAME} has been the cornerstone of premium
+              property consulting for over two decades. We specialize in
+              curating experiences that transcend simple transactions.
+            </p>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Our journey began with a single vision: to redefine what it means
+              to live in luxury. Today, we stand as a global leader, connecting
+              discerning clients with the world&apos;s most exceptional living
+              spaces.
+            </p>
+            <p className="text-muted-foreground text-sm italic pt-2">
+              We have replaced our former &quot;Our Team&quot; section with a
+              dedicated{" "}
               <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 mt-8 bg-black text-white text-sm font-semibold px-7 py-3.5 rounded-full hover:bg-gray-800 transition-colors"
+                href="/services"
+                className="text-brand-gold font-semibold hover:underline"
               >
-                Work with us <ArrowRight className="h-4 w-4" />
+                Services
+              </Link>{" "}
+              page—so you can see exactly how we can help with buying, selling,
+              rentals, valuations, and more.
+            </p>
+            <div className="pt-4">
+              <Link
+                href="/services"
+                className="inline-flex items-center justify-center min-h-[44px] border-2 border-brand-gold text-brand-gold px-8 py-3 rounded-lg font-bold hover:bg-brand-gold hover:text-white transition-all"
+              >
+                Explore Our Services
               </Link>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="py-20 bg-gray-50 px-4 sm:px-6 lg:px-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-4xl lg:text-5xl font-bold text-black mb-2 tracking-tight">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-gray-500">{stat.label}</div>
-              </div>
-            ))}
+          <div className="relative">
+            <div className="aspect-[4/5] rounded-xl overflow-hidden shadow-2xl">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAm2cpyJgC8sT_9hmRdwNBpe6UdFQvWw2QUSeiWN0WMCS-p2m1-Y-gm4dgbosXU8L1p_pvGxAK9YWvMhXOD6fT9xVDHV2A1rPFbOgZHWlQZ2FVB4HhQCOPKL_o0VA2VS47SFpF7-VXXLaXBxq6twwtPb_yoy-ku4O72RDKSUil8pZo1LDGL1ur5pGlOmrrX8rV9YY-ujE3wXNduenb5IBDgDj35OktOroGSbN9C0zmmASgpLNpdWtHDRrZLyde542Uk7GERKAT5HjHD"
+                alt="Sophisticated modern interior design"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="absolute -bottom-6 -left-6 bg-brand-gold p-8 rounded-xl hidden md:block">
+              <p className="text-4xl font-black text-white">25+</p>
+              <p className="text-sm font-bold text-white/80 uppercase tracking-wider">
+                Years of Experience
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Values */}
-      <section className="py-24 bg-white px-4 sm:px-6 lg:px-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-14">
-            <span className="text-sm text-gray-400 tracking-widest">
-              /Our Values
+      {/* Stats Section */}
+      <section className="bg-brand-gold/10 py-12 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center">
+          {stats.map((stat) => (
+            <div key={stat.label}>
+              <p className="text-4xl font-black text-brand-gold mb-2">
+                {stat.value}
+              </p>
+              <p className="text-sm font-bold uppercase text-muted-foreground tracking-widest">
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Mission & Vision Cards */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-10 max-w-7xl mx-auto bg-white">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-muted p-8 sm:p-10 rounded-xl border border-border shadow-sm flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-brand-gold/20 rounded-full flex items-center justify-center text-brand-gold mb-6">
+              <Rocket className="w-10 h-10" />
+            </div>
+            <h3 className="text-2xl font-bold mb-4 text-brand-charcoal">
+              Our Mission
+            </h3>
+            <p className="text-muted-foreground text-base leading-relaxed">{mission}</p>
+          </div>
+          <div className="bg-muted p-8 sm:p-10 rounded-xl border border-border shadow-sm flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-brand-gold/20 rounded-full flex items-center justify-center text-brand-gold mb-6">
+              <Eye className="w-10 h-10" />
+            </div>
+            <h3 className="text-2xl font-bold mb-4 text-brand-charcoal">
+              Our Vision
+            </h3>
+            <p className="text-muted-foreground text-base leading-relaxed">{vision}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Values Section */}
+      <section className="py-16 sm:py-20 bg-muted">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+          <div className="text-center mb-16">
+            <span className="text-brand-gold font-bold tracking-widest uppercase text-sm">
+              Core Values
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mt-3 leading-tight max-w-lg">
-              What drives everything we do
+            <h2 className="text-3xl md:text-4xl font-bold mt-2 text-brand-charcoal">
+              The Pillars of Our Success
             </h2>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {values.map((value, i) => (
-              <div
-                key={value.title}
-                className="relative pt-8 border-t border-gray-200"
-              >
-                <div className="text-xs text-gray-400 tracking-widest mb-4 uppercase">
-                  {String(i + 1).padStart(2, "0")}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {values.map((value) => {
+              const Icon = value.icon;
+              return (
+                <div
+                  key={value.title}
+                  className="group bg-white p-8 rounded-xl border border-border hover:border-brand-gold/40 transition-all shadow-sm"
+                >
+                  <Icon className="w-10 h-10 text-brand-gold mb-4 group-hover:scale-110 transition-transform inline-block" />
+                  <h4 className="text-xl font-bold mb-2 text-brand-charcoal">
+                    {value.title}
+                  </h4>
+                  <p className="text-base text-muted-foreground leading-relaxed">
+                    {value.description}
+                  </p>
                 </div>
-                <h3 className="font-bold text-black text-lg mb-3">
-                  {value.title}
-                </h3>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  {value.description}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        </div>
-      </section>
-
-      {/* Timeline / Milestones */}
-      <section className="py-24 bg-[#0f0f0f] px-4 sm:px-6 lg:px-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-14">
-            <span className="text-sm text-white/30 tracking-widest">
-              /Milestones
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-3 leading-tight">
-              Our journey
-            </h2>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-0">
-            {milestones.map((m) => (
-              <div
-                key={m.year}
-                className="relative pr-8 pb-8 lg:pb-0 border-b lg:border-b-0 lg:border-r border-white/10 last:border-0"
-              >
-                <div className="text-white/30 text-xs tracking-widest mb-4">
-                  {m.year}
-                </div>
-                <div className="h-px bg-white/10 mb-6" />
-                <h3 className="font-bold text-white text-lg mb-3">{m.title}</h3>
-                <p className="text-sm text-white/50 leading-relaxed">
-                  {m.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team CTA */}
-      <section className="py-20 bg-white px-4 sm:px-6 lg:px-10">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-black mb-4">
-            Meet the team behind The Real Business
-          </h2>
-          <p className="text-gray-500 text-sm max-w-md mx-auto mb-8">
-            Our talented professionals bring decades of combined experience and
-            a shared passion for exceptional real estate.
-          </p>
-          <Link
-            href="/team"
-            className="inline-flex items-center gap-2 bg-black text-white text-sm font-semibold px-7 py-3.5 rounded-full hover:bg-gray-800 transition-colors"
-          >
-            Meet our team <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
       </section>
     </>

@@ -8,12 +8,12 @@ function CategoryCard({ category }: { category: Category }) {
   return (
     <a
       href="#properties"
-      className="group flex flex-col items-center gap-3 p-6 bg-white rounded-2xl border border-gray-100 hover:border-brand-gold/40 hover:shadow-md transition-all cursor-pointer"
+      className="group flex flex-col items-center gap-3 p-6 bg-white rounded-2xl border border-border hover:border-brand-gold/40 hover:shadow-md transition-all cursor-pointer"
     >
       <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-gold/10 text-2xl group-hover:bg-brand-gold/20 transition-colors">
         {category.icon ?? "🏠"}
       </div>
-      <p className="font-semibold text-sm text-gray-700 group-hover:text-brand-gold transition-colors text-center">
+      <p className="font-semibold text-sm text-foreground group-hover:text-brand-gold transition-colors text-center">
         {category.name}
       </p>
     </a>
@@ -42,7 +42,7 @@ export function CategoriesSection() {
           <h2 className="font-heading text-3xl sm:text-4xl font-bold text-brand-charcoal mb-4">
             Property Categories
           </h2>
-          <p className="text-slate-500 max-w-xl mx-auto">
+          <p className="text-muted-foreground max-w-xl mx-auto">
             Find exactly what you&apos;re looking for by exploring our curated
             property categories.
           </p>
@@ -53,7 +53,7 @@ export function CategoriesSection() {
             ? Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-gray-50"
+                  className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-muted"
                 >
                   <Skeleton className="h-14 w-14 rounded-xl" />
                   <Skeleton className="h-4 w-16" />

@@ -51,11 +51,11 @@ export function Testimonials() {
 
   return (
     <section
-      className="py-16 sm:py-20 lg:py-24 bg-gray-50"
+      className="py-16 sm:py-20 lg:py-24 bg-muted"
       ref={ref}
       aria-labelledby="testimonials-heading"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+      <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 sm:gap-10">
           <div className="lg:w-64 shrink-0">
             <motion.div
@@ -63,10 +63,12 @@ export function Testimonials() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5 }}
             >
-              <div className="text-xs text-gray-400 tracking-widest mb-1">
+              <div className="text-xs text-muted-foreground tracking-widest mb-1">
                 Main Street Plaza, Downtown
               </div>
-              <div className="text-xs text-gray-400">+1 (555) 123-4567</div>
+              <div className="text-xs text-muted-foreground">
+                +1 (555) 123-4567
+              </div>
             </motion.div>
           </div>
 
@@ -109,15 +111,17 @@ export function Testimonials() {
                     <p className="text-sm font-semibold text-brand-charcoal truncate">
                       {t.name}
                     </p>
-                    <p className="text-xs text-gray-400 truncate">{t.handle}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {t.handle}
+                    </p>
                   </div>
                 </div>
-                <p className="text-sm text-gray-700 leading-relaxed">
+                <p className="text-base text-foreground leading-relaxed">
                   {t.quote}
                 </p>
               </div>
               <div className="md:pt-0 pt-2">
-                <p className="text-sm text-gray-500 leading-relaxed md:mt-12">
+                <p className="text-base text-muted-foreground leading-relaxed md:mt-12">
                   {t.quote2}
                 </p>
               </div>
@@ -127,7 +131,7 @@ export function Testimonials() {
               <button
                 type="button"
                 onClick={prev}
-                className="h-10 w-10 sm:h-9 sm:w-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-brand-charcoal hover:border-brand-charcoal hover:text-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2"
+                className="min-h-[44px] min-w-[44px] h-11 w-11 sm:h-10 sm:w-10 rounded-full border border-border flex items-center justify-center hover:bg-brand-charcoal hover:border-brand-charcoal hover:text-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2"
                 aria-label="Previous testimonial"
               >
                 <ChevronLeft className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
@@ -143,7 +147,7 @@ export function Testimonials() {
               </div>
 
               <span
-                className="text-xs text-gray-400 tabular-nums shrink-0"
+                className="text-xs text-muted-foreground tabular-nums shrink-0"
                 aria-live="polite"
               >
                 {active + 1} / {testimonials.length}
@@ -152,7 +156,7 @@ export function Testimonials() {
               <button
                 type="button"
                 onClick={next}
-                className="h-10 w-10 sm:h-9 sm:w-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-brand-charcoal hover:border-brand-charcoal hover:text-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2"
+                className="min-h-[44px] min-w-[44px] h-11 w-11 sm:h-10 sm:w-10 rounded-full border border-border flex items-center justify-center hover:bg-brand-charcoal hover:border-brand-charcoal hover:text-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2"
                 aria-label="Next testimonial"
               >
                 <ChevronRight className="h-4 w-4 sm:h-3.5 sm:w-3.5" />

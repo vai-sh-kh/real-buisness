@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getPropertyById } from "@/lib/queries/properties";
+import { getPropertyByIdOrSlug } from "@/lib/queries/properties";
 import { propertySchema } from "@/lib/validations/property.schema";
 import { slugify } from "@/lib/utils";
 
@@ -9,9 +9,12 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  const { id: identifier } = await params;
   try {
-    const data = await getPropertyById(id);
+    const data = await getPropertyByIdOrSlug(identifier);
+    if (!data || data.status !== "active") {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
     return NextResponse.json({ data });
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

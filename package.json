@@ -15,7 +15,8 @@
     "e2e:headed": "playwright test --headed",
     "e2e:watch": "playwright test --headed --slow-mo=300",
     "test:all": "npm run test:run && npm run e2e",
-    "db:reset": "supabase db reset"
+    "db:reset": "supabase db reset",
+    "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -76,6 +77,7 @@
     "vitest": "^2.1.6",
     "jsdom": "^25.0.1",
     "@playwright/test": "^1.49.0",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "tsx": "^4.19.2"
   }
 }

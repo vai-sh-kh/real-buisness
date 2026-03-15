@@ -116,9 +116,9 @@ function PropertyCard({
         ease: [0.22, 1, 0.36, 1],
         delay: Math.min((index % 3) * 0.08, 0.2),
       }}
-      className="group cursor-pointer h-full flex flex-col rounded-2xl overflow-hidden bg-white border border-gray-100 hover:border-brand-gold/20 hover:shadow-lg transition-all duration-300"
+      className="group cursor-pointer h-full flex flex-col rounded-2xl overflow-hidden bg-white border border-border hover:border-brand-gold/20 hover:shadow-lg transition-all duration-300"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         {property.cover_image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -127,14 +127,19 @@ function PropertyCard({
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="h-full w-full flex items-center justify-center text-gray-300 text-4xl">
+          <div className="h-full w-full flex items-center justify-center text-muted-foreground text-4xl">
             🏠
           </div>
         )}
-        <div className="absolute top-3 left-3">
+        <div className="absolute top-3 left-3 flex flex-wrap gap-2">
           <span className="bg-brand-charcoal/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full">
             {property.type === "sale" ? "For Sale" : "For Rent"}
           </span>
+          {property.is_featured && (
+            <span className="bg-brand-gold text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+              Featured
+            </span>
+          )}
         </div>
         <div className="absolute bottom-3 right-3">
           <span className="bg-brand-gold text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
@@ -147,7 +152,7 @@ function PropertyCard({
         <h3 className="font-semibold text-brand-charcoal text-base sm:text-[15px] leading-snug mb-1 group-hover:text-brand-gold transition-colors line-clamp-2">
           {property.title}
         </h3>
-        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-3">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
           <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
           <span className="truncate">
             {property.city}, {property.state}
@@ -193,7 +198,7 @@ function PropertyCard({
 
 function CardSkeleton() {
   return (
-    <div className="rounded-2xl overflow-hidden border border-gray-100">
+    <div className="rounded-2xl overflow-hidden border border-border">
       <Skeleton className="aspect-[4/3] w-full" />
       <div className="p-4 sm:p-5 space-y-3">
         <Skeleton className="h-5 w-3/4" />
@@ -230,7 +235,7 @@ export function FeaturedProperties() {
       className="py-16 sm:py-20 lg:py-24 bg-gray-50/50"
       aria-labelledby="featured-properties-heading"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+      <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
         <div
           ref={headRef}
           className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 sm:mb-12"

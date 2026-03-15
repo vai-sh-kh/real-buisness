@@ -1,470 +1,702 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
 import {
+  MapPin,
+  Home,
+  Banknote,
   Search,
-  SlidersHorizontal,
   Bed,
   Bath,
   Maximize2,
-  MapPin,
-  X,
+  Heart,
+  AlertCircle,
+  SearchX,
+  SlidersHorizontal,
+  Sparkles,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { formatPrice } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { formatPrice, getPriceTypeLabel } from "@/lib/utils";
 import type { PropertyWithRelations } from "@/types";
+import type { Category } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter,
+} from "@/components/ui/sheet";
+import { FilterSelect } from "@/components/ui/filter-select";
+import { usePublicCategories } from "@/hooks/useCategories";
+import { useInfinitePublicProperties } from "@/hooks/useProperties";
 
-const TYPE_TABS = [
-  { label: "All", value: "all" },
-  { label: "Buy", value: "buy" },
-  { label: "Rent", value: "rent" },
-  { label: "New Developments", value: "new" },
-  { label: "Commercial", value: "commercial" },
+const SORT_OPTIONS = [
+  { value: "newest", label: "Newest First" },
+  { value: "price_asc", label: "Price: Low to High" },
+  { value: "price_desc", label: "Price: High to Low" },
+  { value: "views", label: "Most Viewed" },
 ] as const;
 
-const CITIES = [
-  "All Cities",
-  "Los Angeles",
-  "New York",
-  "Miami",
-  "Chicago",
-  "Austin",
-  "Seattle",
-];
 const PRICE_RANGES = [
-  { label: "Any Price", min: undefined, max: undefined },
-  { label: "Under $200K", min: undefined, max: 200000 },
-  { label: "$200K–$500K", min: 200000, max: 500000 },
-  { label: "$500K–$1M", min: 500000, max: 1000000 },
-  { label: "Over $1M", min: 1000000, max: undefined },
+  { value: "", label: "Any Price", min: undefined, max: undefined },
+  { value: "0-50l", label: "Up to ₹50 L", min: 0, max: 50_00_000 },
+  {
+    value: "50l-1cr",
+    label: "₹50 L – ₹1 Cr",
+    min: 50_00_000,
+    max: 1_00_00_000,
+  },
+  {
+    value: "1cr-5cr",
+    label: "₹1 Cr – ₹5 Cr",
+    min: 1_00_00_000,
+    max: 5_00_00_000,
+  },
+  { value: "5cr+", label: "₹5 Cr +", min: 5_00_00_000, max: undefined },
 ];
-const BEDROOMS = ["Any", "1+", "2+", "3+", "4+", "5+"];
 
-const fallback: Partial<PropertyWithRelations>[] = [
-  {
-    id: "1",
-    title: "Serenity Tower",
-    city: "Los Angeles",
-    state: "California",
-    price: 340000,
-    bedrooms: 6,
-    bathrooms: 2,
-    area_sqft: 300,
-    type: "sale",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=700&q=80",
-    slug: "",
-  },
-  {
-    id: "2",
-    title: "Island Retreat",
-    city: "Exuma",
-    state: "Bahamas",
-    price: 220000,
-    bedrooms: 4,
-    bathrooms: 1,
-    area_sqft: 250,
-    type: "sale",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=700&q=80",
-    slug: "",
-  },
-  {
-    id: "3",
-    title: "Mountain Lodge",
-    city: "Aspen",
-    state: "Colorado",
-    price: 500000,
-    bedrooms: 6,
-    bathrooms: 3,
-    area_sqft: 400,
-    type: "sale",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=700&q=80",
-    slug: "",
-  },
-  {
-    id: "4",
-    title: "Comporta Beach Lux",
-    city: "Lisbon Coast",
-    state: "Portugal",
-    price: 296000,
-    bedrooms: 6,
-    bathrooms: 3,
-    area_sqft: 230,
-    type: "rent",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1605146769289-440113cc3d00?auto=format&fit=crop&w=700&q=80",
-    slug: "",
-  },
-  {
-    id: "5",
-    title: "Tulum Eco Retreat",
-    city: "Tulum",
-    state: "Mexico",
-    price: 450000,
-    bedrooms: 3,
-    bathrooms: 1,
-    area_sqft: 150,
-    type: "rent",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80",
-    slug: "",
-  },
-  {
-    id: "6",
-    title: "Azura Villa",
-    city: "Mykonos",
-    state: "Greece",
-    price: 470000,
-    bedrooms: 6,
-    bathrooms: 2,
-    area_sqft: 400,
-    type: "sale",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=700&q=80",
-    slug: "",
-  },
-  {
-    id: "7",
-    title: "Downtown Penthouse",
-    city: "New York",
-    state: "New York",
-    price: 1200000,
-    bedrooms: 3,
-    bathrooms: 2,
-    area_sqft: 180,
-    type: "sale",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=80",
-    slug: "",
-  },
-  {
-    id: "8",
-    title: "Garden Villa",
-    city: "Miami",
-    state: "Florida",
-    price: 380000,
-    bedrooms: 4,
-    bathrooms: 3,
-    area_sqft: 320,
-    type: "rent",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=700&q=80",
-    slug: "",
-  },
-  {
-    id: "9",
-    title: "Lakeside Cottage",
-    city: "Chicago",
-    state: "Illinois",
-    price: 260000,
-    bedrooms: 2,
-    bathrooms: 1,
-    area_sqft: 110,
-    type: "sale",
-    cover_image_url:
-      "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?auto=format&fit=crop&w=700&q=80",
-    slug: "",
-  },
-];
+function CardSkeleton() {
+  return (
+    <div className="rounded-2xl overflow-hidden border border-border bg-white">
+      <Skeleton className="aspect-[4/3] w-full" />
+      <div className="p-4 sm:p-5 space-y-3">
+        <Skeleton className="h-5 w-3/4" />
+        <Skeleton className="h-3.5 w-1/2" />
+        <div className="flex items-center gap-4 pt-3 border-t border-border">
+          <Skeleton className="h-3.5 w-16" />
+          <Skeleton className="h-3.5 w-14" />
+          <Skeleton className="h-3.5 w-14" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function PropertyCard({
   property,
   index,
 }: {
-  property: Partial<PropertyWithRelations>;
+  property: PropertyWithRelations;
   index: number;
 }) {
+  const location = [property.city, property.state].filter(Boolean).join(", ");
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: (index % 9) * 0.06 }}
-      className="group cursor-pointer"
+      transition={{
+        duration: 0.4,
+        delay: Math.min((index % 3) * 0.06, 0.15),
+        ease: [0.22, 1, 0.36, 1],
+      }}
     >
-      <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-gray-100">
-        {property.cover_image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={property.cover_image_url}
-            alt={property.title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="h-full w-full flex items-center justify-center text-gray-300 text-4xl">
-            🏠
+      <Link
+        href={`/properties/${property.slug}`}
+        className="group block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 rounded-2xl"
+      >
+        <article className="h-full flex flex-col rounded-2xl overflow-hidden bg-white border border-border hover:border-brand-gold/20 hover:shadow-lg transition-all duration-300">
+          <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+            {property.cover_image_url ? (
+              <Image
+                src={property.cover_image_url}
+                alt={property.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                unoptimized={
+                  property.cover_image_url.startsWith("http") &&
+                  !property.cover_image_url.includes(
+                    process.env.NEXT_PUBLIC_VERCEL_URL ?? "",
+                  )
+                }
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center text-muted-foreground text-4xl">
+                <Home className="h-16 w-16" />
+              </div>
+            )}
+            <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+              <span className="bg-brand-charcoal/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full">
+                {property.type === "sale" ? "For Sale" : "For Rent"}
+              </span>
+              {property.is_featured && (
+                <span className="bg-brand-gold text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+                  Featured
+                </span>
+              )}
+            </div>
+            <span className="absolute bottom-3 right-3 bg-brand-gold text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+              {formatPrice(property.price)}
+            </span>
+            <span className="absolute bottom-3 left-3 text-[10px] text-white/90 font-medium">
+              {getPriceTypeLabel(property.price_type)}
+            </span>
+            <button
+              type="button"
+              onClick={(e) => e.preventDefault()}
+              className="absolute top-3 right-3 min-h-[44px] min-w-[44px] flex items-center justify-center p-2 bg-white/90 rounded-full text-foreground hover:bg-white hover:text-brand-charcoal transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold"
+              aria-label="Save to favourites"
+            >
+              <Heart className="h-4 w-4" />
+            </button>
           </div>
-        )}
-        <div className="absolute top-3 left-3">
-          <span className="bg-brand-charcoal/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
-            {property.type === "sale" ? "For Sale" : "For Rent"}
-          </span>
-        </div>
-        <div className="absolute bottom-3 right-3">
-          <span className="bg-brand-gold text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
-            {formatPrice(property.price ?? 0)}
-          </span>
-        </div>
-      </div>
-      <div className="flex items-start justify-between mb-1">
-        <h3 className="font-semibold text-brand-charcoal text-[15px] leading-snug group-hover:opacity-70 transition-opacity">
-          {property.title}
-        </h3>
-      </div>
-      <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-3">
-        <MapPin className="h-3 w-3 shrink-0" />
-        <span>
-          {property.city}, {property.state}
-        </span>
-      </div>
-      <div className="flex items-center gap-4 text-xs text-gray-400 pt-3 border-t border-gray-100">
-        {property.area_sqft != null && (
-          <span className="flex items-center gap-1">
-            <Maximize2 className="h-3.5 w-3.5" /> {property.area_sqft} m²
-          </span>
-        )}
-        {property.bedrooms != null && (
-          <span className="flex items-center gap-1">
-            <Bed className="h-3.5 w-3.5" /> {property.bedrooms} beds
-          </span>
-        )}
-        {property.bathrooms != null && (
-          <span className="flex items-center gap-1">
-            <Bath className="h-3.5 w-3.5" /> {property.bathrooms} baths
-          </span>
-        )}
-      </div>
+          <div className="p-4 sm:p-5 flex flex-col flex-1">
+            <h3 className="font-semibold text-brand-charcoal text-base sm:text-[15px] leading-snug mb-1 group-hover:text-brand-gold transition-colors line-clamp-2">
+              {property.title}
+            </h3>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+              <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span className="truncate">
+                {location || property.address || "—"}
+              </span>
+            </div>
+            {property.short_description && (
+              <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                {property.short_description}
+              </p>
+            )}
+            {Array.isArray(property.amenities) &&
+              property.amenities.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {property.amenities.slice(0, 4).map((a) => (
+                    <span
+                      key={a}
+                      className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted/80 px-2 py-0.5 rounded-md"
+                    >
+                      <Sparkles className="h-2.5 w-2.5" />
+                      {a}
+                    </span>
+                  ))}
+                  {property.amenities.length > 4 && (
+                    <span className="text-[10px] text-muted-foreground">
+                      +{property.amenities.length - 4}
+                    </span>
+                  )}
+                </div>
+              )}
+            <div className="flex items-center gap-4 text-xs text-muted-foreground pt-3 mt-auto border-t border-border">
+              {property.area_sqft != null && (
+                <span className="flex items-center gap-1.5">
+                  <Maximize2 className="h-3.5 w-3.5" aria-hidden />
+                  {property.area_sqft.toLocaleString("en-IN")} sqft
+                </span>
+              )}
+              {property.bedrooms != null && (
+                <span className="flex items-center gap-1.5">
+                  <Bed className="h-3.5 w-3.5" aria-hidden />
+                  {property.bedrooms} beds
+                </span>
+              )}
+              {property.bathrooms != null && (
+                <span className="flex items-center gap-1.5">
+                  <Bath className="h-3.5 w-3.5" aria-hidden />
+                  {property.bathrooms} baths
+                </span>
+              )}
+            </div>
+          </div>
+        </article>
+      </Link>
     </motion.div>
   );
 }
 
-function CardSkeleton() {
-  return (
-    <div>
-      <Skeleton className="aspect-[4/3] w-full rounded-xl mb-4" />
-      <Skeleton className="h-5 w-3/4 mb-2" />
-      <Skeleton className="h-3.5 w-1/2 mb-3" />
-      <Skeleton className="h-3.5 w-2/3" />
-    </div>
-  );
-}
-
 export function PropertiesClient() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<string>(
-    searchParams.get("type") === "rent" ? "rent" : "all",
-  );
-  const [search, setSearch] = useState(searchParams.get("q") ?? "");
-  const [city, setCity] = useState("All Cities");
-  const [priceIndex, setPriceIndex] = useState(0);
-  const [bedrooms, setBedrooms] = useState("Any");
-  const [showFilters, setShowFilters] = useState(false);
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const priceRange = PRICE_RANGES[priceIndex];
+  const type = searchParams.get("type") ?? "";
+  const category_id = searchParams.get("category_id") ?? "";
+  const priceRange = searchParams.get("price") ?? "";
+  const bedrooms = searchParams.get("bedrooms") ?? "";
+  const sort =
+    (searchParams.get("sort") as (typeof SORT_OPTIONS)[number]["value"]) ??
+    "newest";
+  const search = searchParams.get("search") ?? "";
+  const city = searchParams.get("city") ?? "";
+  const [searchInput, setSearchInput] = useState(search);
+  const [cityInput, setCityInput] = useState(city);
 
-  const apiType =
-    activeTab === "buy" || activeTab === "sale"
-      ? "sale"
-      : activeTab === "rent"
-        ? "rent"
-        : undefined;
+  useEffect(() => {
+    setSearchInput(search);
+    setCityInput(city);
+  }, [search, city]);
 
-  const queryString = new URLSearchParams({
-    limit: "12",
+  const priceRangeOption = PRICE_RANGES.find((r) => r.value === priceRange);
+  const min_price = priceRangeOption?.min;
+  const max_price = priceRangeOption?.max;
+
+  const { data: categories = [] } = usePublicCategories();
+
+  const infiniteFilters: Omit<
+    import("@/hooks/useProperties").PublicPropertyFilters,
+    "page" | "limit"
+  > = {
+    sort,
+    type: type === "sale" || type === "rent" ? type : undefined,
+    category_id: category_id || undefined,
+    city: city.trim() || undefined,
+    min_price,
+    max_price,
+    bedrooms: bedrooms ? Number(bedrooms) : undefined,
+    search: search.trim() || undefined,
     status: "active",
-    ...(apiType && { type: apiType }),
-    ...(search && { search }),
-    ...(city !== "All Cities" && { city }),
-    ...(priceRange.min !== undefined && { min_price: String(priceRange.min) }),
-    ...(priceRange.max !== undefined && { max_price: String(priceRange.max) }),
-    ...(bedrooms !== "Any" && {
-      bedrooms: bedrooms.replace("+", ""),
-    }),
-  }).toString();
+  };
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["properties", queryString],
-    queryFn: async () => {
-      const res = await fetch(`/api/properties?${queryString}`);
-      if (!res.ok) throw new Error("Failed to fetch");
-      const json = await res.json();
-      return json.data as PropertyWithRelations[];
+  const {
+    data: infiniteData,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useInfinitePublicProperties(infiniteFilters);
+
+  const properties = infiniteData?.pages.flatMap((p) => p.data) ?? [];
+  const total = infiniteData?.pages[0]?.total ?? 0;
+
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el || !hasNextPage || isFetchingNextPage) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) fetchNextPage();
+      },
+      { rootMargin: "200px" },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const updateParams = useCallback(
+    (updates: Record<string, string | number | undefined>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      for (const [key, value] of Object.entries(updates)) {
+        if (value === undefined || value === "" || value === null) {
+          params.delete(key);
+        } else {
+          params.set(key, String(value));
+        }
+      }
+      router.push(`/properties?${params.toString()}`, { scroll: false });
     },
-    staleTime: 2 * 60 * 1000,
-  });
+    [router, searchParams],
+  );
 
-  const properties =
-    data && data.length > 0
-      ? data
-      : (fallback as Partial<PropertyWithRelations>[]);
+  // Auto-trigger search (debounced, no button)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const updateParamsRef = useRef(updateParams);
+  updateParamsRef.current = updateParams;
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      debounceRef.current = null;
+      updateParamsRef.current({
+        search: searchInput.trim() || undefined,
+        city: cityInput.trim() || undefined,
+      });
+    }, 400);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchInput, cityInput]);
+
+  const errorMessage =
+    isError && error
+      ? error instanceof Error
+        ? error.message
+        : "Failed to load properties"
+      : null;
+  const hasFilters =
+    type || search || city || category_id || priceRange || bedrooms;
+  const filterCount = [
+    type,
+    city.trim(),
+    category_id,
+    priceRange,
+    bedrooms,
+    search.trim(),
+  ].filter(Boolean).length;
+
+  const clearFilters = useCallback(() => {
+    router.push("/properties", { scroll: false });
+  }, [router]);
 
   return (
     <>
-      {/* Page hero */}
-      <div className="bg-gray-50 pt-12 pb-10 px-4 sm:px-6 lg:px-10">
-        <div className="max-w-7xl mx-auto">
-          <p className="text-sm text-gray-400 tracking-widest mb-2">
-            /Properties
-          </p>
-          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-brand-charcoal leading-tight mb-3">
-            Find the home
-            <br />
-            that will be yours
-          </h1>
-          <p className="text-gray-500 text-sm max-w-sm leading-relaxed">
-            Our curated listings include photos, 3D tours, and offline viewings
-            — everything you need to explore and buy with confidence.
-          </p>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="sticky top-16 z-30 bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-3">
-          {/* Tab row */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            {/* Type tabs */}
-            <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 shrink-0">
-              {TYPE_TABS.map((tab) => (
+      {/* Filters: search + filters side by side, badge count, clear button, less gap below */}
+      <section className="pt-8 pb-6 sm:pt-10 sm:pb-8 bg-white border-b border-border">
+        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="bg-muted rounded-2xl p-4 sm:p-5 border border-border"
+          >
+            {/* Mobile: search + Filters button with count badge + Clear */}
+            <div className="flex flex-col gap-3 md:hidden">
+              <div className="flex gap-2">
+                <div className="relative flex-1 min-w-0">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <input
+                    type="search"
+                    placeholder="Search properties..."
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    className="w-full min-h-[48px] pl-10 pr-4 py-3 text-base bg-white border border-border rounded-xl text-brand-charcoal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
+                    aria-label="Search properties"
+                  />
+                </div>
                 <button
-                  key={tab.value}
-                  onClick={() => setActiveTab(tab.value)}
-                  className={cn(
-                    "px-4 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap",
-                    activeTab === tab.value
-                      ? "bg-brand-charcoal text-white shadow-sm"
-                      : "text-gray-500 hover:text-brand-charcoal",
-                  )}
+                  type="button"
+                  onClick={() => setFilterSheetOpen(true)}
+                  className="relative flex items-center justify-center gap-2 min-h-[48px] px-4 bg-white border border-border rounded-xl text-brand-charcoal font-medium hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-brand-gold/50 shrink-0"
+                  aria-label={
+                    filterCount
+                      ? `Filters (${filterCount} active)`
+                      : "Open filters"
+                  }
                 >
-                  {tab.label}
+                  <SlidersHorizontal className="h-4 w-4" aria-hidden />
+                  Filters
+                  {filterCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-brand-gold text-white text-xs font-bold">
+                      {filterCount > 9 ? "9+" : filterCount}
+                    </span>
+                  )}
                 </button>
-              ))}
-            </div>
-
-            {/* Search */}
-            <div className="flex items-center gap-2 flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5">
-              <Search className="h-4 w-4 text-gray-400 shrink-0" />
-              <input
-                type="text"
-                placeholder="Search property or location..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="flex-1 text-sm outline-none text-gray-700 placeholder:text-gray-400 bg-transparent min-w-0"
-              />
-              {search && (
-                <button onClick={() => setSearch("")}>
-                  <X className="h-3.5 w-3.5 text-gray-400 hover:text-gray-600" />
+              </div>
+              {hasFilters && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="min-h-[44px] w-full rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-brand-charcoal hover:bg-white focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
+                >
+                  Clear all filters
                 </button>
               )}
             </div>
 
-            {/* Filters toggle */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors shrink-0",
-                showFilters
-                  ? "bg-brand-charcoal text-white border-brand-charcoal"
-                  : "border-gray-200 text-gray-600 hover:border-gray-400",
-              )}
-            >
-              <SlidersHorizontal className="h-4 w-4" />
-              Filters
-            </button>
-          </div>
-
-          {/* Expanded filter row */}
-          {showFilters && (
-            <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-gray-100">
-              {/* City */}
-              <select
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="text-sm border border-gray-200 rounded-xl px-4 py-2.5 outline-none text-gray-700 bg-white hover:border-gray-400 transition-colors cursor-pointer"
-              >
-                {CITIES.map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
-
-              {/* Price range */}
-              <select
-                value={priceIndex}
-                onChange={(e) => setPriceIndex(Number(e.target.value))}
-                className="text-sm border border-gray-200 rounded-xl px-4 py-2.5 outline-none text-gray-700 bg-white hover:border-gray-400 transition-colors cursor-pointer"
-              >
-                {PRICE_RANGES.map((pr, i) => (
-                  <option key={pr.label} value={i}>
-                    {pr.label}
-                  </option>
-                ))}
-              </select>
-
-              {/* Bedrooms */}
-              <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
-                {BEDROOMS.map((b) => (
+            {/* Desktop: search + filters in one row + badge + Clear */}
+            <div className="hidden md:flex flex-wrap items-end gap-3">
+              <div className="flex flex-col gap-1.5 min-w-[200px] flex-1 max-w-md">
+                <label className="block text-sm font-medium text-foreground">
+                  Search
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <input
+                    type="search"
+                    placeholder="Search properties..."
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    className="w-full min-h-[48px] pl-10 pr-4 py-3 text-base bg-white border border-border rounded-xl text-brand-charcoal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5 w-[160px]">
+                <label className="block text-sm font-medium text-foreground">
+                  Location
+                </label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <input
+                    type="text"
+                    placeholder="City"
+                    value={cityInput}
+                    onChange={(e) => setCityInput(e.target.value)}
+                    className="w-full min-h-[48px] pl-10 pr-4 py-3 text-base bg-white border border-border rounded-xl text-brand-charcoal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
+                  />
+                </div>
+              </div>
+              <div className="w-[130px]">
+                <FilterSelect
+                  label="Type"
+                  value={type}
+                  onValueChange={(v) => updateParams({ type: v || undefined })}
+                  options={[
+                    { value: "", label: "All" },
+                    { value: "sale", label: "Sale" },
+                    { value: "rent", label: "Rent" },
+                  ]}
+                  icon={<Home className="h-4 w-4" />}
+                />
+              </div>
+              <div className="w-[160px]">
+                <FilterSelect
+                  label="Category"
+                  value={category_id}
+                  onValueChange={(v) =>
+                    updateParams({ category_id: v || undefined })
+                  }
+                  options={[
+                    { value: "", label: "All" },
+                    ...categories.map((c) => ({ value: c.id, label: c.name })),
+                  ]}
+                  icon={<Home className="h-4 w-4" />}
+                />
+              </div>
+              <div className="w-[140px]">
+                <FilterSelect
+                  label="Price"
+                  value={priceRange}
+                  onValueChange={(v) => updateParams({ price: v || undefined })}
+                  options={PRICE_RANGES.map((r) => ({
+                    value: r.value,
+                    label: r.label,
+                  }))}
+                  icon={<Banknote className="h-4 w-4" />}
+                />
+              </div>
+              {hasFilters && (
+                <>
+                  <div className="flex items-end h-[48px]">
+                    <span
+                      className="flex min-w-[22px] h-[22px] items-center justify-center rounded-full bg-brand-gold text-white text-xs font-bold"
+                      title={`${filterCount} filter${filterCount !== 1 ? "s" : ""} active`}
+                    >
+                      {filterCount > 9 ? "9+" : filterCount}
+                    </span>
+                  </div>
                   <button
-                    key={b}
-                    onClick={() => setBedrooms(b)}
-                    className={cn(
-                      "px-3 py-1.5 text-xs font-medium rounded-lg transition-all",
-                      bedrooms === b
-                        ? "bg-brand-charcoal text-white"
-                        : "text-gray-500 hover:text-brand-charcoal",
-                    )}
+                    type="button"
+                    onClick={clearFilters}
+                    className="min-h-[48px] px-4 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-brand-charcoal hover:bg-white focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
                   >
-                    {b}
+                    Clear
                   </button>
+                </>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Mobile filter bottom sheet */}
+      <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl max-h-[85vh] overflow-y-auto"
+        >
+          <SheetHeader>
+            <SheetTitle>Filters</SheetTitle>
+          </SheetHeader>
+          <div className="grid gap-4 py-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="block text-sm font-medium text-foreground">
+                Location
+              </label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="e.g. Mumbai, Maharashtra"
+                  value={cityInput}
+                  onChange={(e) => setCityInput(e.target.value)}
+                  className="w-full min-h-[48px] pl-10 pr-4 py-3 text-base bg-muted border border-border rounded-xl text-brand-charcoal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
+                />
+              </div>
+            </div>
+            <FilterSelect
+              label="Type"
+              value={type}
+              onValueChange={(v) => updateParams({ type: v || undefined })}
+              options={[
+                { value: "", label: "All Types" },
+                { value: "sale", label: "For Sale" },
+                { value: "rent", label: "For Rent" },
+              ]}
+              icon={<Home className="h-4 w-4" />}
+              triggerClassName="bg-muted"
+            />
+            <FilterSelect
+              label="Category"
+              value={category_id}
+              onValueChange={(v) =>
+                updateParams({ category_id: v || undefined })
+              }
+              options={[
+                { value: "", label: "All Categories" },
+                ...categories.map((c) => ({ value: c.id, label: c.name })),
+              ]}
+              icon={<Home className="h-4 w-4" />}
+              triggerClassName="bg-muted"
+            />
+            <FilterSelect
+              label="Price Range"
+              value={priceRange}
+              onValueChange={(v) => updateParams({ price: v || undefined })}
+              options={PRICE_RANGES.map((r) => ({
+                value: r.value,
+                label: r.label,
+              }))}
+              icon={<Banknote className="h-4 w-4" />}
+              triggerClassName="bg-muted"
+            />
+          </div>
+          <SheetFooter className="flex-row gap-3 sm:gap-3">
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={() => {
+                  clearFilters();
+                  setFilterSheetOpen(false);
+                }}
+                className="min-h-[48px] px-6 rounded-xl border border-border text-muted-foreground font-semibold hover:text-brand-charcoal hover:bg-muted focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
+              >
+                Clear all
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setFilterSheetOpen(false)}
+              className="min-h-[48px] px-6 bg-brand-charcoal text-white font-semibold rounded-xl hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
+            >
+              Done
+            </button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
+      {/* Results (reduced top padding so no large gap below filters) */}
+      <section className="pt-8 pb-16 sm:pt-10 sm:pb-20 lg:pt-12 lg:pb-24 bg-muted/50">
+        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
+          {isLoading && (
+            <>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10">
+                <Skeleton className="h-5 w-40" />
+                <Skeleton className="h-10 w-32" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-14">
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <CardSkeleton key={i} />
+                ))}
+              </div>
+            </>
+          )}
+
+          {!isLoading && errorMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center justify-center py-16 sm:py-24 text-center"
+            >
+              <div className="rounded-full bg-destructive/10 p-4 mb-4">
+                <AlertCircle
+                  className="h-10 w-10 text-destructive"
+                  aria-hidden
+                />
+              </div>
+              <h2 className="text-lg font-semibold text-foreground mb-2">
+                Failed to load properties
+              </h2>
+              <p className="text-muted-foreground text-base max-w-md mb-6">
+                {errorMessage}
+              </p>
+              <button
+                type="button"
+                onClick={() => void refetch()}
+                className="inline-flex items-center justify-center min-h-[44px] px-6 py-3 rounded-xl bg-brand-charcoal text-white font-semibold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
+              >
+                Try again
+              </button>
+            </motion.div>
+          )}
+
+          {!isLoading && !errorMessage && properties.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center justify-center py-16 sm:py-24 text-center"
+            >
+              <div className="rounded-full bg-muted p-4 mb-4">
+                <SearchX
+                  className="h-10 w-10 text-muted-foreground"
+                  aria-hidden
+                />
+              </div>
+              <h2 className="text-lg font-semibold text-foreground mb-2">
+                No properties found
+              </h2>
+              <p className="text-muted-foreground text-base max-w-md mb-6">
+                {hasFilters
+                  ? "Try adjusting your filters or search to see more results."
+                  : "There are no properties listed yet. Check back later."}
+              </p>
+              {hasFilters && (
+                <button
+                  type="button"
+                  onClick={() => router.push("/properties")}
+                  className="inline-flex items-center justify-center min-h-[44px] px-6 py-3 rounded-xl border border-border text-foreground font-semibold hover:bg-muted focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
+                >
+                  Clear filters
+                </button>
+              )}
+            </motion.div>
+          )}
+
+          {!isLoading && !errorMessage && properties.length > 0 && (
+            <>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10">
+                <p className="text-muted-foreground text-base">
+                  Showing{" "}
+                  <span className="font-semibold text-brand-charcoal">
+                    {properties.length} of {total}
+                  </span>{" "}
+                  properties
+                </p>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-muted-foreground">Sort by:</span>
+                  <FilterSelect
+                    value={sort}
+                    onValueChange={(v) =>
+                      updateParams({
+                        sort: v as (typeof SORT_OPTIONS)[number]["value"],
+                      })
+                    }
+                    options={SORT_OPTIONS.map((o) => ({
+                      value: o.value,
+                      label: o.label,
+                    }))}
+                    placeholder="Sort"
+                    triggerClassName="min-h-[44px] w-auto min-w-[160px] border-0 bg-transparent font-semibold"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-14">
+                {properties.map((property, index) => (
+                  <PropertyCard
+                    key={property.id}
+                    property={property}
+                    index={index}
+                  />
                 ))}
               </div>
 
-              {/* Clear */}
-              <button
-                onClick={() => {
-                  setCity("All Cities");
-                  setPriceIndex(0);
-                  setBedrooms("Any");
-                  setSearch("");
-                  setActiveTab("all");
-                }}
-                className="text-xs text-gray-400 hover:text-brand-charcoal transition-colors flex items-center gap-1 px-3 py-2.5"
+              <div
+                ref={loadMoreRef}
+                className="min-h-[24px] flex items-center justify-center py-8"
               >
-                <X className="h-3 w-3" /> Clear filters
-              </button>
-            </div>
+                {isFetchingNextPage && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span className="size-4 animate-spin rounded-full border-2 border-brand-gold border-t-transparent" />
+                    Loading more…
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
-      </div>
-
-      {/* Results */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12">
-        {/* Results count */}
-        <p className="text-sm text-gray-400 mb-8">
-          {isLoading ? "Loading..." : `${properties.length} properties found`}
-        </p>
-
-        {/* Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {isLoading
-            ? Array.from({ length: 9 }).map((_, i) => <CardSkeleton key={i} />)
-            : properties.map((p, i) => (
-                <PropertyCard key={p.id} property={p} index={i} />
-              ))}
-        </div>
-
-        {!isLoading && properties.length === 0 && (
-          <div className="text-center py-24">
-            <p className="text-gray-400 text-sm">
-              No properties found for your criteria.
-            </p>
-          </div>
-        )}
-      </div>
+      </section>
     </>
   );
 }

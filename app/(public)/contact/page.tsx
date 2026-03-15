@@ -104,8 +104,8 @@ export default function ContactPage() {
         description="Whether you're looking to buy, sell, rent, or have a question—our team is here to help. Reach out and we'll get back to you soon."
       />
 
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16 sm:py-24 bg-white">
+        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Contact Form */}
             <motion.div
@@ -117,7 +117,7 @@ export default function ContactPage() {
                 <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
                   Send Us a Message
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Whether you&apos;re looking to buy, sell, or just have a
                   question, our team is ready to assist you.
                 </p>
@@ -132,7 +132,7 @@ export default function ContactPage() {
                   <div>
                     <label
                       htmlFor="firstName"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-foreground mb-2"
                     >
                       First Name <span className="text-red-500">*</span>
                     </label>
@@ -140,7 +140,7 @@ export default function ContactPage() {
                       type="text"
                       id="firstName"
                       {...register("firstName")}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
+                      className="w-full min-h-[48px] px-4 py-3 text-base bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
                       placeholder="e.g. Ramesh"
                     />
                     {errors.firstName && (
@@ -152,7 +152,7 @@ export default function ContactPage() {
                   <div>
                     <label
                       htmlFor="lastName"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-foreground mb-2"
                     >
                       Last Name <span className="text-red-500">*</span>
                     </label>
@@ -160,7 +160,7 @@ export default function ContactPage() {
                       type="text"
                       id="lastName"
                       {...register("lastName")}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
+                      className="w-full min-h-[48px] px-4 py-3 text-base bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
                       placeholder="e.g. Kumar"
                     />
                     {errors.lastName && (
@@ -175,7 +175,7 @@ export default function ContactPage() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-foreground mb-2"
                     >
                       Email Address <span className="text-red-500">*</span>
                     </label>
@@ -183,7 +183,7 @@ export default function ContactPage() {
                       type="email"
                       id="email"
                       {...register("email")}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
+                      className="w-full min-h-[48px] px-4 py-3 text-base bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
                       placeholder="e.g. name@example.com"
                     />
                     {errors.email && (
@@ -195,7 +195,7 @@ export default function ContactPage() {
                   <div>
                     <label
                       htmlFor="phone"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-foreground mb-2"
                     >
                       Phone Number
                     </label>
@@ -203,7 +203,7 @@ export default function ContactPage() {
                       type="tel"
                       id="phone"
                       {...register("phone")}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
+                      className="w-full min-h-[48px] px-4 py-3 text-base bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all"
                       placeholder="e.g. 98765 43210"
                     />
                     {errors.phone && (
@@ -217,7 +217,7 @@ export default function ContactPage() {
                 <div>
                   <label
                     htmlFor="interest"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-foreground mb-2"
                   >
                     I&apos;m interested in{" "}
                     <span className="text-red-500">*</span>
@@ -233,22 +233,22 @@ export default function ContactPage() {
                         <SelectTrigger
                           id="interest"
                           className={cn(
-                            "w-full h-[52px] px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 shadow-sm transition-all",
+                            "w-full h-[52px] px-4 py-3 rounded-xl border border-border bg-muted text-foreground shadow-sm transition-all",
                             "focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold focus:ring-offset-0",
-                            "hover:bg-gray-100/80",
-                            "data-[placeholder]:text-gray-500",
+                            "hover:bg-muted/80",
+                            "data-[placeholder]:text-muted-foreground",
                             errors.interest &&
                               "border-red-500 focus:ring-red-500/20 focus:border-red-500",
                           )}
                         >
                           <SelectValue placeholder="Choose an option" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-xl border border-gray-200 bg-white shadow-lg">
+                        <SelectContent className="rounded-xl border border-border bg-white shadow-lg">
                           {interestOptions.map((opt) => (
                             <SelectItem
                               key={opt.value}
                               value={opt.value}
-                              className="rounded-lg py-2.5 pl-3 pr-8 focus:bg-amber-50 focus:text-foreground cursor-pointer"
+                              className="rounded-lg py-2.5 pl-3 pr-8 focus:bg-brand-gold/10 focus:text-foreground cursor-pointer"
                             >
                               {opt.label}
                             </SelectItem>
@@ -267,7 +267,7 @@ export default function ContactPage() {
                 <div>
                   <label
                     htmlFor="message"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-foreground mb-2"
                   >
                     Message
                   </label>
@@ -275,7 +275,7 @@ export default function ContactPage() {
                     id="message"
                     rows={5}
                     {...register("message")}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all resize-none"
+                    className="w-full min-h-[120px] px-4 py-3 text-base bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all resize-none"
                     placeholder="How can we help you? (optional; if provided, min. 10 characters)"
                   />
                   {errors.message && (
@@ -303,7 +303,7 @@ export default function ContactPage() {
               transition={{ delay: 0.2 }}
               className="flex flex-col h-full"
             >
-              <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 mb-8">
+              <div className="bg-muted p-8 rounded-2xl border border-border mb-8">
                 <h3 className="font-heading text-2xl font-bold text-foreground mb-6">
                   Contact Information
                 </h3>
@@ -372,7 +372,7 @@ export default function ContactPage() {
               </div>
 
               {/* Map */}
-              <div className="flex-grow min-h-[300px] bg-gray-200 rounded-2xl overflow-hidden relative">
+              <div className="flex-grow min-h-[300px] bg-muted rounded-2xl overflow-hidden relative">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.1422937950147!2d-73.98731968459391!3d40.75889497932681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae072e!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1644469238848!5m2!1sen!2sus"
                   width="100%"

@@ -12,8 +12,8 @@ export default function TermsPage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-black pt-20 pb-24 px-4 sm:px-6 lg:px-10 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
+      <section className="bg-black pt-20 pb-24 px-4 sm:px-6 lg:px-16 xl:px-24 overflow-hidden">
+        <div className="max-w-[1680px] mx-auto">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10">
             <div>
               <p className="text-white/40 text-xs tracking-[0.2em] uppercase mb-6 flex items-center gap-3">
@@ -27,7 +27,7 @@ export default function TermsPage() {
               </h1>
             </div>
             <div className="lg:max-w-xs">
-              <p className="text-white/50 text-sm leading-relaxed">
+              <p className="text-white/50 text-base leading-relaxed">
                 Please read these terms carefully before using our website or
                 services. By accessing The Real Business, you agree to be bound
                 by these terms.
@@ -41,8 +41,8 @@ export default function TermsPage() {
       </section>
 
       {/* Content */}
-      <section className="py-24 bg-white px-4 sm:px-6 lg:px-10">
-        <div className="max-w-3xl mx-auto prose prose-gray prose-headings:font-heading prose-headings:text-brand-charcoal prose-p:text-gray-600 prose-p:text-sm prose-li:text-gray-600 prose-li:text-sm">
+      <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-16 xl:px-24">
+        <div className="max-w-3xl mx-auto prose prose-neutral prose-headings:font-heading prose-headings:text-brand-charcoal prose-p:text-muted-foreground prose-p:text-base prose-li:text-muted-foreground prose-li:text-base">
           <h2 id="acceptance">1. Acceptance of Terms</h2>
           <p>
             By accessing or using the website and services of The Real Business

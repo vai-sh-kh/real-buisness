@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProperties } from "@/lib/queries/properties";
-import { toUserFriendlyMessage } from "@/lib/db-errors";
+import {
+  CONNECTION_UNAVAILABLE_MESSAGE,
+  toUserFriendlyMessage,
+  withConnectionRetry,
+} from "@/lib/db-errors";
 
 // Public endpoint — serves the landing page featured properties
 export async function GET(request: NextRequest) {
@@ -16,24 +20,27 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get("limit") ?? "12", 10);
   const search = searchParams.get("search") ?? undefined;
   try {
-    const { data, total } = await getProperties({
-      type: type ?? undefined,
-      category_id,
-      city,
-      min_price: min_price ? Number(min_price) : undefined,
-      max_price: max_price ? Number(max_price) : undefined,
-      bedrooms: bedrooms ? Number(bedrooms) : undefined,
-      status: "active",
-      search,
-      sort,
-      page,
-      limit,
-    });
-
+    const { data, total } = await withConnectionRetry(() =>
+      getProperties({
+        type: type ?? undefined,
+        category_id,
+        city,
+        min_price: min_price ? Number(min_price) : undefined,
+        max_price: max_price ? Number(max_price) : undefined,
+        bedrooms: bedrooms ? Number(bedrooms) : undefined,
+        status: "active",
+        search,
+        sort,
+        page,
+        limit,
+      }),
+    );
     return NextResponse.json({ data, total });
   } catch (err) {
     const message = toUserFriendlyMessage(err);
     console.error("[GET /api/properties]", err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status =
+      message === CONNECTION_UNAVAILABLE_MESSAGE ? 503 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }

@@ -12,22 +12,22 @@ export default function PrivacyPage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-black pt-20 pb-24 px-4 sm:px-6 lg:px-10 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
+      <section className="bg-brand-charcoal pt-20 pb-24 px-4 sm:px-6 lg:px-16 xl:px-24 overflow-hidden">
+        <div className="max-w-[1680px] mx-auto">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10">
             <div>
               <p className="text-white/40 text-xs tracking-[0.2em] uppercase mb-6 flex items-center gap-3">
                 <span className="h-px w-8 bg-white/20 inline-block" />
                 Legal
               </p>
-              <h1 className="text-5xl sm:text-6xl lg:text-[80px] font-bold text-white leading-[0.95] tracking-tight max-w-3xl">
+              <h1 className="text-4xl xs:text-5xl sm:text-6xl lg:text-[80px] font-bold text-white leading-[0.95] tracking-tight max-w-3xl">
                 Privacy
                 <br />
                 <span className="italic font-light">Policy</span>
               </h1>
             </div>
             <div className="lg:max-w-xs">
-              <p className="text-white/50 text-sm leading-relaxed">
+              <p className="text-white/50 text-base leading-relaxed">
                 We are committed to protecting your privacy. This policy
                 describes how we collect, use, and safeguard your personal
                 information when you use our website and services.
@@ -41,8 +41,8 @@ export default function PrivacyPage() {
       </section>
 
       {/* Content */}
-      <section className="py-24 bg-white px-4 sm:px-6 lg:px-10">
-        <div className="max-w-3xl mx-auto prose prose-gray prose-headings:font-heading prose-headings:text-brand-charcoal prose-p:text-gray-600 prose-p:text-sm prose-li:text-gray-600 prose-li:text-sm">
+      <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-16 xl:px-24">
+        <div className="max-w-3xl mx-auto prose prose-neutral prose-headings:font-heading prose-headings:text-brand-charcoal prose-p:text-muted-foreground prose-p:text-sm prose-li:text-muted-foreground prose-li:text-sm">
           <h2 id="information-we-collect">1. Information We Collect</h2>
           <p>
             We may collect information you provide directly, such as your name,

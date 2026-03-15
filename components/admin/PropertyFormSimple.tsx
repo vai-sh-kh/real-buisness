@@ -176,40 +176,56 @@ export function PropertyFormSimple({
             </div>
             <div>
               <Label>Price</Label>
-              <Input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                {...form.register("price", {
-                  setValueAs: (v) => {
-                    if (v === "" || v == null) return undefined;
-                    const digits = String(v).replace(/\D/g, "");
-                    return digits === "" ? undefined : Number(digits);
-                  },
-                })}
-                onKeyDown={(e) => {
-                  if (
-                    !/[\d]/.test(e.key) &&
-                    ![
-                      "Backspace",
-                      "Tab",
-                      "ArrowLeft",
-                      "ArrowRight",
-                      "Delete",
-                    ].includes(e.key)
-                  ) {
+              <div className="flex gap-2 mt-1">
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  {...form.register("price", {
+                    setValueAs: (v) => {
+                      if (v === "" || v == null) return undefined;
+                      const digits = String(v).replace(/\D/g, "");
+                      return digits === "" ? undefined : Number(digits);
+                    },
+                  })}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[\d]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Tab",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Delete",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onPaste={(e) => {
                     e.preventDefault();
+                    const digits = e.clipboardData
+                      .getData("text")
+                      .replace(/\D/g, "");
+                    form.setValue("price", digits === "" ? 0 : Number(digits));
+                  }}
+                  className="flex-1 min-w-0"
+                />
+                <Select
+                  value={form.watch("price_type") ?? "total"}
+                  onValueChange={(v: "total" | "percent") =>
+                    form.setValue("price_type", v)
                   }
-                }}
-                onPaste={(e) => {
-                  e.preventDefault();
-                  const digits = e.clipboardData
-                    .getData("text")
-                    .replace(/\D/g, "");
-                  form.setValue("price", digits === "" ? 0 : Number(digits));
-                }}
-                className="mt-1"
-              />
+                >
+                  <SelectTrigger className="w-[130px] shrink-0">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="total">Total amount</SelectItem>
+                    <SelectItem value="percent">Per cent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               {form.formState.errors.price && (
                 <p className="text-sm text-destructive mt-1">
                   {form.formState.errors.price.message}

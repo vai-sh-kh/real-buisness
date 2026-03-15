@@ -60,8 +60,10 @@ const defaultValues: PropertyFormValues = {
   short_description: null,
   type: "sale",
   status: "active",
+  is_featured: false,
   category_id: null,
   price: undefined as unknown as number,
+  price_type: "total",
   price_label: null,
   area_sqft: null,
   bedrooms: null,
@@ -185,8 +187,10 @@ export function PropertySheet({
         short_description: property.short_description,
         type: property.type,
         status: property.status,
+        is_featured: property.is_featured ?? false,
         category_id: property.category_id,
         price: Number(property.price),
+        price_type: property.price_type ?? "total",
         price_label: property.price_label,
         area_sqft:
           property.area_sqft != null ? Number(property.area_sqft) : null,
@@ -257,8 +261,10 @@ export function PropertySheet({
     "slug",
     "type",
     "status",
+    "is_featured",
     "category_id",
     "price",
+    "price_type",
     "price_label",
     "cover_image_url",
     "short_description",
@@ -751,6 +757,26 @@ export function PropertySheet({
                       </div>
                     </div>
 
+                    <div
+                      className="flex items-center gap-3"
+                      data-error-field="is_featured"
+                    >
+                      <Checkbox
+                        id="is_featured"
+                        checked={watch("is_featured")}
+                        onCheckedChange={(checked) =>
+                          setValue("is_featured", !!checked)
+                        }
+                      />
+                      <Label
+                        htmlFor="is_featured"
+                        className="text-sm font-medium text-gray-700 cursor-pointer"
+                      >
+                        Featured listing (show on homepage / highlight in
+                        listings)
+                      </Label>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4 items-start">
                       <div
                         className="flex flex-col gap-2"
@@ -798,51 +824,74 @@ export function PropertySheet({
                         >
                           Price (₹) <RequiredStar />
                         </Label>
-                        <div className="relative w-full">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">
-                            ₹
-                          </span>
-                          <Input
-                            id="price"
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            {...register("price", {
-                              setValueAs: (v) => {
-                                if (v === "" || v == null) return undefined;
-                                const digits = String(v).replace(/\D/g, "");
-                                return digits === ""
-                                  ? undefined
-                                  : Number(digits);
-                              },
-                            })}
-                            onKeyDown={(e) => {
-                              if (
-                                !/[\d]/.test(e.key) &&
-                                ![
-                                  "Backspace",
-                                  "Tab",
-                                  "ArrowLeft",
-                                  "ArrowRight",
-                                  "Delete",
-                                ].includes(e.key)
-                              ) {
+                        <div className="flex gap-2 w-full">
+                          <div className="relative flex-1 min-w-0">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">
+                              ₹
+                            </span>
+                            <Input
+                              id="price"
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              {...register("price", {
+                                setValueAs: (v) => {
+                                  if (v === "" || v == null) return undefined;
+                                  const digits = String(v).replace(/\D/g, "");
+                                  return digits === ""
+                                    ? undefined
+                                    : Number(digits);
+                                },
+                              })}
+                              onKeyDown={(e) => {
+                                if (
+                                  !/[\d]/.test(e.key) &&
+                                  ![
+                                    "Backspace",
+                                    "Tab",
+                                    "ArrowLeft",
+                                    "ArrowRight",
+                                    "Delete",
+                                  ].includes(e.key)
+                                ) {
+                                  e.preventDefault();
+                                }
+                              }}
+                              onPaste={(e) => {
                                 e.preventDefault();
-                              }
-                            }}
-                            onPaste={(e) => {
-                              e.preventDefault();
-                              const digits = e.clipboardData
-                                .getData("text")
-                                .replace(/\D/g, "");
-                              setValue(
-                                "price",
-                                digits === "" ? 0 : Number(digits),
-                              );
-                            }}
-                            placeholder="5000000"
-                            className="h-12 w-full rounded-xl border-gray-200 focus:ring-indigo-500 pl-8 font-bold"
-                          />
+                                const digits = e.clipboardData
+                                  .getData("text")
+                                  .replace(/\D/g, "");
+                                setValue(
+                                  "price",
+                                  digits === "" ? 0 : Number(digits),
+                                );
+                              }}
+                              placeholder="5000000"
+                              className="h-12 w-full rounded-xl border-gray-200 focus:ring-indigo-500 pl-8 font-bold"
+                            />
+                          </div>
+                          <Select
+                            value={watch("price_type") ?? "total"}
+                            onValueChange={(v: "total" | "percent") =>
+                              setValue("price_type", v)
+                            }
+                          >
+                            <SelectTrigger className="h-12 w-[130px] shrink-0 rounded-xl border-gray-200 font-medium">
+                              <SelectValue placeholder="Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="total" className="rounded-lg">
+                                Total amount
+                              </SelectItem>
+                              <SelectItem
+                                value="percent"
+                                className="rounded-lg"
+                              >
+                                Per cent
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         {errors.price && (
                           <p className="text-xs text-destructive font-medium ml-1">

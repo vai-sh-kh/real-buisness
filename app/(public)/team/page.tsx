@@ -87,8 +87,8 @@ export default function TeamPage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-[#f8f8f6] pt-20 pb-16 px-4 sm:px-6 lg:px-10">
-        <div className="max-w-7xl mx-auto">
+      <section className="bg-[#f8f8f6] pt-20 pb-16 px-4 sm:px-6 lg:px-16 xl:px-24">
+        <div className="max-w-[1680px] mx-auto">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
             <div>
               <p className="text-sm text-gray-400 tracking-widest mb-3">
@@ -120,8 +120,8 @@ export default function TeamPage() {
       </section>
 
       {/* Team grid */}
-      <section className="py-20 bg-white px-4 sm:px-6 lg:px-10">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-20 bg-white px-4 sm:px-6 lg:px-16 xl:px-24">
+        <div className="max-w-[1680px] mx-auto">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {team.map((member, i) => (
               <div key={member.name} className="group">
@@ -176,8 +176,8 @@ export default function TeamPage() {
       </section>
 
       {/* Join the team CTA */}
-      <section className="py-20 bg-black px-4 sm:px-6 lg:px-10">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8">
+      <section className="py-20 bg-black px-4 sm:px-6 lg:px-16 xl:px-24">
+        <div className="max-w-[1680px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-8">
           <div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
               Want to join our team?

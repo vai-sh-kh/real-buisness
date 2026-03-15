@@ -102,6 +102,7 @@ export async function POST(request: NextRequest) {
     status: d.status,
     category_id: d.category_id ?? null,
     price: d.price,
+    price_type: d.price_type ?? "total",
     price_label: d.price_label ?? null,
     area_sqft: d.area_sqft ?? null,
     bedrooms: d.bedrooms ?? null,

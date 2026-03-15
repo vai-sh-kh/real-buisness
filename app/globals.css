@@ -6,12 +6,12 @@
   :root {
     /* Logo-derived: white #FFFFFF, gold #B79354, charcoal #1A1A1A */
     --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
+    --foreground: 0 0% 6%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 0 0% 6%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
-    --primary: 0 0% 10%;
+    --popover-foreground: 0 0% 6%;
+    --primary: 0 0% 6%;
     --primary-foreground: 0 0% 100%;
     --brand-gold: 38 39% 52%;
     --brand-gold-foreground: 0 0% 10%;
@@ -19,11 +19,11 @@
     --gold-foreground: 0 0% 10%;
     --brand-charcoal: 0 0% 10%;
     --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 10%;
+    --secondary-foreground: 0 0% 6%;
     --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted-foreground: 0 0% 40%;
     --accent: 38 39% 96%;
-    --accent-foreground: 0 0% 10%;
+    --accent-foreground: 0 0% 6%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 90%;
@@ -34,6 +34,8 @@
     --surface-light: 0 0% 98%;
     --brand-gold-hover: 38 39% 58%;
     --brand-gold-muted: 38 39% 92%;
+    --client-muted: 0 0% 40%;
+    --client-border: 0 0% 88%;
     --brand-blue: 221 83% 53%;
     --brand-blue-foreground: 0 0% 100%;
     --brand-blue-hover: 221 83% 48%;
@@ -49,11 +51,20 @@
     @apply border-border;
   }
   html {
+    font-size: 16px;
     background-color: hsl(var(--background));
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-base;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Optional fluid typography for hero headings (use via var() in components) */
+@layer base {
+  :root {
+    --text-hero: clamp(1.75rem, 5vw + 1rem, 4.5rem);
+    --text-h1: clamp(1.5rem, 3vw + 0.5rem, 3rem);
   }
 }
 

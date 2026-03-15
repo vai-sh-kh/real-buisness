@@ -52,16 +52,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 const defaultFormValues: Partial<PropertyFormValues> = {
   type: "sale",
   status: "draft",
+  is_featured: false,
   country: "India",
   description: null,
   short_description: null,
   category_id: null,
+  price_type: "total",
   price_label: null,
   area_sqft: null,
   bedrooms: null,
@@ -80,8 +83,10 @@ function propertyToFormValues(
     short_description: p.short_description ?? undefined,
     type: p.type,
     status: p.status,
+    is_featured: p.is_featured ?? false,
     category_id: p.category_id ?? undefined,
     price: Number(p.price),
+    price_type: p.price_type ?? "total",
     price_label: p.price_label ?? undefined,
     area_sqft: p.area_sqft != null ? Number(p.area_sqft) : undefined,
     bedrooms: p.bedrooms ?? undefined,
@@ -536,42 +541,70 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
                 </SelectContent>
               </Select>
             </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="is_featured_table"
+                checked={form.watch("is_featured")}
+                onCheckedChange={(checked) =>
+                  form.setValue("is_featured", !!checked)
+                }
+              />
+              <Label htmlFor="is_featured_table" className="cursor-pointer">
+                Featured listing
+              </Label>
+            </div>
             <div>
               <Label>Price</Label>
-              <Input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                {...form.register("price", {
-                  setValueAs: (v) => {
-                    if (v === "" || v == null) return undefined;
-                    const digits = String(v).replace(/\D/g, "");
-                    return digits === "" ? undefined : Number(digits);
-                  },
-                })}
-                onKeyDown={(e) => {
-                  if (
-                    !/[\d]/.test(e.key) &&
-                    ![
-                      "Backspace",
-                      "Tab",
-                      "ArrowLeft",
-                      "ArrowRight",
-                      "Delete",
-                    ].includes(e.key)
-                  ) {
+              <div className="flex gap-2 mt-1">
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  {...form.register("price", {
+                    setValueAs: (v) => {
+                      if (v === "" || v == null) return undefined;
+                      const digits = String(v).replace(/\D/g, "");
+                      return digits === "" ? undefined : Number(digits);
+                    },
+                  })}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[\d]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Tab",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Delete",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onPaste={(e) => {
                     e.preventDefault();
+                    const digits = e.clipboardData
+                      .getData("text")
+                      .replace(/\D/g, "");
+                    form.setValue("price", digits === "" ? 0 : Number(digits));
+                  }}
+                  className="flex-1 min-w-0"
+                />
+                <Select
+                  value={form.watch("price_type") ?? "total"}
+                  onValueChange={(v: "total" | "percent") =>
+                    form.setValue("price_type", v)
                   }
-                }}
-                onPaste={(e) => {
-                  e.preventDefault();
-                  const digits = e.clipboardData
-                    .getData("text")
-                    .replace(/\D/g, "");
-                  form.setValue("price", digits === "" ? 0 : Number(digits));
-                }}
-                className="mt-1"
-              />
+                >
+                  <SelectTrigger className="w-[130px] shrink-0">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="total">Total amount</SelectItem>
+                    <SelectItem value="percent">Per cent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               {form.formState.errors.price && (
                 <p className="text-sm text-destructive mt-1">
                   {form.formState.errors.price.message}

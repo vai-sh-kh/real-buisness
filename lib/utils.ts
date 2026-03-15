@@ -27,6 +27,12 @@ export function formatPrice(price: number, currency = "₹"): string {
   return `${currency}${price.toLocaleString("en-IN")}`;
 }
 
+export function getPriceTypeLabel(
+  priceType: "total" | "percent" | undefined
+): string {
+  return priceType === "percent" ? "Per cent" : "Total amount";
+}
+
 export function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString("en-IN", {
     day: "numeric",

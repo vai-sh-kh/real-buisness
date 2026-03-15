@@ -15,7 +15,7 @@ export function CTA() {
       ref={ref}
       aria-labelledby="cta-heading"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+      <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 sm:gap-10">
           <div>
             <motion.span
@@ -52,7 +52,7 @@ export function CTA() {
             }}
             className="lg:max-w-xs"
           >
-            <p className="text-white/60 text-sm leading-relaxed mb-6 sm:mb-8">
+            <p className="text-white/60 text-base leading-relaxed mb-6 sm:mb-8">
               Get in touch with our experts and start your journey to the
               perfect property for your lifestyle and budget.
             </p>
@@ -84,7 +84,7 @@ export function CTA() {
           </div>
           <a
             href="mailto:contact@therealbusiness.com"
-            className="text-sm text-white/50 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded"
+            className="text-base text-white/50 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded py-2 min-h-[44px] inline-flex items-center"
           >
             contact@therealbusiness.com
           </a>

@@ -1,11 +1,16 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Admin panel responsive breakpoints (Tailwind defaults):
- * - default: mobile-first (< 640px)
- * - sm: 640px (larger phones / small tablets)
- * - md: 768px (optional intermediate layouts)
- * - lg: 1024px (admin layout switch: sidebar vs bottom nav, sheet side)
+ * Responsive breakpoints (mobile-first).
+ * Public site + admin:
+ * - default: 0–639px (small phones 320px, large phones 375–414px)
+ * - xs: 480px (optional step between default and sm)
+ * - sm: 640px (large phones landscape, small tablets)
+ * - md: 768px (tablets portrait; admin layout)
+ * - lg: 1024px (tablets landscape, laptops; admin sidebar vs bottom nav)
+ * - xl: 1280px (desktops)
+ * - 2xl: 1536px (large desktops)
+ * - 3xl: 1920px (Full HD+, TV-like; use for max-width/typography)
  */
 
 const config: Config = {
@@ -28,6 +33,10 @@ const config: Config = {
       },
     },
     extend: {
+      screens: {
+        xs: "480px",
+        "3xl": "1920px",
+      },
       fontFamily: {
         "admin-sans": ["var(--admin-font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
@@ -108,6 +117,12 @@ const config: Config = {
         "admin-card": {
           bg: "hsl(var(--admin-card-bg))",
           border: "hsl(var(--admin-card-border))",
+        },
+        /* Luxury properties page */
+        luxury: {
+          primary: "#c9a96e",
+          "bg-light": "#f8f7f6",
+          "text-dark": "#1e1a14",
         },
       },
       borderRadius: {

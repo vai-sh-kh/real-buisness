@@ -42,6 +42,23 @@ export function useAllCategories() {
   });
 }
 
+/** Public categories for properties page filters (no auth). */
+export function usePublicCategories() {
+  return useQuery<Category[]>({
+    queryKey: ["categories", "public"],
+    queryFn: async () => {
+      const res = await fetch("/api/categories", { credentials: "include" });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json?.error ?? "Failed to load categories");
+      }
+      const json = await res.json();
+      return (json.data ?? []) as Category[];
+    },
+    staleTime: 2 * 60 * 1000,
+  });
+}
+
 export function useCreateCategory() {
   const qc = useQueryClient();
   return useMutation({

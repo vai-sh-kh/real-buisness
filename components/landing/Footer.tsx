@@ -11,7 +11,7 @@ const pages = [
   { label: "Home", href: "/" },
   { label: "Properties", href: "/properties" },
   { label: "About", href: "/about" },
-  { label: "Our Team", href: "/team" },
+  { label: "Services", href: "/services" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -71,14 +71,14 @@ function SocialIcon({ platform }: { platform: SocialPlatform }) {
 
 export function Footer() {
   return (
-    <footer className="bg-gray-900 text-white pt-16 sm:pt-20 pb-8 sm:pb-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+    <footer className="bg-brand-charcoal text-white pt-16 sm:pt-20 pb-24 md:pb-10">
+      <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 pb-12 sm:pb-14 border-b border-white/15">
           <div className="lg:col-span-2">
             {/* Text logo - white */}
             <Link
               href="/"
-              className="inline-block mb-5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 rounded"
+              className="inline-block mb-5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 focus-visible:ring-offset-brand-charcoal rounded"
             >
               <span className="font-heading text-xl sm:text-2xl font-bold tracking-tight text-white uppercase leading-tight">
                 <span className="block">The Real</span>
@@ -97,7 +97,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.ariaLabel}
-                  className="h-10 w-10 rounded-full border border-white/20 flex items-center justify-center text-white/50 hover:text-brand-gold hover:border-brand-gold/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                  className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full border border-white/20 flex items-center justify-center text-white/50 hover:text-brand-gold hover:border-brand-gold/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 focus-visible:ring-offset-brand-charcoal"
                 >
                   <SocialIcon platform={social.platform} />
                 </a>
@@ -114,7 +114,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-base text-white/60 hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded py-1 inline-block"
+                    className="text-base text-white/60 hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded py-3 min-h-[44px] flex items-center inline-block"
                   >
                     {link.label}
                   </Link>
@@ -132,7 +132,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-base text-white/60 hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded py-1 inline-block"
+                    className="text-base text-white/60 hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded py-3 min-h-[44px] flex items-center inline-block"
                   >
                     {link.label}
                   </Link>

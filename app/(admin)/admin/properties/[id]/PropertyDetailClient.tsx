@@ -332,11 +332,16 @@ export function PropertyDetailClient({
                 >
                   ₹{Number(property.price).toLocaleString("en-IN")}
                 </span>
-                {property.price_label && (
-                  <span className="ml-1.5 text-sm text-muted-foreground">
-                    ({formatDetailValue(property.price_label)})
-                  </span>
-                )}
+                <span className="ml-1.5 text-sm text-muted-foreground">
+                  (
+                  {property.price_type === "percent"
+                    ? "Per cent"
+                    : "Total amount"}
+                  {property.price_label
+                    ? ` · ${formatDetailValue(property.price_label)}`
+                    : ""}
+                  )
+                </span>
               </p>
               <p className="text-sm">
                 <span className={FIELD_LABEL_CLASS}>Short description: </span>
@@ -413,7 +418,12 @@ export function PropertyDetailClient({
                     <span className="text-xs sm:text-sm text-amber-900/80 font-medium">
                       {label}:{" "}
                     </span>
-                    <span className={cn("text-sm sm:text-base font-semibold", VALUE_CLASS)}>
+                    <span
+                      className={cn(
+                        "text-sm sm:text-base font-semibold",
+                        VALUE_CLASS,
+                      )}
+                    >
                       {formatDetailValue(value)}
                     </span>
                   </p>
