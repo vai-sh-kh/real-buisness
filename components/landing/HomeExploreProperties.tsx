@@ -178,7 +178,7 @@ export function HomeExploreProperties() {
                 type="button"
                 onClick={() => setActiveTab(tab.value)}
                 className={cn(
-                  "min-h-[44px] px-4 sm:px-5 rounded-xl text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2",
+                  "min-h-[48px] sm:min-h-[44px] px-4 sm:px-5 rounded-xl text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2",
                   activeTab === tab.value
                     ? "bg-brand-charcoal text-white"
                     : "bg-white border border-border text-muted-foreground hover:border-brand-gold/50 hover:text-brand-charcoal"
@@ -189,7 +189,7 @@ export function HomeExploreProperties() {
             ))}
             <Link
               href="/properties"
-              className="min-h-[44px] px-4 sm:px-5 rounded-xl bg-brand-gold text-white text-sm font-semibold inline-flex items-center gap-2 hover:bg-brand-gold/90 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 shrink-0"
+              className="min-h-[48px] sm:min-h-[44px] px-4 sm:px-5 rounded-xl bg-brand-gold text-white text-sm font-semibold inline-flex items-center gap-2 hover:bg-brand-gold/90 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 shrink-0"
             >
               View all
               <ArrowRight className="h-4 w-4" />

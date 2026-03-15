@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -39,8 +40,9 @@ export function OurVision() {
       aria-labelledby="vision-heading"
     >
       <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
-        <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-20 items-center">
-          <div className="min-w-0 order-2 lg:order-1">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 xl:gap-20 items-stretch">
+          {/* Content column */}
+          <div className="min-w-0 order-2 lg:order-1 flex flex-col">
             <motion.span
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
@@ -68,7 +70,7 @@ export function OurVision() {
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
               transition={{ duration: 0.5, delay: 0.15 }}
-              className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-8 sm:mb-10 max-w-md"
+              className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-6 sm:mb-8 max-w-md"
             >
               We create innovative, sustainable communities that enhance
               lifestyles, prioritize comfort, and deliver lasting value through
@@ -102,32 +104,33 @@ export function OurVision() {
             </div>
           </div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 24 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{
-                duration: 0.7,
-                ease: [0.22, 1, 0.36, 1],
-                delay: 0.15,
-              }}
-              className="relative order-1 lg:order-last min-w-0"
-            >
-            <div className="aspect-[3/4] max-h-[280px] sm:max-h-[360px] md:max-h-[420px] lg:max-h-none rounded-xl sm:rounded-2xl overflow-hidden bg-muted">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
-                alt="Modern sustainable home"
-                loading="lazy"
-                decoding="async"
-                className="h-full w-full object-cover"
+          {/* Image column: same height as content on desktop */}
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{
+              duration: 0.7,
+              ease: [0.22, 1, 0.36, 1],
+              delay: 0.15,
+            }}
+            className="relative order-1 lg:order-last min-w-0 flex flex-col lg:h-full"
+          >
+            <div className="relative w-full flex-1 min-h-[260px] sm:min-h-[300px] lg:min-h-0 lg:h-full rounded-xl sm:rounded-2xl overflow-hidden bg-muted border border-border">
+              <Image
+                src="/about-story.jpg"
+                alt="Real estate development and sustainable communities"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority={false}
               />
-            </div>
-            <div className="absolute -bottom-4 -left-4 right-4 sm:right-auto sm:w-48 bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-xl border border-border">
-              <div className="text-2xl sm:text-3xl font-bold text-brand-gold">
-                14%
-              </div>
-              <div className="text-xs text-muted-foreground mt-0.5">
-                Annual ROI average
+              <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:w-44 bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-lg border border-border">
+                <div className="text-2xl sm:text-3xl font-bold text-brand-gold">
+                  14%
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  Annual ROI average
+                </div>
               </div>
             </div>
           </motion.div>
