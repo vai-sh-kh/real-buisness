@@ -51,12 +51,10 @@ export const adminPageTitles: Record<string, string> = {
   "/admin/categories": "Categories",
   "/admin/leads": "Leads",
   "/admin/reports": "Reports",
-  "/admin/settings": "Settings",
 };
 
 export function getAdminPageTitle(pathname: string): string {
   if (adminPageTitles[pathname]) return adminPageTitles[pathname];
   if (pathname.startsWith("/admin/properties/")) return "Property";
-  if (pathname.startsWith("/admin/settings")) return "Settings";
   return "Admin";
 }

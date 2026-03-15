@@ -1,8 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Loader2, LogOut, Settings } from "lucide-react";
+import { Loader2, LogOut, Menu } from "lucide-react";
 import { useAppStore } from "@/store/appStore";
 
 function getGreeting(displayName: string): string {
@@ -22,7 +21,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/store/authStore";
-import { useSettings } from "@/hooks/useSettings";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -40,15 +38,12 @@ import { Logo } from "@/components/ui/Logo";
 export function Header() {
   const router = useRouter();
   const { email, clearAuth } = useAuthStore();
-  const { sidebarCollapsed } = useAppStore();
-  const { data: settingsData } = useSettings();
-  const settings = settingsData?.data;
+  const { sidebarCollapsed, toggleMobileNav } = useAppStore();
 
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const displayName = settings?.display_name?.trim() || "Admin User";
-  const avatarUrl = settings?.avatar_url;
+  const displayName = "Admin User";
 
   async function handleLogout() {
     setIsLoggingOut(true);
@@ -74,8 +69,16 @@ export function Header() {
       )}
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        {/* Mobile: icon + "The Real Business" branding */}
+        {/* Mobile: hamburger + icon + "The Real Business" branding */}
         <div className="flex min-w-0 flex-1 items-center gap-3 lg:hidden">
+          <button
+            type="button"
+            onClick={() => toggleMobileNav()}
+            className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-lg hover:bg-muted transition-colors"
+            aria-label="Open menu"
+          >
+            <Menu className="h-6 w-6 text-foreground" />
+          </button>
           <Logo
             href="/admin/dashboard"
             height={36}
@@ -108,19 +111,11 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <button className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg px-2 py-1.5 hover:bg-muted transition-colors lg:min-h-0 lg:min-w-0 lg:gap-2.5">
               <div className="relative">
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt={displayName}
-                    className="h-8 w-8 rounded-lg object-cover"
-                  />
-                ) : (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-semibold">
-                    {displayName[0]?.toUpperCase() ??
-                      email?.[0]?.toUpperCase() ??
-                      "A"}
-                  </div>
-                )}
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-semibold">
+                  {displayName[0]?.toUpperCase() ??
+                    email?.[0]?.toUpperCase() ??
+                    "A"}
+                </div>
                 <div className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-admin-header-bg" />
               </div>
               <div className="text-left hidden lg:flex flex-col">
@@ -139,19 +134,11 @@ export function Header() {
           >
             <DropdownMenuLabel className="font-normal mt-0 px-3 pb-3 pt-0">
               <div className="flex items-center gap-3">
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt={displayName}
-                    className="h-9 w-9 rounded-lg object-cover"
-                  />
-                ) : (
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-semibold">
-                    {displayName[0]?.toUpperCase() ??
-                      email?.[0]?.toUpperCase() ??
-                      "A"}
-                  </div>
-                )}
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-semibold">
+                  {displayName[0]?.toUpperCase() ??
+                    email?.[0]?.toUpperCase() ??
+                    "A"}
+                </div>
                 <div className="flex flex-col space-y-0.5 min-w-0">
                   <p className="text-sm font-medium truncate">{displayName}</p>
                   <p className="text-xs text-muted-foreground truncate">
@@ -161,15 +148,6 @@ export function Header() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="my-1" />
-            <DropdownMenuItem asChild className="py-3">
-              <Link
-                href="/admin/settings"
-                className="flex cursor-pointer items-center gap-3 rounded-lg"
-              >
-                <Settings className="h-4 w-4 shrink-0" />
-                Settings
-              </Link>
-            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => setShowLogoutDialog(true)}
               className="flex cursor-pointer items-center gap-3 rounded-lg py-3 text-destructive focus:bg-destructive/10 focus:text-destructive"

@@ -32,7 +32,7 @@ interface PropertyFormSimpleProps {
 
 const defaultValues: Partial<PropertyFormValues> = {
   type: "sale",
-  status: "draft",
+  status: "active",
   country: "India",
 };
 
@@ -177,12 +177,37 @@ export function PropertyFormSimple({
             <div>
               <Label>Price</Label>
               <Input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 {...form.register("price", {
-                  valueAsNumber: true,
-                  setValueAs: (v) =>
-                    v === "" || isNaN(Number(v)) ? undefined : Number(v),
+                  setValueAs: (v) => {
+                    if (v === "" || v == null) return undefined;
+                    const digits = String(v).replace(/\D/g, "");
+                    return digits === "" ? undefined : Number(digits);
+                  },
                 })}
+                onKeyDown={(e) => {
+                  if (
+                    !/[\d]/.test(e.key) &&
+                    ![
+                      "Backspace",
+                      "Tab",
+                      "ArrowLeft",
+                      "ArrowRight",
+                      "Delete",
+                    ].includes(e.key)
+                  ) {
+                    e.preventDefault();
+                  }
+                }}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const digits = e.clipboardData
+                    .getData("text")
+                    .replace(/\D/g, "");
+                  form.setValue("price", digits === "" ? 0 : Number(digits));
+                }}
                 className="mt-1"
               />
               {form.formState.errors.price && (
@@ -249,7 +274,36 @@ export function PropertyFormSimple({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>ZIP / Postal code</Label>
-              <Input {...form.register("zip_code")} className="mt-1" />
+              <Input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={20}
+                {...form.register("zip_code")}
+                onKeyDown={(e) => {
+                  if (
+                    !/[\d]/.test(e.key) &&
+                    ![
+                      "Backspace",
+                      "Tab",
+                      "ArrowLeft",
+                      "ArrowRight",
+                      "Delete",
+                    ].includes(e.key)
+                  ) {
+                    e.preventDefault();
+                  }
+                }}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const digits = e.clipboardData
+                    .getData("text")
+                    .replace(/\D/g, "")
+                    .slice(0, 20);
+                  form.setValue("zip_code", digits);
+                }}
+                className="mt-1"
+              />
             </div>
             <div>
               <Label>Country</Label>
@@ -268,7 +322,9 @@ export function PropertyFormSimple({
             <div>
               <Label>Area (sq ft)</Label>
               <Input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*\.?[0-9]*"
                 {...form.register("area_sqft", {
                   setValueAs: (v) =>
                     v === "" || isNaN(Number(v)) ? undefined : Number(v),
@@ -279,7 +335,9 @@ export function PropertyFormSimple({
             <div>
               <Label>Bedrooms</Label>
               <Input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 {...form.register("bedrooms", {
                   setValueAs: (v) =>
                     v === "" || isNaN(Number(v)) ? undefined : Number(v),
@@ -290,7 +348,9 @@ export function PropertyFormSimple({
             <div>
               <Label>Bathrooms</Label>
               <Input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 {...form.register("bathrooms", {
                   setValueAs: (v) =>
                     v === "" || isNaN(Number(v)) ? undefined : Number(v),

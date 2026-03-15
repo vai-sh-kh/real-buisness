@@ -30,8 +30,8 @@ export function PageHeader({
   backLabel = "Back",
 }: PageHeaderProps) {
   return (
-    <header className="border-b border-[#e5e5e5] bg-[#f5f5f5] px-2 pt-4 pb-3 sm:px-6 sm:pt-5 lg:px-8 lg:pt-6">
-      <div className="flex flex-row flex-wrap items-start justify-between gap-4">
+    <header className="bg-[#f5f5f5] px-4 pt-4 pb-4 sm:px-6 sm:pt-5 sm:pb-4 lg:px-8 lg:pt-6 lg:pb-5">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
           {backHref && (
             <Link
@@ -75,7 +75,7 @@ export function PageHeader({
             <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
           )}
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-3">
           {showDate && (
             <div className="hidden text-right sm:block">
               <p className="text-xs font-medium uppercase tracking-wider text-gray-400">

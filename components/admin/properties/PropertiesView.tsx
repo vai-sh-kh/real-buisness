@@ -14,6 +14,7 @@ import {
   Building2,
   Loader2,
   Eye,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,7 +107,7 @@ export function PropertiesView({
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
-  const { data, isLoading } = useProperties({
+  const { data, isLoading, isFetching } = useProperties({
     page,
     limit,
     search: search || undefined,
@@ -115,6 +116,7 @@ export function PropertiesView({
     sort_by: sortBy,
     sort_order: sortOrder,
   });
+  const isTableLoading = isLoading || isFetching;
   const deleteProperty = useDeleteProperty();
 
   const hasFilters =
@@ -235,7 +237,10 @@ export function PropertiesView({
       cell: ({ row }) => {
         const property = row.original;
         return (
-          <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="flex justify-end"
+            onClick={(e) => e.stopPropagation()}
+          >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -303,8 +308,7 @@ export function PropertiesView({
   const headerActions = (
     <Button
       onClick={handleAdd}
-      size="sm"
-      className="min-h-[44px] h-9 gap-1.5 rounded-lg bg-primary px-4 text-primary-foreground hover:bg-primary/90"
+      className="min-h-[44px] gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
     >
       <Plus className="h-4 w-4" />
       Add property
@@ -321,18 +325,19 @@ export function PropertiesView({
           actions={headerActions}
         />
       ) : (
-        <div className="flex justify-end px-2 pt-6 sm:px-6 lg:px-8">
-          {headerActions}
-        </div>
+        <div className="flex justify-end">{headerActions}</div>
       )}
 
-      <div className="space-y-8 px-2 pt-6 pb-4 sm:px-6 sm:pt-6 lg:px-8 lg:pt-8">
+      <div className="space-y-6 sm:space-y-8">
         <div className="flex flex-col gap-4 rounded-xl border border-admin-card-border bg-admin-card-bg p-4 shadow-sm sm:flex-row sm:items-start sm:justify-between lg:p-6">
           {isMobile ? (
             <>
               <div className="flex w-full items-center gap-2">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 shrink-0 text-gray-400" />
+                  {isFetching && (
+                    <Loader2 className="absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 shrink-0 animate-spin text-muted-foreground" />
+                  )}
                   <Input
                     placeholder="Search properties..."
                     value={rawSearch}
@@ -340,7 +345,7 @@ export function PropertiesView({
                       setRawSearch(e.target.value);
                       setPage(1);
                     }}
-                    className="h-10 rounded-xl pl-9"
+                    className={cn("h-10 rounded-xl pl-9", isFetching && "pr-9")}
                   />
                 </div>
                 <Button
@@ -441,12 +446,13 @@ export function PropertiesView({
                     <div className="flex gap-2 pt-2">
                       {hasFilters && (
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           onClick={() => {
                             clearFilters();
                           }}
-                          className="flex-1 rounded-xl"
+                          className="flex-1 rounded-xl border-border gap-1.5"
                         >
+                          <X className="h-4 w-4 shrink-0" />
                           Clear
                         </Button>
                       )}
@@ -464,7 +470,10 @@ export function PropertiesView({
           ) : (
             <div className="flex w-full flex-col items-center gap-3 sm:flex-row">
               <div className="relative w-full sm:flex-1">
-                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 shrink-0 text-gray-400" />
+                {isFetching && (
+                  <Loader2 className="absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 shrink-0 animate-spin text-muted-foreground" />
+                )}
                 <Input
                   placeholder="Search properties..."
                   value={rawSearch}
@@ -472,7 +481,7 @@ export function PropertiesView({
                     setRawSearch(e.target.value);
                     setPage(1);
                   }}
-                  className="h-10 rounded-xl pl-9"
+                  className={cn("h-10 rounded-xl pl-9", isFetching && "pr-9")}
                 />
               </div>
               <Select
@@ -533,10 +542,11 @@ export function PropertiesView({
               </Select>
               {hasFilters && (
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   onClick={clearFilters}
-                  className="h-10 w-full rounded-lg text-muted-foreground hover:text-foreground sm:w-auto"
+                  className="h-10 w-full rounded-xl border-border gap-1.5 text-muted-foreground hover:text-foreground sm:w-auto"
                 >
+                  <X className="h-4 w-4 shrink-0" />
                   Clear
                 </Button>
               )}
@@ -548,7 +558,7 @@ export function PropertiesView({
           {isMobile ? (
             <>
               <div className="space-y-2 p-4">
-                {isLoading ? (
+                {isTableLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <div
                       key={i}
@@ -652,7 +662,7 @@ export function PropertiesView({
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                      <div className="border-t border-admin-card-border px-2 py-2 sm:px-4">
+                      <div className="border-t border-admin-card-border px-4 py-2">
                         <Button
                           variant="outline"
                           size="sm"
@@ -679,17 +689,17 @@ export function PropertiesView({
                     setLimit(l);
                     setPage(1);
                   }}
-                  isLoading={isLoading}
+                  isLoading={isTableLoading}
                 />
               </div>
             </>
           ) : (
             <>
-              <div className="px-2 py-4">
+              <div className="py-4">
                 <DataTable
                   columns={columns}
                   data={list}
-                  isLoading={isLoading}
+                  isLoading={isTableLoading}
                   emptyMessage="No properties found."
                   emptyIcon={
                     <Building2 className="mb-4 h-10 w-10 text-muted-foreground/50" />
@@ -709,7 +719,7 @@ export function PropertiesView({
                     setLimit(l);
                     setPage(1);
                   }}
-                  isLoading={isLoading}
+                  isLoading={isTableLoading}
                 />
               </div>
             </>

@@ -7,6 +7,7 @@ export interface AdminListCardProps {
   title: string;
   subtitle?: string | null;
   badge?: React.ReactNode;
+  left?: React.ReactNode;
   onClick: () => void;
   right?: React.ReactNode;
   className?: string;
@@ -20,6 +21,7 @@ export function AdminListCard({
   title,
   subtitle,
   badge,
+  left,
   onClick,
   right,
   className,
@@ -33,6 +35,7 @@ export function AdminListCard({
         className,
       )}
     >
+      {left != null && <div className="shrink-0">{left}</div>}
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-foreground">{title}</p>
         {subtitle != null && subtitle !== "" && (

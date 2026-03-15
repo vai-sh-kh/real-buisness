@@ -2,13 +2,10 @@
 
 import { useAppStore } from "@/store/appStore";
 import { cn } from "@/lib/utils";
-import { AdminThemeProvider } from "@/components/admin/settings/AdminThemeContext";
-import { AdminThemeApplicator } from "@/components/admin/settings/AdminThemeApplicator";
 
 const THEME_INIT_SCRIPT = `
 (function(){
   try {
-    /* Temporarily force light theme only - dark styles removed */
     var el = document.getElementById('admin-theme-root');
     if (el) { el.classList.remove('light','dark'); el.classList.add('light'); }
   } catch(e) {}
@@ -32,20 +29,19 @@ export function AdminClientWrapper({
         dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}
         suppressHydrationWarning
       />
-      <AdminThemeProvider>
-        <AdminThemeApplicator />
-        <div
-          className={cn(
-            "relative flex h-screen flex-col transition-all duration-300",
-            "pl-0 lg:pl-64",
-            sidebarCollapsed && "lg:pl-16",
-          )}
-        >
-          <div className="flex flex-1 flex-col overflow-hidden">
-            <div className="flex-1 overflow-y-auto overflow-x-hidden bg-admin-main-bg">{children}</div>
+      <div
+        className={cn(
+          "relative flex h-screen flex-col transition-all duration-300",
+          "pl-0 lg:pl-64",
+          sidebarCollapsed && "lg:pl-16",
+        )}
+      >
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden bg-admin-main-bg">
+            {children}
           </div>
         </div>
-      </AdminThemeProvider>
+      </div>
     </div>
   );
 }

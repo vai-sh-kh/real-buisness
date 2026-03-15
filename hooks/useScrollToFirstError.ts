@@ -78,7 +78,7 @@ export function useScrollToFirstError(
     };
 
     if (onFirstError) {
-      setTimeout(scrollAndFocus, 150);
+      setTimeout(scrollAndFocus, 320);
     } else {
       requestAnimationFrame(scrollAndFocus);
     }

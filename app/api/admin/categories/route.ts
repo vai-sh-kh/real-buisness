@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
 import { getCategories, createCategory } from "@/lib/queries/categories";
+import { CONNECTION_UNAVAILABLE_MESSAGE, withConnectionRetry } from "@/lib/db-errors";
 import type { Category, CategoryFilters } from "@/types";
 
 export async function GET(request: NextRequest) {
@@ -23,20 +24,27 @@ export async function GET(request: NextRequest) {
     searchParams.get("sort_order") === "desc" ? "desc" : "asc";
 
   try {
-    const { data, total } = await getCategories({
-      page,
-      limit,
-      search,
-      is_active: is_active !== null ? is_active === "true" : undefined,
-      sort_by,
-      sort_order,
-    });
+    const { data, total } = await withConnectionRetry(() =>
+      getCategories({
+        page,
+        limit,
+        search,
+        is_active: is_active !== null ? is_active === "true" : undefined,
+        sort_by,
+        sort_order,
+      }),
+    );
 
     return NextResponse.json({ data, total, page, limit });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to fetch categories";
     console.error("[GET /api/admin/categories]", err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status = message === CONNECTION_UNAVAILABLE_MESSAGE ? 503 : 500;
+    const body =
+      status === 503
+        ? { error: "Service temporarily unavailable. Please try again." }
+        : { error: message };
+    return NextResponse.json(body, { status });
   }
 }
 
@@ -58,7 +66,7 @@ export async function POST(request: NextRequest) {
 
   if (!name || typeof name !== "string" || name.trim() === "") {
     return NextResponse.json(
-      { error: "Category name is required" },
+      { error: "Please enter the category name" },
       { status: 400 }
     );
   }

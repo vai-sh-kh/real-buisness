@@ -4,6 +4,7 @@ import { getPropertyByIdOrSlug } from "@/lib/queries/properties";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { propertySchema } from "@/lib/validations/property.schema";
 import { slugify } from "@/lib/utils";
+import { normalizeMapUrl } from "@/lib/map-url";
 import { toUserFriendlyMessage } from "@/lib/db-errors";
 
 type Params = { params: Promise<{ id: string }> };
@@ -69,6 +70,17 @@ export async function PUT(request: NextRequest, { params }: Params) {
       ([, v]) => v !== undefined
     )
   );
+
+  // Ensure gallery_images is an array or null for DB (TEXT[])
+  if (Object.prototype.hasOwnProperty.call(updatePayload, "gallery_images")) {
+    const raw = updatePayload.gallery_images;
+    updatePayload.gallery_images = Array.isArray(raw) ? raw : null;
+  }
+
+  if (typeof updatePayload.map_embed_url === "string") {
+    const normalized = await normalizeMapUrl(updatePayload.map_embed_url);
+    updatePayload.map_embed_url = normalized ?? (updatePayload.map_embed_url.trim() || null);
+  }
 
   const { data, error } = await supabase
     .from("properties")

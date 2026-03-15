@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
   if (email !== adminEmail || password !== adminPassword) {
     return NextResponse.json(
-      { error: "Invalid email or password" },
+      { error: "Please check your email and password" },
       { status: 401 }
     );
   }

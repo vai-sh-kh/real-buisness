@@ -1,11 +1,10 @@
 "use client";
 
-import { useCallback, useState, useMemo, useEffect } from "react";
+import { useCallback, useState, useMemo, useEffect, useRef } from "react";
 import axios from "axios";
-import { ImagePlus, Loader2, X } from "lucide-react";
+import { ImagePlus, Loader2, X, RefreshCw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Progress } from "@/components/ui/progress";
 import { ImagePreviewModal } from "./ImagePreviewModal";
 import {
   PROPERTY_IMAGE_ACCEPT,
@@ -16,6 +15,7 @@ import {
 import {
   validateGalleryFiles,
   getZodErrorMessage,
+  getGalleryUploadErrorMessage,
 } from "@/lib/validations/upload.schema";
 
 type UploadItemStatus = "uploading" | "done" | "error";
@@ -41,6 +41,38 @@ interface GalleryDropzoneProps {
   /** Files selected but not yet uploaded (e.g. when creating new property) */
   pendingFiles?: File[];
   disabled?: boolean;
+  /** Notify parent when any gallery upload is in progress (for disabling submit) */
+  onUploadingChange?: (uploading: boolean) => void;
+  /** AbortSignal to cancel in-flight uploads when sheet closes or tab changes */
+  uploadAbortSignal?: AbortSignal | null;
+}
+
+/**
+ * Uploads one gallery image to Supabase Storage via the API.
+ * Uses axios for progress tracking. Runs in parallel with other files.
+ */
+async function uploadGalleryFile(
+  propertyId: string,
+  file: File,
+  options: { signal?: AbortSignal },
+): Promise<string> {
+  const formData = new FormData();
+  formData.set("propertyId", propertyId);
+  formData.set("type", "gallery");
+  formData.append("files", file);
+
+  const { data } = await axios.post<{ urls?: string[]; error?: string }>(
+    "/api/admin/properties/upload",
+    formData,
+    {
+      withCredentials: true,
+      signal: options.signal,
+    },
+  );
+
+  const url = data?.urls?.[0];
+  if (typeof url === "string") return url;
+  throw new Error(data?.error ?? "Invalid response");
 }
 
 export function GalleryDropzone({
@@ -50,6 +82,8 @@ export function GalleryDropzone({
   propertyId,
   pendingFiles = [],
   disabled,
+  onUploadingChange,
+  uploadAbortSignal,
 }: GalleryDropzoneProps) {
   const [drag, setDrag] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -57,6 +91,8 @@ export function GalleryDropzone({
   const [error, setError] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
+  const valueRef = useRef<string[]>(value);
+  valueRef.current = value;
 
   const pendingUrls = useMemo(() => {
     return pendingFiles.map((f) => URL.createObjectURL(f));
@@ -66,6 +102,56 @@ export function GalleryDropzone({
   }, [pendingUrls]);
 
   const totalCount = value.length + pendingFiles.length + activeUploads.length;
+  const hasFailedUploads = activeUploads.some((u) => u.status === "error");
+
+  const runOneUpload = useCallback(
+    (item: GalleryUploadItem): Promise<string | null> => {
+      if (!propertyId) return Promise.resolve(null);
+      return uploadGalleryFile(propertyId, item.file, {
+        signal: uploadAbortSignal ?? undefined,
+      })
+        .then((url) => {
+          setActiveUploads((prev) =>
+            prev.filter((u) => {
+              if (u.id !== item.id) return true;
+              if (u.previewUrl) URL.revokeObjectURL(u.previewUrl);
+              return false;
+            }),
+          );
+          const next = [...valueRef.current, url];
+          valueRef.current = next;
+          onValueChange(next);
+          return url;
+        })
+        .catch((e) => {
+          if (
+            axios.isCancel(e) ||
+            (e instanceof Error && e.name === "AbortError")
+          ) {
+            setActiveUploads((prev) => prev.filter((u) => u.id !== item.id));
+            if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+            return null;
+          }
+          const apiMessage =
+            axios.isAxiosError(e) && e.response?.data?.error
+              ? String(e.response.data.error)
+              : e instanceof Error
+                ? e.message
+                : "Upload failed";
+          const userMessage = getGalleryUploadErrorMessage(apiMessage);
+          setActiveUploads((prev) =>
+            prev.map((u) =>
+              u.id === item.id
+                ? { ...u, status: "error" as const, error: userMessage }
+                : u,
+            ),
+          );
+          toast.error(`${item.file.name}: ${userMessage}`);
+          return null;
+        });
+    },
+    [propertyId, uploadAbortSignal, onValueChange],
+  );
 
   const processFiles = useCallback(
     async (files: File[]) => {
@@ -84,6 +170,7 @@ export function GalleryDropzone({
       }
       setError(null);
       setUploading(true);
+      onUploadingChange?.(true);
       const items: GalleryUploadItem[] = files.map((file, i) => ({
         id: `upload-${Date.now()}-${i}-${file.name}`,
         file,
@@ -91,94 +178,64 @@ export function GalleryDropzone({
         status: "uploading" as const,
         previewUrl: URL.createObjectURL(file),
       }));
-      setActiveUploads(items);
-
-      const uploadOne = (item: GalleryUploadItem): Promise<string | null> =>
-        new Promise((resolve) => {
-          const fd = new FormData();
-          fd.set("propertyId", propertyId);
-          fd.set("type", "gallery");
-          fd.append("files", item.file);
-          axios
-            .post<{ urls?: string[]; error?: string }>(
-              "/api/admin/properties/upload",
-              fd,
-              {
-                withCredentials: true,
-                headers: { "Content-Type": "multipart/form-data" },
-                onUploadProgress: (ev) => {
-                  if (ev.total != null && ev.total > 0) {
-                    const pct = Math.round((ev.loaded / ev.total) * 100);
-                    setActiveUploads((prev) =>
-                      prev.map((u) =>
-                        u.id === item.id ? { ...u, progress: pct } : u,
-                      ),
-                    );
-                  }
-                },
-              },
-            )
-            .then((res) => {
-              const url = res.data?.urls?.[0];
-              if (typeof url === "string") {
-                setActiveUploads((prev) =>
-                  prev.map((u) =>
-                    u.id === item.id
-                      ? { ...u, progress: 100, status: "done", url }
-                      : u,
-                  ),
-                );
-                resolve(url);
-              } else {
-                setActiveUploads((prev) =>
-                  prev.map((u) =>
-                    u.id === item.id
-                      ? { ...u, status: "error", error: "Invalid response" }
-                      : u,
-                  ),
-                );
-                resolve(null);
-              }
-            })
-            .catch((e) => {
-              const errMsg =
-                axios.isAxiosError(e) && e.response?.data?.error
-                  ? String(e.response.data.error)
-                  : e instanceof Error
-                    ? e.message
-                    : "Upload failed";
-              setActiveUploads((prev) =>
-                prev.map((u) =>
-                  u.id === item.id
-                    ? { ...u, status: "error", error: errMsg }
-                    : u,
-                ),
-              );
-              toast.error(`${item.file.name}: ${errMsg}`);
-              resolve(null);
-            });
-        });
+      setActiveUploads((prev) => [...prev, ...items]);
 
       try {
-        const results = await Promise.all(items.map((item) => uploadOne(item)));
-        const successUrls = results.filter(
-          (u): u is string => typeof u === "string",
-        );
-        if (successUrls.length > 0) {
-          onValueChange([...value, ...successUrls]);
-        }
+        await Promise.all(items.map((item) => runOneUpload(item)));
       } finally {
-        setActiveUploads((prev) => {
-          prev.forEach(
-            (u) => u.previewUrl && URL.revokeObjectURL(u.previewUrl),
-          );
-          return [];
-        });
+        setActiveUploads((prev) => prev.filter((u) => u.status === "error"));
         setUploading(false);
+        onUploadingChange?.(false);
       }
     },
-    [propertyId, value, pendingFiles, onValueChange, onFilesSelect],
+    [
+      value.length,
+      pendingFiles,
+      propertyId,
+      onFilesSelect,
+      onUploadingChange,
+      runOneUpload,
+    ],
   );
+
+  const retryFailed = useCallback(
+    (itemId: string) => {
+      const item = activeUploads.find((u) => u.id === itemId);
+      if (!item || item.status !== "error" || !propertyId) return;
+      setActiveUploads((prev) =>
+        prev.map((u) =>
+          u.id === itemId
+            ? {
+                ...u,
+                status: "uploading" as const,
+                progress: 0,
+                error: undefined,
+              }
+            : u,
+        ),
+      );
+      setUploading(true);
+      onUploadingChange?.(true);
+      runOneUpload({
+        ...item,
+        progress: 0,
+        status: "uploading",
+        error: undefined,
+      }).finally(() => {
+        setUploading(false);
+        onUploadingChange?.(false);
+      });
+    },
+    [activeUploads, propertyId, onUploadingChange, runOneUpload],
+  );
+
+  const removeFailed = useCallback((itemId: string) => {
+    setActiveUploads((prev) => {
+      const item = prev.find((u) => u.id === itemId);
+      if (item?.previewUrl) URL.revokeObjectURL(item.previewUrl);
+      return prev.filter((u) => u.id !== itemId);
+    });
+  }, []);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -310,7 +367,12 @@ export function GalleryDropzone({
         {activeUploads.map((item) => (
           <div
             key={item.id}
-            className="relative flex aspect-square flex-col gap-2 rounded-xl border-2 border-dashed border-indigo-200 bg-indigo-50/50 p-2"
+            className={cn(
+              "relative flex aspect-square flex-col gap-2 rounded-xl border-2 border-dashed p-2",
+              item.status === "error"
+                ? "border-red-200 bg-red-50/50"
+                : "border-indigo-200 bg-indigo-50/50",
+            )}
           >
             <div className="relative flex-1 min-h-0 overflow-hidden rounded-lg bg-gray-100">
               {item.previewUrl ? (
@@ -324,21 +386,54 @@ export function GalleryDropzone({
                   <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
                 </div>
               )}
+              {item.status === "uploading" && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
+                  <Loader2 className="h-8 w-8 animate-spin text-white drop-shadow" />
+                </div>
+              )}
             </div>
             <div className="space-y-1">
               <div className="flex items-center justify-between gap-1 text-[10px]">
                 <span className="truncate font-medium text-gray-600">
                   {item.file.name}
                 </span>
-                <span className="shrink-0 tabular-nums text-indigo-600">
-                  {item.status === "error" ? "Failed" : `${item.progress}%`}
-                </span>
+                {item.status === "uploading" && (
+                  <span className="shrink-0 font-semibold text-indigo-600">
+                    Uploading…
+                  </span>
+                )}
+                {item.status === "error" && (
+                  <span className="shrink-0 font-semibold text-red-600">
+                    Failed
+                  </span>
+                )}
               </div>
               {item.status === "error" ? (
-                <p className="text-[10px] text-destructive">{item.error}</p>
-              ) : (
-                <Progress value={item.progress} className="h-1.5" />
-              )}
+                <>
+                  <p className="text-[10px] text-destructive font-medium flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3 shrink-0" />
+                    {item.error}
+                  </p>
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => retryFailed(item.id)}
+                      className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+                    >
+                      <RefreshCw className="h-3 w-3" />
+                      Retry
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeFailed(item.id)}
+                      className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    >
+                      <X className="h-3 w-3" />
+                      Remove
+                    </button>
+                  </div>
+                </>
+              ) : null}
             </div>
           </div>
         ))}
@@ -346,16 +441,16 @@ export function GalleryDropzone({
           <div
             onDragOver={(e) => {
               e.preventDefault();
-              if (!disabled) setDrag(true);
+              if (!disabled && !uploading) setDrag(true);
             }}
             onDragLeave={() => setDrag(false)}
             onDrop={handleDrop}
             className={cn(
-              "relative aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-colors min-h-[100px]",
+              "relative aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-all min-h-[100px] p-4",
               drag
-                ? "border-indigo-500 bg-indigo-50/50"
-                : "border-gray-200 bg-gray-50/50",
-              disabled && "opacity-60 pointer-events-none",
+                ? "border-indigo-400 bg-indigo-50 text-indigo-700 scale-[1.02]"
+                : "border-gray-300 bg-gray-50/80 hover:border-gray-400 hover:bg-gray-100/80",
+              (disabled || uploading) && "opacity-70 pointer-events-none",
             )}
           >
             <input
@@ -367,17 +462,42 @@ export function GalleryDropzone({
               disabled={disabled || uploading}
             />
             {uploading ? (
-              <div className="flex flex-col items-center gap-1">
-                <Loader2 className="h-8 w-8 text-indigo-500 animate-spin" />
-                <span className="text-[10px] text-gray-500">Uploading...</span>
+              <div className="flex flex-col items-center gap-2">
+                <div className="rounded-full bg-indigo-100 p-2">
+                  <Loader2 className="h-6 w-6 text-indigo-600 animate-spin" />
+                </div>
+                <span className="text-xs font-medium text-gray-600">
+                  See progress per image above
+                </span>
+                <span className="text-[10px] text-gray-400">
+                  {activeUploads.filter((u) => u.status === "uploading").length}{" "}
+                  uploading
+                </span>
               </div>
             ) : (
               <>
-                <ImagePlus className="h-8 w-8 text-gray-400" />
-                <span className="text-xs text-gray-500 font-medium">
-                  {totalCount}/{GALLERY_IMAGE_MAX_COUNT}
+                <div
+                  className={cn(
+                    "rounded-full p-2.5 transition-colors",
+                    drag ? "bg-indigo-100" : "bg-gray-200/80",
+                  )}
+                >
+                  <ImagePlus
+                    className={cn(
+                      "h-7 w-7",
+                      drag ? "text-indigo-600" : "text-gray-500",
+                    )}
+                  />
+                </div>
+                <span className="text-xs font-semibold text-gray-700">
+                  Add images
                 </span>
-                <span className="text-[10px] text-gray-400">Drop or click</span>
+                <span className="text-[10px] text-gray-500 text-center">
+                  Drop here or click to browse
+                </span>
+                <span className="text-[10px] font-medium text-gray-400 tabular-nums">
+                  {totalCount} / {GALLERY_IMAGE_MAX_COUNT}
+                </span>
               </>
             )}
           </div>
@@ -397,6 +517,13 @@ export function GalleryDropzone({
         <p className="text-xs text-gray-400">
           {PROPERTY_IMAGE_EXTENSIONS.join(", ")} · Max {MAX_MB}MB each · Up to{" "}
           {GALLERY_IMAGE_MAX_COUNT} images
+        </p>
+      )}
+      {hasFailedUploads && (
+        <p className="text-xs text-amber-600 font-medium flex items-center gap-1">
+          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+          Some images failed to upload. Use Retry or Remove on each card, then
+          save.
         </p>
       )}
       {error && <p className="text-xs text-destructive font-medium">{error}</p>}

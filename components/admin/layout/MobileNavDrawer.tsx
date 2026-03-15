@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Settings, LogOut, Loader2 } from "lucide-react";
+import { LogOut, Loader2 } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -113,19 +113,6 @@ export function MobileNavDrawer() {
               </ul>
             </nav>
             <div className="border-t border-admin-sidebar-border px-3 py-4 space-y-1">
-              <Link
-                href="/admin/settings"
-                onClick={() => setMobileNavOpen(false)}
-                className={cn(
-                  "flex min-h-[48px] items-center gap-3.5 rounded-lg px-3 py-3 text-base font-medium transition-colors",
-                  pathname === "/admin/settings"
-                    ? "bg-admin-sidebar-active text-admin-sidebar-text"
-                    : "text-admin-sidebar-text-muted hover:bg-admin-sidebar-hover hover:text-admin-sidebar-text",
-                )}
-              >
-                <Settings className="h-6 w-6 shrink-0" />
-                <span>Settings</span>
-              </Link>
               <button
                 onClick={() => {
                   setMobileNavOpen(false);

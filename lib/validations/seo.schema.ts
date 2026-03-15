@@ -7,9 +7,9 @@ export const seoSchema = z.object({
   business_type_schema: z.string().max(100).optional().nullable(),
   og_title: z.string().max(70).optional().nullable(),
   og_description: z.string().max(200).optional().nullable(),
-  og_image_url: z.string().url("Must be a valid URL").optional().nullable().or(z.literal("")),
+  og_image_url: z.string().url("Please enter a valid URL").optional().nullable().or(z.literal("")),
   twitter_card: z.enum(["summary", "summary_large_image"]).default("summary_large_image"),
-  canonical_url: z.string().url("Must be a valid URL").optional().nullable().or(z.literal("")),
+  canonical_url: z.string().url("Please enter a valid URL").optional().nullable().or(z.literal("")),
   robots: z.string().max(100).default("index,follow"),
 });
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Settings, LogOut, Loader2, ExternalLink } from "lucide-react";
+import { LogOut, Loader2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/appStore";
 import { useAuthStore } from "@/store/authStore";
@@ -138,20 +138,6 @@ export function Sidebar() {
         >
           <ExternalLink className="h-6 w-6 shrink-0" />
           {!sidebarCollapsed && <span>View site</span>}
-        </Link>
-        <Link
-          href="/admin/settings"
-          className={cn(
-            "flex items-center gap-3.5 rounded-lg px-3 py-3 text-base font-medium transition-colors",
-            pathname === "/admin/settings"
-              ? "bg-admin-sidebar-active text-admin-sidebar-text"
-              : "text-admin-sidebar-text-muted hover:bg-admin-sidebar-hover hover:text-admin-sidebar-text",
-            sidebarCollapsed && "justify-center px-0",
-          )}
-          title={sidebarCollapsed ? "Settings" : undefined}
-        >
-          <Settings className="h-6 w-6 shrink-0" />
-          {!sidebarCollapsed && <span>Settings</span>}
         </Link>
         <button
           onClick={() => setShowLogoutDialog(true)}

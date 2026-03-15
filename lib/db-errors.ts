@@ -38,6 +38,35 @@ function getFriendlyMessageForConstraint(constraintOrMessage: string): string | 
 export const CONNECTION_UNAVAILABLE_MESSAGE =
   "Database connection unavailable. Please check your configuration (Supabase URL and keys) or try again later.";
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Retry an async operation when it fails with a connection-type error (e.g. cold start, brief network blip).
+ * Reduces intermittent 503s after refresh or first load.
+ */
+export async function withConnectionRetry<T>(
+  fn: () => Promise<T>,
+  options: { maxRetries?: number; delayMs?: number } = {},
+): Promise<T> {
+  const maxRetries = options.maxRetries ?? 2;
+  const delayMs = options.delayMs ?? 400;
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      const msg = err instanceof Error ? err.message : String(err);
+      const isConnection = msg === CONNECTION_UNAVAILABLE_MESSAGE || isConnectionError(msg);
+      if (!isConnection || attempt === maxRetries) throw err;
+      await sleep(delayMs);
+    }
+  }
+  throw lastErr;
+}
+
 const CONNECTION_ERROR_MESSAGES = [
   "fetch failed",
   "network",
@@ -48,7 +77,7 @@ const CONNECTION_ERROR_MESSAGES = [
   "failed to fetch",
 ];
 
-function isConnectionError(message: string): boolean {
+export function isConnectionError(message: string): boolean {
   const lower = message.toLowerCase();
   return CONNECTION_ERROR_MESSAGES.some((m) => lower.includes(m));
 }

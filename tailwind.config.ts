@@ -1,5 +1,13 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * Admin panel responsive breakpoints (Tailwind defaults):
+ * - default: mobile-first (< 640px)
+ * - sm: 640px (larger phones / small tablets)
+ * - md: 768px (optional intermediate layouts)
+ * - lg: 1024px (admin layout switch: sidebar vs bottom nav, sheet side)
+ */
+
 const config: Config = {
   content: [
     "./pages/**/*.{ts,tsx}",

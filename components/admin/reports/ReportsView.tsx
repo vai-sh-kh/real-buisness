@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Building2,
   UserPlus,
@@ -55,7 +55,14 @@ import {
 import { useReports } from "@/hooks/useReports";
 import { formatDate, cn } from "@/lib/utils";
 import Link from "next/link";
-import type { LeadSource, ReportsData } from "@/types";
+import type { LeadSource, RecentActivity, ReportsData } from "@/types";
+import { DataTablePagination } from "@/components/admin/data-table/DataTablePagination";
+import { ReportsSkeleton } from "@/components/admin/skeletons/AdminPageSkeleton";
+
+const ACTIVITY_LABELS: Record<RecentActivity["type"], string> = {
+  property: "Property added",
+  lead: "Lead added",
+};
 
 const PROPERTY_STATUS_COLORS: Record<string, string> = {
   active: "#22c55e",
@@ -205,7 +212,7 @@ function reportsToExportRows(reports: ReportsData): Record<string, unknown>[] {
     rows.push({
       Metric: "",
       Value: "",
-      Type: a.type,
+      Type: ACTIVITY_LABELS[a.type],
       Title: a.title,
       Subtitle: a.subtitle,
       "Created At": a.created_at,
@@ -222,77 +229,6 @@ const SECTIONS = [
   { id: "source_bar" as const, label: "By source" },
   { id: "activity" as const, label: "Recent activity" },
 ];
-
-function ReportsSkeleton() {
-  return (
-    <div className="space-y-8 animate-in fade-in duration-300">
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-4 rounded-xl border border-admin-card-border bg-admin-card-bg p-4">
-        <div className="h-9 w-[160px] rounded-md bg-muted" />
-        <div className="h-9 w-24 rounded-md bg-muted" />
-        <div className="ml-auto h-9 w-20 rounded-md bg-muted" />
-      </div>
-      {/* Summary stats */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="rounded-xl border border-admin-card-border bg-admin-card-bg p-6 shadow-sm"
-          >
-            <div className="flex items-center justify-between">
-              <div className="h-4 w-24 rounded bg-muted" />
-              <div className="h-5 w-5 rounded bg-muted" />
-            </div>
-            <div className="mt-2 h-8 w-12 rounded bg-muted" />
-            <div className="mt-2 h-3 w-20 rounded bg-muted" />
-          </div>
-        ))}
-      </div>
-      {/* Charts row 1 */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-admin-card-border bg-admin-card-bg p-6 shadow-sm">
-          <div className="mb-6 h-6 w-48 rounded bg-muted" />
-          <div className="h-[280px] rounded-xl bg-muted/50" />
-        </div>
-        <div className="rounded-xl border border-admin-card-border bg-admin-card-bg p-6 shadow-sm">
-          <div className="mb-6 h-6 w-40 rounded bg-muted" />
-          <div className="h-[280px] rounded-xl bg-muted/50" />
-        </div>
-      </div>
-      {/* Charts row 2 */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-admin-card-border bg-admin-card-bg p-6 shadow-sm">
-          <div className="mb-6 h-6 w-44 rounded bg-muted" />
-          <div className="h-[260px] rounded-xl bg-muted/50" />
-        </div>
-        <div className="rounded-xl border border-admin-card-border bg-admin-card-bg p-6 shadow-sm">
-          <div className="mb-6 h-6 w-36 rounded bg-muted" />
-          <div className="h-[260px] rounded-xl bg-muted/50" />
-        </div>
-      </div>
-      {/* Recent activity */}
-      <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-        <div className="mb-6 h-6 w-36 rounded bg-muted" />
-        <div className="space-y-3">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className="flex items-center gap-4 rounded-xl border border-admin-card-border p-4"
-            >
-              <div className="h-10 w-10 shrink-0 rounded-xl bg-muted" />
-              <div className="flex-1 space-y-2">
-                <div className="h-4 w-48 rounded bg-muted" />
-                <div className="h-3 w-32 rounded bg-muted" />
-              </div>
-              <div className="h-6 w-16 rounded bg-muted" />
-              <div className="h-4 w-20 rounded bg-muted" />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function ReportsView() {
   const [sortActivity, setSortActivity] = useState<"asc" | "desc">("desc");
@@ -311,6 +247,16 @@ export function ReportsView() {
   const [exportConfirmFormat, setExportConfirmFormat] = useState<
     "csv" | "xlsx" | null
   >(null);
+  const [activityPage, setActivityPage] = useState(1);
+  const [activityPageSize, setActivityPageSize] = useState(10);
+
+  const activityTotal = reports?.recent_activity?.length ?? 0;
+  const activityTotalPages = Math.ceil(activityTotal / activityPageSize) || 1;
+  useEffect(() => {
+    if (activityPage > activityTotalPages && activityTotalPages > 0) {
+      setActivityPage(1);
+    }
+  }, [activityPage, activityTotalPages]);
 
   const toggleSection = (id: string) => {
     setSections((prev) => {
@@ -419,7 +365,7 @@ export function ReportsView() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Sort, Sections, Export toolbar */}
       <div className="flex flex-col gap-3 rounded-xl border border-admin-card-border bg-admin-card-bg p-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:p-4">
         <div className="flex items-center gap-2 min-w-0 flex-1 sm:flex-initial">
@@ -800,48 +746,64 @@ export function ReportsView() {
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {reports.recent_activity.slice(0, 10).map((a, i) => (
-                <div
-                  key={`${a.type}-${a.id}-${i}`}
-                  className={cn(
-                    "flex items-center gap-4 rounded-xl border p-4 transition-colors",
-                    "border-admin-card-border hover:bg-muted/30",
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-                      a.type === "property"
-                        ? "bg-blue-50 text-blue-600"
-                        : "bg-amber-50 text-amber-600",
-                    )}
-                  >
-                    {a.type === "property" ? (
-                      <Building2 className="h-4 w-4" />
-                    ) : (
-                      <UserPlus className="h-4 w-4" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-gray-900">
-                      {a.title}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {a.subtitle}
-                    </p>
-                  </div>
-                  <div className="shrink-0">
-                    <span className="rounded-lg bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                      {a.type}
-                    </span>
-                  </div>
-                  <span className="shrink-0 text-xs text-muted-foreground">
-                    {formatDate(a.created_at)}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <>
+              <div className="space-y-3">
+                {reports.recent_activity
+                  .slice(
+                    (activityPage - 1) * activityPageSize,
+                    activityPage * activityPageSize,
+                  )
+                  .map((a, i) => (
+                    <div
+                      key={`${a.type}-${a.id}-${i}`}
+                      className={cn(
+                        "flex items-center gap-4 rounded-xl border p-4 transition-colors",
+                        "border-admin-card-border hover:bg-muted/30",
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+                          a.type === "property"
+                            ? "bg-blue-50 text-blue-600"
+                            : "bg-amber-50 text-amber-600",
+                        )}
+                      >
+                        {a.type === "property" ? (
+                          <Building2 className="h-4 w-4" />
+                        ) : (
+                          <UserPlus className="h-4 w-4" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-gray-900">{a.title}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {a.subtitle}
+                        </p>
+                      </div>
+                      <div className="shrink-0">
+                        <span className="rounded-lg bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
+                          {ACTIVITY_LABELS[a.type]}
+                        </span>
+                      </div>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {formatDate(a.created_at)}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+              <DataTablePagination
+                page={activityPage}
+                limit={activityPageSize}
+                total={reports.recent_activity.length}
+                onPageChange={setActivityPage}
+                onLimitChange={(limit) => {
+                  setActivityPageSize(limit);
+                  setActivityPage(1);
+                }}
+                isLoading={isLoading}
+              />
+            </>
           )}
         </div>
       )}

@@ -5,19 +5,20 @@ import axios from "axios";
 import { ImageIcon, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Progress } from "@/components/ui/progress";
 import { ImagePreviewModal } from "./ImagePreviewModal";
 import {
   PROPERTY_IMAGE_ACCEPT,
-  PROPERTY_IMAGE_EXTENSIONS,
+  COVER_IMAGE_EXTENSIONS,
+  COVER_IMAGE_MAX_SIZE_BYTES,
 } from "@/lib/constants/upload";
 import {
   validateCoverFile,
   getZodErrorMessage,
+  getCoverUploadErrorMessage,
 } from "@/lib/validations/upload.schema";
 
 const ACCEPT_STR = Object.keys(PROPERTY_IMAGE_ACCEPT).join(",");
-const MAX_MB = 5;
+const COVER_MAX_MB = COVER_IMAGE_MAX_SIZE_BYTES / 1024 / 1024;
 
 interface CoverImageDropzoneProps {
   value: string | null;
@@ -31,6 +32,10 @@ interface CoverImageDropzoneProps {
   onValidationError?: (message: string) => void;
   /** Called when error is cleared (e.g. after successful upload or remove) */
   onErrorClear?: () => void;
+  /** Notify parent when cover upload is in progress (for disabling submit) */
+  onUploadingChange?: (uploading: boolean) => void;
+  /** AbortSignal to cancel upload when sheet closes or tab changes */
+  uploadAbortSignal?: AbortSignal | null;
 }
 
 export function CoverImageDropzone({
@@ -42,11 +47,12 @@ export function CoverImageDropzone({
   disabled,
   onValidationError,
   onErrorClear,
+  onUploadingChange,
+  uploadAbortSignal,
 }: CoverImageDropzoneProps) {
   const inputId = useId();
   const [drag, setDrag] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
 
@@ -75,39 +81,33 @@ export function CoverImageDropzone({
         onValidationError?.(msg);
         return;
       }
-      if (!propertyId) {
-        onFileSelect?.(file);
-        clearError();
-        return;
-      }
       clearError();
       setUploading(true);
-      setUploadProgress(0);
+      onUploadingChange?.(true);
       try {
         const fd = new FormData();
-        fd.set("propertyId", propertyId);
-        fd.set("type", "cover");
+        if (propertyId) {
+          fd.set("propertyId", propertyId);
+          fd.set("type", "cover");
+        } else {
+          fd.set("type", "cover-draft");
+        }
         fd.set("file", file);
         const res = await axios.post<{ url?: string; error?: string }>(
           "/api/admin/properties/upload",
           fd,
           {
             withCredentials: true,
-            headers: { "Content-Type": "multipart/form-data" },
-            onUploadProgress: (ev) => {
-              if (ev.total != null && ev.total > 0) {
-                const pct = Math.round((ev.loaded / ev.total) * 100);
-                setUploadProgress(pct);
-              }
-            },
+            signal: uploadAbortSignal ?? undefined,
           },
         );
         const json = res.data;
         if (res.status !== 200) {
-          const msg =
+          const apiMsg =
             typeof json.error === "string"
               ? json.error
               : "Cover image upload failed";
+          const msg = getCoverUploadErrorMessage(apiMsg);
           setError(msg);
           toast.error(msg);
           onValidationError?.(msg);
@@ -120,23 +120,29 @@ export function CoverImageDropzone({
           onValidationError?.(msg);
           return;
         }
-        setUploadProgress(100);
         onValueChange(json.url);
         onFileSelect?.(null);
         onErrorClear?.();
       } catch (e) {
-        const msg =
+        if (
+          axios.isCancel(e) ||
+          (e instanceof Error && e.name === "AbortError")
+        ) {
+          return;
+        }
+        const apiMsg =
           axios.isAxiosError(e) && e.response?.data?.error
             ? String(e.response.data.error)
             : e instanceof Error
               ? e.message
               : "Upload failed";
+        const msg = getCoverUploadErrorMessage(apiMsg);
         setError(msg);
         toast.error(msg);
         onValidationError?.(msg);
       } finally {
         setUploading(false);
-        setUploadProgress(0);
+        onUploadingChange?.(false);
       }
     },
     [
@@ -145,6 +151,8 @@ export function CoverImageDropzone({
       onFileSelect,
       onValidationError,
       onErrorClear,
+      onUploadingChange,
+      uploadAbortSignal,
       clearError,
     ],
   );
@@ -206,12 +214,11 @@ export function CoverImageDropzone({
         />
         <div className="relative z-10 flex flex-col items-center justify-center gap-2 py-12 px-6 min-h-[200px]">
           {uploading ? (
-            <div className="flex w-full max-w-xs flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-3">
               <Loader2 className="h-10 w-10 text-indigo-500 animate-spin" />
               <span className="text-sm font-medium text-gray-600">
-                Uploading… {uploadProgress}%
+                Uploading…
               </span>
-              <Progress value={uploadProgress} className="w-full" />
             </div>
           ) : value || pendingFile ? (
             <div className="relative w-full max-w-[280px] aspect-video rounded-lg overflow-hidden bg-gray-100 border border-gray-200 group">
@@ -266,7 +273,8 @@ export function CoverImageDropzone({
                 Drop cover image or click to browse
               </p>
               <p className="text-xs text-gray-400">
-                {PROPERTY_IMAGE_EXTENSIONS.join(", ")} · Max {MAX_MB}MB
+                One image · {COVER_IMAGE_EXTENSIONS.join(", ")} · Max{" "}
+                {COVER_MAX_MB}MB
               </p>
             </label>
           )}

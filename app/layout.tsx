@@ -15,16 +15,20 @@ const lora = Lora({
 
 export const metadata: Metadata = {
   title: {
-    default: "TheRealBusiness — Premier Real Estate",
-    template: "%s | TheRealBusiness",
+    default: "The Real Business — Premier Real Estate",
+    template: "%s | The Real Business",
   },
   description:
-    "Discover premium properties for sale and rent. Find your dream home with TheRealBusiness.",
+    "Discover premium properties for sale and rent. Find your dream home with The Real Business.",
   keywords: ["real estate", "properties", "buy", "sell", "rent", "India"],
+  icons: {
+    icon: "/logo-icon-bg.png",
+    apple: "/logo-icon-bg.png",
+  },
   openGraph: {
     type: "website",
     locale: "en_IN",
-    siteName: "TheRealBusiness",
+    siteName: "The Real Business",
   },
 };
 

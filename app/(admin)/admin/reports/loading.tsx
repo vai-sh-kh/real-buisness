@@ -5,9 +5,11 @@ import {
 
 export default function ReportsLoading() {
   return (
-    <div className="space-y-6">
+    <div className="min-h-full bg-[#f5f5f5]">
       <PageHeaderSkeleton />
-      <ReportsSkeleton />
+      <div className="space-y-6 sm:space-y-8">
+        <ReportsSkeleton />
+      </div>
     </div>
   );
 }

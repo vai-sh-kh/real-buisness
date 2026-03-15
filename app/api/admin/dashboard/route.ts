@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getDashboardStats } from "@/lib/queries/dashboard";
-import { CONNECTION_UNAVAILABLE_MESSAGE, toUserFriendlyMessage } from "@/lib/db-errors";
+import { CONNECTION_UNAVAILABLE_MESSAGE, toUserFriendlyMessage, withConnectionRetry } from "@/lib/db-errors";
 
 export async function GET() {
   try {
@@ -12,8 +12,10 @@ export async function GET() {
   }
 
   try {
-    const supabase = createAdminClient();
-    const data = await getDashboardStats(supabase);
+    const data = await withConnectionRetry(async () => {
+      const supabase = createAdminClient();
+      return getDashboardStats(supabase);
+    });
     return NextResponse.json({ data });
   } catch (err) {
     const message = toUserFriendlyMessage(err);

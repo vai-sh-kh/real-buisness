@@ -51,7 +51,7 @@ export function DataTablePagination({
           }}
           disabled={isLoading}
         >
-          <SelectTrigger className="h-8 w-16">
+          <SelectTrigger className="h-8 w-16 min-h-[44px] sm:min-h-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -68,7 +68,7 @@ export function DataTablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-8 w-8 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1 || isLoading}
         >
@@ -81,7 +81,7 @@ export function DataTablePagination({
               key={i + 1}
               variant={page === i + 1 ? "default" : "outline"}
               size="icon"
-              className="h-8 w-8"
+              className="h-8 w-8 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
               onClick={() => onPageChange(i + 1)}
               disabled={isLoading}
             >
@@ -93,14 +93,14 @@ export function DataTablePagination({
             <Button
               variant={page === 1 ? "default" : "outline"}
               size="icon"
-              className="h-8 w-8"
+              className="h-8 w-8 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
               onClick={() => onPageChange(1)}
               disabled={isLoading}
             >
               1
             </Button>
             {page > 3 && (
-              <div className="flex h-8 w-8 items-center justify-center">
+              <div className="flex h-8 w-8 min-h-[44px] min-w-[44px] items-center justify-center sm:min-h-0 sm:min-w-0">
                 <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
               </div>
             )}
@@ -109,7 +109,7 @@ export function DataTablePagination({
               <Button
                 variant="default"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
                 disabled={isLoading}
               >
                 {page}
@@ -117,14 +117,14 @@ export function DataTablePagination({
             )}
 
             {page < totalPages - 2 && (
-              <div className="flex h-8 w-8 items-center justify-center">
+              <div className="flex h-8 w-8 min-h-[44px] min-w-[44px] items-center justify-center sm:min-h-0 sm:min-w-0">
                 <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
               </div>
             )}
             <Button
               variant={page === totalPages ? "default" : "outline"}
               size="icon"
-              className="h-8 w-8"
+              className="h-8 w-8 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
               onClick={() => onPageChange(totalPages)}
               disabled={isLoading}
             >
@@ -136,7 +136,7 @@ export function DataTablePagination({
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-8 w-8 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages || isLoading}
         >

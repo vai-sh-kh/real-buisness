@@ -25,7 +25,10 @@ import type { Category } from "@/types";
 import { Loader2 } from "lucide-react";
 
 const categorySchema = z.object({
-  name: z.string().min(1, "Name is required").max(100),
+  name: z
+    .string()
+    .min(1, "Please enter the category name")
+    .max(100, "Please keep to 100 characters or less"),
   description: z.string().nullable().optional(),
   icon: z.string().nullable().optional(),
   is_active: z.boolean().default(true),
@@ -102,7 +105,7 @@ export function CategorySheet({
         )}
       >
         {/* Header with gradient */}
-        <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 text-white relative overflow-hidden">
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-4 sm:p-6 lg:p-8 text-white relative overflow-hidden">
           <div className="relative z-10">
             <div className="mb-4">
               <SheetTitle className="text-xl font-bold text-white leading-tight">
@@ -123,7 +126,7 @@ export function CategorySheet({
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col flex-1 overflow-hidden"
         >
-          <div className="flex-1 overflow-y-auto p-8 space-y-8 pb-32">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 pb-32">
             <div className="space-y-6">
               <div className="space-y-2">
                 <Label

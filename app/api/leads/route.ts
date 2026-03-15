@@ -21,12 +21,12 @@ export async function POST(request: NextRequest) {
   } = body as Partial<Lead> & { property_id?: string };
 
   if (!name || typeof name !== "string" || name.trim() === "") {
-    return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    return NextResponse.json({ error: "Please enter your name" }, { status: 400 });
   }
 
   if (!email && !phone) {
     return NextResponse.json(
-      { error: "Either email or phone is required" },
+      { error: "Please enter either email or phone number" },
       { status: 400 }
     );
   }

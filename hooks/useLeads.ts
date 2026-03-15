@@ -55,7 +55,7 @@ export function useUpdateLead() {
       values,
     }: {
       id: string;
-      values: Partial<Pick<Lead, "status" | "notes">>;
+      values: Partial<Omit<Lead, "id" | "created_at">>;
     }) => {
       const res = await fetch(`/api/admin/leads/${id}`, {
         method: "PUT",

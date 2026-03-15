@@ -14,7 +14,7 @@ export default function ReportsPage() {
           { label: "Reports" },
         ]}
       />
-      <div className="space-y-6 px-2 pt-6 pb-4 sm:px-6 sm:pt-6 lg:px-8 lg:pt-8">
+      <div className="space-y-6 sm:space-y-8">
         <ReportsView />
       </div>
     </div>

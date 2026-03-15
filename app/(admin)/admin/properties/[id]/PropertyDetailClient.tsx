@@ -13,9 +13,10 @@ import {
   FileText,
   ImageIcon,
   Calendar,
-  Eye,
   PackageOpen,
   ExternalLink,
+  Tag,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,10 +24,7 @@ import {
   PageHeader,
   type BreadcrumbItem,
 } from "@/components/admin/layout/PageHeader";
-import {
-  ProfileSectionLabel,
-  ProfileFieldLabel,
-} from "@/components/admin/ProfileDetailModal";
+import { ProfileSectionLabel } from "@/components/admin/ProfileDetailModal";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -36,15 +34,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Skeleton } from "@/components/ui/skeleton";
 import { PropertySheet } from "@/components/admin/properties/PropertySheet";
-import { usePropertyByIdOrSlug, useDeleteProperty } from "@/hooks/useProperties";
+import {
+  usePropertyByIdOrSlug,
+  useDeleteProperty,
+} from "@/hooks/useProperties";
 import { formatDate } from "@/lib/utils";
-import type {
-  PropertyWithRelations,
-  PropertyStatus,
-} from "@/types";
+import { toEmbedUrlSync } from "@/lib/map-url";
+import type { PropertyWithRelations, PropertyStatus } from "@/types";
 import { cn } from "@/lib/utils";
+import { PropertyDetailSkeleton } from "@/components/admin/skeletons/AdminPageSkeleton";
+
+const EMPTY_PLACEHOLDER = "__";
+
+function formatDetailValue(value: string | number | null | undefined): string {
+  if (value === null || value === undefined) return EMPTY_PLACEHOLDER;
+  if (typeof value === "string" && value.trim() === "")
+    return EMPTY_PLACEHOLDER;
+  return String(value);
+}
 
 const STATUS_COLORS: Record<
   PropertyStatus,
@@ -56,133 +64,32 @@ const STATUS_COLORS: Record<
   rented: "outline",
 };
 
-const CARD_CLASS =
-  "rounded-xl border border-admin-card-border bg-admin-card-bg p-3 shadow-sm sm:p-4 lg:p-6";
+/** Distinct background + text colors for amenity badges (cycle by index). */
+const AMENITY_BADGE_COLORS = [
+  "bg-blue-100 text-blue-800 border-blue-200",
+  "bg-emerald-100 text-emerald-800 border-emerald-200",
+  "bg-amber-100 text-amber-800 border-amber-200",
+  "bg-violet-100 text-violet-800 border-violet-200",
+  "bg-rose-100 text-rose-800 border-rose-200",
+  "bg-cyan-100 text-cyan-800 border-cyan-200",
+  "bg-orange-100 text-orange-800 border-orange-200",
+  "bg-teal-100 text-teal-800 border-teal-200",
+  "bg-indigo-100 text-indigo-800 border-indigo-200",
+  "bg-pink-100 text-pink-800 border-pink-200",
+] as const;
 
-const SECTION_LABEL_CLASS = "text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground";
+const CARD_CLASS =
+  "rounded-xl border border-admin-card-border bg-admin-card-bg p-3 shadow-sm sm:p-4 lg:p-6 min-w-0";
+const SECTION_LABEL_CLASS =
+  "text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground";
 const FIELD_LABEL_CLASS = "text-xs sm:text-sm text-muted-foreground";
 const VALUE_CLASS = "text-sm sm:text-base font-medium text-foreground";
-const VALUE_MUTED_CLASS = "text-sm sm:text-base text-muted-foreground leading-relaxed";
+const VALUE_MUTED_CLASS =
+  "text-sm sm:text-base text-muted-foreground leading-relaxed";
 
 interface PropertyDetailClientProps {
   /** Property ID (UUID) or slug - both work in the URL */
   identifier: string;
-}
-
-function PropertyDetailSkeleton() {
-  return (
-    <div className="space-y-4 px-2 pt-4 pb-8 sm:space-y-6 sm:px-4 sm:pt-5 sm:pb-10 lg:px-8 lg:pt-6">
-      {/* Overview */}
-      <div className={CARD_CLASS}>
-        <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-start">
-          <Skeleton className="h-32 w-full rounded-lg sm:h-44 sm:w-52 lg:h-48 lg:w-64" />
-          <div className="min-w-0 flex-1 space-y-2 sm:space-y-3">
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              <Skeleton className="h-6 w-16 rounded-full" />
-              <Skeleton className="h-6 w-14 rounded-full" />
-            </div>
-            <Skeleton className="h-7 w-28 rounded sm:h-8" />
-            <Skeleton className="h-4 w-full max-w-md rounded" />
-            <Skeleton className="h-4 w-[90%] max-w-md rounded" />
-          </div>
-        </div>
-      </div>
-
-      {/* Location + Specifications grid */}
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-        <div className={CARD_CLASS}>
-          <Skeleton className="h-4 w-24 rounded" />
-          <div className="mt-2 sm:mt-3 space-y-1 sm:space-y-2">
-            <Skeleton className="h-3 w-14 rounded" />
-            <Skeleton className="h-4 w-full rounded" />
-            <Skeleton className="h-4 w-[85%] max-w-full rounded" />
-          </div>
-          <div className="mt-3 sm:mt-4">
-            <Skeleton className="h-3 w-10 rounded" />
-            <Skeleton className="mt-1 aspect-video w-full min-h-[140px] sm:min-h-[160px] rounded-lg" />
-          </div>
-        </div>
-        <div className={CARD_CLASS}>
-          <Skeleton className="h-4 w-28 rounded" />
-          <div className="mt-2 sm:mt-3 grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-3">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-              <Skeleton key={i} className="h-14 rounded-lg sm:h-16" />
-            ))}
-          </div>
-          <div className="mt-3 sm:mt-4">
-            <Skeleton className="h-3 w-16 rounded" />
-            <div className="mt-1 flex flex-wrap gap-1.5 sm:gap-2">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="h-5 w-14 rounded-lg" />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Description */}
-      <div className={CARD_CLASS}>
-        <Skeleton className="h-4 w-24 rounded" />
-        <div className="mt-2 sm:mt-3 space-y-2">
-          <Skeleton className="h-4 w-full rounded" />
-          <Skeleton className="h-4 w-full rounded" />
-          <Skeleton className="h-4 w-[95%] max-w-full rounded" />
-          <Skeleton className="h-4 w-[70%] max-w-full rounded" />
-        </div>
-      </div>
-
-      {/* Assets */}
-      <div className={CARD_CLASS}>
-        <Skeleton className="h-4 w-16 rounded" />
-        <div className="mt-2 sm:mt-3 space-y-3 sm:space-y-4">
-          <div>
-            <Skeleton className="h-3 w-24 rounded" />
-            <Skeleton className="mt-1 h-40 w-full max-w-md rounded-lg sm:h-48" />
-          </div>
-          <div>
-            <Skeleton className="h-3 w-14 rounded" />
-            <div className="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2 sm:grid-cols-3 md:grid-cols-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Skeleton key={i} className="aspect-square rounded-lg" />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* SEO & Meta */}
-      <div className={CARD_CLASS}>
-        <Skeleton className="h-4 w-24 rounded" />
-        <div className="mt-2 sm:mt-3 space-y-2 sm:space-y-3">
-          <div>
-            <Skeleton className="h-3 w-20 rounded" />
-            <Skeleton className="mt-0.5 h-4 w-full rounded" />
-          </div>
-          <div>
-            <Skeleton className="h-3 w-28 rounded" />
-            <Skeleton className="mt-0.5 h-4 w-full rounded" />
-          </div>
-          <div>
-            <Skeleton className="h-3 w-24 rounded" />
-            <Skeleton className="mt-1 h-20 w-full max-w-xs rounded-lg" />
-          </div>
-        </div>
-      </div>
-
-      {/* Timeline */}
-      <div className={CARD_CLASS}>
-        <Skeleton className="h-4 w-20 rounded" />
-        <div className="mt-2 sm:mt-3 grid grid-cols-1 gap-2 sm:gap-3 sm:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-lg border border-admin-card-border bg-muted/30 p-3 sm:p-4">
-              <Skeleton className="h-3 w-14 rounded" />
-              <Skeleton className="mt-0.5 h-4 w-20 rounded" />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
 }
 
 function PropertyDetailEmpty() {
@@ -200,7 +107,12 @@ function PropertyDetailEmpty() {
             This property may have been removed or the link is invalid.
           </p>
         </div>
-        <Button asChild variant="outline" size="sm" className="min-h-[48px] rounded-xl px-6 text-base sm:min-h-[44px] sm:text-sm">
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="min-h-[48px] min-w-[44px] rounded-xl px-6 text-base sm:min-h-[44px] sm:text-sm"
+        >
           <Link href="/admin/properties">Back to properties</Link>
         </Button>
       </div>
@@ -208,9 +120,15 @@ function PropertyDetailEmpty() {
   );
 }
 
-export function PropertyDetailClient({ identifier }: PropertyDetailClientProps) {
+export function PropertyDetailClient({
+  identifier,
+}: PropertyDetailClientProps) {
   const router = useRouter();
-  const { data: property, isLoading, isError } = usePropertyByIdOrSlug(identifier);
+  const {
+    data: property,
+    isLoading,
+    isError,
+  } = usePropertyByIdOrSlug(identifier);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editSheetOpen, setEditSheetOpen] = useState(false);
   const deleteProperty = useDeleteProperty();
@@ -243,12 +161,11 @@ export function PropertyDetailClient({ identifier }: PropertyDetailClientProps) 
   const viewOnSiteHref = property.slug ? `/properties/${property.slug}` : null;
 
   const headerActions = (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-3">
       {viewOnSiteHref && (
         <Button
           variant="outline"
-          size="sm"
-          className="min-h-[44px] gap-1.5 rounded-xl text-sm sm:text-base"
+          className="min-h-[44px] min-w-[44px] gap-2 rounded-xl px-5 py-2.5 text-sm font-medium"
           asChild
         >
           <Link href={viewOnSiteHref} target="_blank" rel="noopener noreferrer">
@@ -259,8 +176,7 @@ export function PropertyDetailClient({ identifier }: PropertyDetailClientProps) 
       )}
       <Button
         variant="outline"
-        size="sm"
-        className="min-h-[44px] gap-1.5 rounded-xl text-sm sm:text-base"
+        className="min-h-[44px] min-w-[44px] gap-2 rounded-xl px-5 py-2.5 text-sm font-medium"
         onClick={() => setEditSheetOpen(true)}
       >
         <Pencil className="h-4 w-4 shrink-0" />
@@ -268,8 +184,7 @@ export function PropertyDetailClient({ identifier }: PropertyDetailClientProps) 
       </Button>
       <Button
         variant="destructive"
-        size="sm"
-        className="min-h-[44px] gap-1.5 rounded-xl text-sm sm:text-base"
+        className="min-h-[44px] min-w-[44px] gap-2 rounded-xl px-5 py-2.5 text-sm font-medium"
         onClick={() => setDeleteDialogOpen(true)}
       >
         <Trash2 className="h-4 w-4 shrink-0" />
@@ -285,6 +200,42 @@ export function PropertyDetailClient({ identifier }: PropertyDetailClientProps) 
     property.zip_code,
     property.country,
   ].filter(Boolean);
+  const addressLine =
+    locationParts.length > 0 ? locationParts.join(", ") : EMPTY_PLACEHOLDER;
+
+  const hasLatLong =
+    property.latitude != null &&
+    property.longitude != null &&
+    !Number.isNaN(Number(property.latitude)) &&
+    !Number.isNaN(Number(property.longitude));
+  const latLongDisplay = hasLatLong
+    ? `${Number(property.latitude).toFixed(5)}, ${Number(property.longitude).toFixed(5)}`
+    : EMPTY_PLACEHOLDER;
+
+  const categoryName =
+    property.category &&
+    typeof property.category === "object" &&
+    "name" in property.category
+      ? (property.category as { name: string }).name
+      : EMPTY_PLACEHOLDER;
+
+  const specItems = [
+    {
+      label: "Area",
+      value: property.area_sqft != null ? `${property.area_sqft} sqft` : null,
+    },
+    { label: "Bedrooms", value: property.bedrooms },
+    { label: "Bathrooms", value: property.bathrooms },
+    { label: "Floors", value: property.floors },
+    { label: "Facing", value: property.facing },
+    {
+      label: "Age",
+      value: property.age_years != null ? `${property.age_years} yrs` : null,
+    },
+    { label: "Furnished", value: property.furnished },
+    { label: "Plot no.", value: property.plot_number },
+    { label: "Plot dims", value: property.plot_dimensions },
+  ];
 
   return (
     <>
@@ -295,16 +246,16 @@ export function PropertyDetailClient({ identifier }: PropertyDetailClientProps) 
         actions={headerActions}
       />
 
-      <div className="space-y-4 px-2 pt-4 pb-8 sm:space-y-6 sm:px-4 sm:pt-5 sm:pb-10 lg:px-8 lg:pt-6">
-        {/* Overview */}
+      <div className="min-w-0 space-y-4 pt-4 pb-8 sm:space-y-6 sm:pt-5 sm:pb-10 lg:space-y-8 lg:pt-6">
+        {/* Hero / Overview */}
         <section className={CARD_CLASS}>
-          <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-start">
-            <div className="h-32 w-full shrink-0 overflow-hidden rounded-lg border border-admin-card-border bg-muted sm:h-44 sm:w-52 lg:h-48 lg:w-64">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+            <div className="h-32 w-full max-w-full shrink-0 overflow-hidden rounded-lg border border-admin-card-border bg-muted sm:h-44 sm:w-52 lg:h-48 lg:w-64 min-w-0">
               {property.cover_image_url ? (
                 <img
                   src={property.cover_image_url}
                   alt=""
-                  className="h-full w-full object-cover"
+                  className="h-full w-full max-w-full object-cover"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center">
@@ -313,158 +264,229 @@ export function PropertyDetailClient({ identifier }: PropertyDetailClientProps) 
               )}
             </div>
             <div className="min-w-0 flex-1 space-y-2 sm:space-y-3">
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                <Badge variant={STATUS_COLORS[property.status]} className="text-xs sm:text-sm">
-                  {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
+              <h1 className="text-xl font-semibold text-foreground sm:text-2xl leading-tight">
+                {formatDetailValue(property.title)}
+              </h1>
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>Slug: </span>
+                <span className={VALUE_CLASS}>
+                  {formatDetailValue(property.slug)}
+                </span>
+              </p>
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>Status: </span>
+                <Badge
+                  variant={STATUS_COLORS[property.status]}
+                  className="text-xs sm:text-sm align-middle"
+                >
+                  {property.status.charAt(0).toUpperCase() +
+                    property.status.slice(1)}
                 </Badge>
-                <Badge variant="outline" className="capitalize text-xs sm:text-sm">
+              </p>
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>Type: </span>
+                <Badge
+                  variant="outline"
+                  className="capitalize text-xs sm:text-sm align-middle"
+                >
                   {property.type}
                 </Badge>
-                {property.category &&
-                  typeof property.category === "object" &&
-                  "name" in property.category && (
-                    <span className={cn(FIELD_LABEL_CLASS, "hidden sm:inline")}>
-                      {(property.category as { name: string }).name}
-                    </span>
+              </p>
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>Category: </span>
+                <span className={VALUE_CLASS}>{categoryName}</span>
+              </p>
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>Price: </span>
+                <span
+                  className={cn(
+                    "text-lg sm:text-xl font-semibold",
+                    VALUE_CLASS,
                   )}
-              </div>
-              <p className={cn("text-xl sm:text-2xl font-semibold text-foreground", VALUE_CLASS)}>
-                ₹{Number(property.price).toLocaleString("en-IN")}
+                >
+                  ₹{Number(property.price).toLocaleString("en-IN")}
+                </span>
                 {property.price_label && (
-                  <span className="ml-1.5 text-sm font-normal text-muted-foreground sm:ml-2">
-                    {property.price_label}
+                  <span className="ml-1.5 text-sm text-muted-foreground">
+                    ({formatDetailValue(property.price_label)})
                   </span>
                 )}
               </p>
-              {property.short_description && (
-                <p className={VALUE_MUTED_CLASS}>
-                  {property.short_description}
-                </p>
-              )}
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>Short description: </span>
+                <span className={VALUE_MUTED_CLASS}>
+                  {formatDetailValue(property.short_description)}
+                </span>
+              </p>
             </div>
           </div>
         </section>
 
-        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+        <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-2">
           {/* Location */}
           <section className={CARD_CLASS}>
-            <ProfileSectionLabel className={cn("flex items-center gap-1.5 sm:gap-2", SECTION_LABEL_CLASS)}>
+            <ProfileSectionLabel
+              className={cn(
+                "flex items-center gap-1.5 sm:gap-2",
+                SECTION_LABEL_CLASS,
+              )}
+            >
               <MapPin className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
               Location
             </ProfileSectionLabel>
-            <div className="mt-2 sm:mt-3 space-y-1 sm:space-y-2">
-              <span className={FIELD_LABEL_CLASS}>Address</span>
-              <p className={VALUE_CLASS}>
-                {locationParts.length > 0 ? locationParts.join(", ") : "—"}
+            <div className="mt-2 space-y-1.5 sm:mt-3 sm:space-y-2">
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>Address: </span>
+                <span className={VALUE_CLASS}>{addressLine}</span>
+              </p>
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>Latitude, Longitude: </span>
+                <span className={VALUE_CLASS}>{latLongDisplay}</span>
               </p>
             </div>
-            {property.map_embed_url && (
+            {property.map_embed_url ? (
               <div className="mt-3 sm:mt-4">
-                <span className={FIELD_LABEL_CLASS}>Map</span>
-                <div className="mt-1 aspect-video w-full overflow-hidden rounded-lg border border-admin-card-border min-h-[140px] sm:min-h-[160px]">
+                <span className={FIELD_LABEL_CLASS}>Map: </span>
+                <div className="mt-1 aspect-video w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-admin-card-border min-h-[140px] sm:min-h-[160px]">
                   <iframe
                     title="Location map"
-                    src={property.map_embed_url}
-                    className="h-full w-full"
+                    src={
+                      toEmbedUrlSync(property.map_embed_url) ??
+                      property.map_embed_url
+                    }
+                    className="h-full w-full max-w-full"
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
+                    allow="geolocation"
                   />
                 </div>
               </div>
-            )}
+            ) : null}
           </section>
 
           {/* Specifications */}
           <section className={CARD_CLASS}>
-            <ProfileSectionLabel className={cn("flex items-center gap-1.5 sm:gap-2", SECTION_LABEL_CLASS)}>
+            <ProfileSectionLabel
+              className={cn(
+                "flex items-center gap-1.5 sm:gap-2",
+                SECTION_LABEL_CLASS,
+              )}
+            >
               <LayoutGrid className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
               Specifications
             </ProfileSectionLabel>
-            <div className="mt-2 sm:mt-3 grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-3">
-              {[
-                { label: "Area", value: property.area_sqft ? `${property.area_sqft} sqft` : null },
-                { label: "Bedrooms", value: property.bedrooms },
-                { label: "Bathrooms", value: property.bathrooms },
-                { label: "Floors", value: property.floors },
-                { label: "Facing", value: property.facing },
-                { label: "Age", value: property.age_years != null ? `${property.age_years} yrs` : null },
-                { label: "Furnished", value: property.furnished },
-                { label: "Plot no.", value: property.plot_number },
-                { label: "Plot dims", value: property.plot_dimensions },
-              ].map(({ label, value }) => (
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:mt-3 sm:gap-3 sm:grid-cols-3">
+              {specItems.map(({ label, value }) => (
                 <div
                   key={label}
-                  className="rounded-lg border border-admin-card-border bg-muted/30 p-2.5 sm:p-3"
+                  className="rounded-lg border border-admin-card-border bg-muted/30 p-2.5 sm:p-3 min-w-0"
                 >
-                  <ProfileFieldLabel className={FIELD_LABEL_CLASS}>{label}</ProfileFieldLabel>
-                  <p className={cn("mt-0.5", VALUE_CLASS)}>{value ?? "—"}</p>
+                  <p className="text-sm">
+                    <span className={FIELD_LABEL_CLASS}>{label}: </span>
+                    <span className={VALUE_CLASS}>
+                      {formatDetailValue(value)}
+                    </span>
+                  </p>
                 </div>
               ))}
             </div>
-            {property.amenities && property.amenities.length > 0 && (
-              <div className="mt-3 sm:mt-4">
-                <ProfileFieldLabel className={FIELD_LABEL_CLASS}>Amenities</ProfileFieldLabel>
+          </section>
+        </div>
+
+        {/* Amenities & Highlights */}
+        <section className={CARD_CLASS}>
+          <ProfileSectionLabel
+            className={cn(
+              "flex items-center gap-1.5 sm:gap-2",
+              SECTION_LABEL_CLASS,
+            )}
+          >
+            <Tag className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+            Amenities & Highlights
+          </ProfileSectionLabel>
+          <div className="mt-2 space-y-3 sm:mt-3 sm:space-y-4">
+            <div>
+              <p className="text-sm mb-1">
+                <span className={FIELD_LABEL_CLASS}>Amenities: </span>
+              </p>
+              {property.amenities && property.amenities.length > 0 ? (
                 <div className="mt-1 flex flex-wrap gap-1.5 sm:gap-2">
-                  {property.amenities.map((a) => (
-                    <Badge key={a} variant="secondary" className="rounded-lg text-xs sm:text-sm">
+                  {property.amenities.map((a, i) => (
+                    <Badge
+                      key={a}
+                      variant="outline"
+                      className={cn(
+                        "rounded-lg border text-xs sm:text-sm font-medium",
+                        AMENITY_BADGE_COLORS[i % AMENITY_BADGE_COLORS.length],
+                      )}
+                    >
                       {a}
                     </Badge>
                   ))}
                 </div>
-              </div>
-            )}
-            {property.highlights && property.highlights.length > 0 && (
-              <div className="mt-3 sm:mt-4">
-                <ProfileFieldLabel className={FIELD_LABEL_CLASS}>Highlights</ProfileFieldLabel>
+              ) : (
+                <p className={cn("mt-0.5", VALUE_CLASS)}>{EMPTY_PLACEHOLDER}</p>
+              )}
+            </div>
+            <div>
+              <p className="text-sm mb-1">
+                <span className={FIELD_LABEL_CLASS}>Highlights: </span>
+              </p>
+              {property.highlights && property.highlights.length > 0 ? (
                 <ul className={cn("mt-1 list-inside list-disc", VALUE_CLASS)}>
                   {property.highlights.map((h, i) => (
                     <li key={i}>{h}</li>
                   ))}
                 </ul>
-              </div>
-            )}
-          </section>
-        </div>
+              ) : (
+                <p className={cn("mt-0.5", VALUE_CLASS)}>{EMPTY_PLACEHOLDER}</p>
+              )}
+            </div>
+          </div>
+        </section>
 
         {/* Description */}
         <section className={CARD_CLASS}>
-          <ProfileSectionLabel className={cn("flex items-center gap-1.5 sm:gap-2", SECTION_LABEL_CLASS)}>
+          <ProfileSectionLabel
+            className={cn(
+              "flex items-center gap-1.5 sm:gap-2",
+              SECTION_LABEL_CLASS,
+            )}
+          >
             <FileText className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
             Description
           </ProfileSectionLabel>
-          <p className={cn("mt-2 sm:mt-3 whitespace-pre-wrap", VALUE_MUTED_CLASS)}>
-            {property.description || "No description provided."}
+          <p className="mt-2 sm:mt-3 text-sm">
+            <span className={FIELD_LABEL_CLASS}>Description: </span>
+          </p>
+          <p className={cn("mt-0.5 whitespace-pre-wrap", VALUE_MUTED_CLASS)}>
+            {formatDetailValue(property.description)}
           </p>
         </section>
 
-        {/* Assets */}
+        {/* Assets / Media */}
         <section className={CARD_CLASS}>
-          <ProfileSectionLabel className={cn("flex items-center gap-1.5 sm:gap-2", SECTION_LABEL_CLASS)}>
+          <ProfileSectionLabel
+            className={cn(
+              "flex items-center gap-1.5 sm:gap-2",
+              SECTION_LABEL_CLASS,
+            )}
+          >
             <ImageIcon className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
             Assets
           </ProfileSectionLabel>
-          <div className="mt-2 sm:mt-3 space-y-3 sm:space-y-4">
-            {property.cover_image_url && (
-              <div>
-                <span className={FIELD_LABEL_CLASS}>Cover image</span>
-                <div className="mt-1 max-w-full overflow-hidden rounded-lg border border-admin-card-border sm:max-w-md">
-                  <img
-                    src={property.cover_image_url}
-                    alt="Cover"
-                    className="h-auto w-full object-cover"
-                  />
-                </div>
-              </div>
-            )}
-            {property.gallery_images && property.gallery_images.length > 0 && (
-              <div>
-                <span className={FIELD_LABEL_CLASS}>Gallery</span>
-                <div className="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2 sm:grid-cols-3 md:grid-cols-4">
+          <div className="mt-2 space-y-3 sm:mt-3 sm:space-y-4">
+            <div className="min-w-0">
+              <p className="text-sm mb-1">
+                <span className={FIELD_LABEL_CLASS}>Gallery: </span>
+              </p>
+              {property.gallery_images && property.gallery_images.length > 0 ? (
+                <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:gap-2 sm:grid-cols-3 md:grid-cols-4">
                   {property.gallery_images.map((url, i) => (
                     <div
                       key={i}
-                      className="aspect-square overflow-hidden rounded-lg border border-admin-card-border"
+                      className="aspect-square min-w-0 overflow-hidden rounded-lg border border-admin-card-border"
                     >
                       <img
                         src={url}
@@ -474,78 +496,103 @@ export function PropertyDetailClient({ identifier }: PropertyDetailClientProps) 
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-            {!property.cover_image_url &&
-              (!property.gallery_images || property.gallery_images.length === 0) && (
-                <p className={VALUE_MUTED_CLASS}>No images.</p>
+              ) : (
+                <p className={cn("mt-0.5", VALUE_MUTED_CLASS)}>
+                  {EMPTY_PLACEHOLDER}
+                </p>
               )}
+            </div>
           </div>
         </section>
 
-        {/* SEO / Meta (optional) */}
-        {(property.meta_title ||
-          property.meta_description ||
-          property.meta_keywords ||
-          property.og_image_url) && (
-          <section className={CARD_CLASS}>
-            <ProfileSectionLabel className={SECTION_LABEL_CLASS}>SEO & Meta</ProfileSectionLabel>
-            <div className="mt-2 sm:mt-3 space-y-2 sm:space-y-3">
-              {property.meta_title && (
-                <div>
-                  <span className={FIELD_LABEL_CLASS}>Meta title</span>
-                  <p className={cn("mt-0.5", VALUE_CLASS)}>{property.meta_title}</p>
+        {/* SEO & Meta - always visible */}
+        <section className={CARD_CLASS}>
+          <ProfileSectionLabel
+            className={cn(
+              "flex items-center gap-1.5 sm:gap-2",
+              SECTION_LABEL_CLASS,
+            )}
+          >
+            <Sparkles className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+            SEO & Meta
+          </ProfileSectionLabel>
+          <div className="mt-2 space-y-2 sm:mt-3 sm:space-y-3">
+            <p className="text-sm">
+              <span className={FIELD_LABEL_CLASS}>Meta title: </span>
+              <span className={VALUE_CLASS}>
+                {formatDetailValue(property.meta_title)}
+              </span>
+            </p>
+            <p className="text-sm">
+              <span className={FIELD_LABEL_CLASS}>Meta description: </span>
+              <span className={VALUE_MUTED_CLASS}>
+                {formatDetailValue(property.meta_description)}
+              </span>
+            </p>
+            <p className="text-sm">
+              <span className={FIELD_LABEL_CLASS}>Meta keywords: </span>
+              <span className={VALUE_MUTED_CLASS}>
+                {formatDetailValue(property.meta_keywords)}
+              </span>
+            </p>
+            <div>
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>OG image: </span>
+              </p>
+              {property.og_image_url ? (
+                <div className="mt-1 max-w-full overflow-hidden rounded-lg border border-admin-card-border sm:max-w-xs min-w-0">
+                  <img
+                    src={property.og_image_url}
+                    alt="OG preview"
+                    className="h-auto w-full max-w-full object-cover"
+                  />
                 </div>
-              )}
-              {property.meta_description && (
-                <div>
-                  <span className={FIELD_LABEL_CLASS}>Meta description</span>
-                  <p className={cn("mt-0.5", VALUE_MUTED_CLASS)}>{property.meta_description}</p>
-                </div>
-              )}
-              {property.meta_keywords && (
-                <div>
-                  <span className={FIELD_LABEL_CLASS}>Meta keywords</span>
-                  <p className={cn("mt-0.5", VALUE_MUTED_CLASS)}>{property.meta_keywords}</p>
-                </div>
-              )}
-              {property.og_image_url && (
-                <div>
-                  <span className={FIELD_LABEL_CLASS}>OG image</span>
-                  <div className="mt-1 max-w-full overflow-hidden rounded-lg border border-admin-card-border sm:max-w-xs">
-                    <img
-                      src={property.og_image_url}
-                      alt="OG preview"
-                      className="h-auto w-full object-cover"
-                    />
-                  </div>
-                </div>
+              ) : (
+                <p className={cn("mt-0.5", VALUE_CLASS)}>{EMPTY_PLACEHOLDER}</p>
               )}
             </div>
-          </section>
-        )}
+          </div>
+        </section>
 
-        {/* Timeline */}
+        {/* Timeline - always visible */}
         <section className={CARD_CLASS}>
-          <ProfileSectionLabel className={cn("flex items-center gap-1.5 sm:gap-2", SECTION_LABEL_CLASS)}>
+          <ProfileSectionLabel
+            className={cn(
+              "flex items-center gap-1.5 sm:gap-2",
+              SECTION_LABEL_CLASS,
+            )}
+          >
             <Calendar className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
             Timeline
           </ProfileSectionLabel>
-          <div className="mt-2 sm:mt-3 grid grid-cols-1 gap-2 sm:gap-3 sm:grid-cols-3">
+          <div className="mt-2 grid grid-cols-1 gap-2 sm:mt-3 sm:gap-3 sm:grid-cols-3">
             <div className="rounded-lg border border-admin-card-border bg-muted/30 p-3 sm:p-4">
-              <ProfileFieldLabel className={FIELD_LABEL_CLASS}>Created</ProfileFieldLabel>
-              <p className={cn("mt-0.5", VALUE_CLASS)}>{formatDate(property.created_at)}</p>
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>Created: </span>
+                <span className={VALUE_CLASS}>
+                  {formatDate(property.created_at)}
+                </span>
+              </p>
             </div>
             <div className="rounded-lg border border-admin-card-border bg-muted/30 p-3 sm:p-4">
-              <ProfileFieldLabel className={FIELD_LABEL_CLASS}>Updated</ProfileFieldLabel>
-              <p className={cn("mt-0.5", VALUE_CLASS)}>{formatDate(property.updated_at)}</p>
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>Updated: </span>
+                <span className={VALUE_CLASS}>
+                  {formatDate(property.updated_at)}
+                </span>
+              </p>
             </div>
             <div className="rounded-lg border border-admin-card-border bg-muted/30 p-3 sm:p-4">
-              <ProfileFieldLabel className={cn("flex items-center gap-1", FIELD_LABEL_CLASS)}>
-                <Eye className="h-3.5 w-3.5 shrink-0" />
-                Views
-              </ProfileFieldLabel>
-              <p className={cn("mt-0.5", VALUE_CLASS)}>{property.views ?? 0}</p>
+              <p className="text-sm">
+                <span className={FIELD_LABEL_CLASS}>Status: </span>
+                <Badge
+                  variant={STATUS_COLORS[property.status]}
+                  className="font-medium align-middle"
+                >
+                  {property.status.charAt(0).toUpperCase() +
+                    property.status.slice(1)}
+                </Badge>
+              </p>
             </div>
           </div>
         </section>
@@ -572,7 +619,7 @@ export function PropertyDetailClient({ identifier }: PropertyDetailClientProps) 
               onClick={handleDeleteConfirm}
               disabled={deleteProperty.isPending}
               variant="destructive"
-              className="min-w-[100px]"
+              className="min-w-[100px] min-h-[44px]"
             >
               {deleteProperty.isPending ? (
                 <>

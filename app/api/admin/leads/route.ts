@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
 import { getLeads, createLead } from "@/lib/queries/leads";
-import { CONNECTION_UNAVAILABLE_MESSAGE } from "@/lib/db-errors";
+import { CONNECTION_UNAVAILABLE_MESSAGE, withConnectionRetry } from "@/lib/db-errors";
 import type { Lead } from "@/types";
 
 export async function GET(request: NextRequest) {
@@ -22,15 +22,17 @@ export async function GET(request: NextRequest) {
   const sort_order = (searchParams.get("sort_order") as "asc" | "desc") ?? "desc";
 
   try {
-    const { data, total } = await getLeads({
-      page,
-      limit,
-      search,
-      status: status as Lead["status"] | "all" | undefined,
-      source: source as Lead["source"] | "all" | undefined,
-      sort_by,
-      sort_order,
-    });
+    const { data, total } = await withConnectionRetry(() =>
+      getLeads({
+        page,
+        limit,
+        search,
+        status: status as Lead["status"] | "all" | undefined,
+        source: source as Lead["source"] | "all" | undefined,
+        sort_by,
+        sort_order,
+      }),
+    );
 
     return NextResponse.json({ data, total, page, limit });
   } catch (err) {

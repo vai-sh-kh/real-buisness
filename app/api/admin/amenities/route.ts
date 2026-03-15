@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
 import { getAmenities, createAmenity } from "@/lib/queries/amenities";
+import { CONNECTION_UNAVAILABLE_MESSAGE } from "@/lib/db-errors";
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,7 +19,12 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to fetch amenities";
     console.error("[GET /api/admin/amenities]", err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const status = message === CONNECTION_UNAVAILABLE_MESSAGE ? 503 : 500;
+    const body =
+      status === 503
+        ? { error: "Service temporarily unavailable. Please try again." }
+        : { error: message };
+    return NextResponse.json(body, { status });
   }
 }
 
@@ -39,7 +45,7 @@ export async function POST(request: NextRequest) {
   const { name, icon } = body as { name?: string; icon?: string };
   if (!name || typeof name !== "string" || !name.trim()) {
     return NextResponse.json(
-      { error: "Name is required" },
+      { error: "Please enter the name" },
       { status: 400 }
     );
   }

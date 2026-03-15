@@ -4,7 +4,8 @@ import { getPropertiesForAdmin } from "@/lib/queries/properties";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { propertySchema } from "@/lib/validations/property.schema";
 import { slugify } from "@/lib/utils";
-import { CONNECTION_UNAVAILABLE_MESSAGE, toUserFriendlyMessage } from "@/lib/db-errors";
+import { normalizeMapUrl } from "@/lib/map-url";
+import { CONNECTION_UNAVAILABLE_MESSAGE, toUserFriendlyMessage, withConnectionRetry } from "@/lib/db-errors";
 
 export async function GET(request: NextRequest) {
   try {
@@ -29,20 +30,22 @@ export async function GET(request: NextRequest) {
   const sort_order = (searchParams.get("sort_order") as "asc" | "desc") ?? "desc";
 
   try {
-    const { data, total } = await getPropertiesForAdmin({
-      page,
-      limit,
-      search,
-      status,
-      type,
-      category_id,
-      city,
-      min_price: min_price ? Number(min_price) : undefined,
-      max_price: max_price ? Number(max_price) : undefined,
-      bedrooms: bedrooms ? Number(bedrooms) : undefined,
-      sort_by,
-      sort_order,
-    });
+    const { data, total } = await withConnectionRetry(() =>
+      getPropertiesForAdmin({
+        page,
+        limit,
+        search,
+        status,
+        type,
+        category_id,
+        city,
+        min_price: min_price ? Number(min_price) : undefined,
+        max_price: max_price ? Number(max_price) : undefined,
+        bedrooms: bedrooms ? Number(bedrooms) : undefined,
+        sort_by,
+        sort_order,
+      }),
+    );
 
     return NextResponse.json({ data, total, page, limit });
   } catch (err) {
@@ -86,6 +89,10 @@ export async function POST(request: NextRequest) {
     slugify(parsed.data.title);
 
   const d = parsed.data;
+  const mapEmbedUrl = d.map_embed_url?.trim()
+    ? await normalizeMapUrl(d.map_embed_url).then((u) => u ?? d.map_embed_url?.trim() ?? null)
+    : null;
+
   const insertPayload = {
     title: d.title,
     slug,
@@ -110,11 +117,11 @@ export async function POST(request: NextRequest) {
     country: d.country ?? "India",
     latitude: d.latitude ?? null,
     longitude: d.longitude ?? null,
-    map_embed_url: d.map_embed_url?.trim() || null,
+    map_embed_url: mapEmbedUrl,
     cover_image_url:
       d.cover_image_url?.trim() ||
       "https://placehold.co/800x450?text=Cover+Image",
-    gallery_images: d.gallery_images ?? null,
+    gallery_images: Array.isArray(d.gallery_images) ? d.gallery_images : null,
     amenities: d.amenities ?? null,
     highlights: d.highlights ?? null,
     plot_number: d.plot_number ?? null,

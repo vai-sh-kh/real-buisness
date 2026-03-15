@@ -16,6 +16,7 @@ import {
 import { useDashboard } from "@/hooks/useDashboard";
 import { formatDate, cn } from "@/lib/utils";
 import Link from "next/link";
+import { DashboardSkeleton } from "@/components/admin/skeletons/AdminPageSkeleton";
 
 const PROPERTY_STATUS_COLORS: Record<string, string> = {
   active: "#22c55e",
@@ -39,93 +40,6 @@ const LEAD_STATUS_LABELS: Record<string, string> = {
   converted: "Converted",
   lost: "Lost",
 };
-
-function DashboardSkeleton() {
-  return (
-    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300">
-      {/* KPI Stats Row */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="flex min-w-0 items-center gap-3 overflow-hidden rounded-xl border border-admin-card-border bg-admin-card-bg p-4 shadow-sm sm:gap-4 sm:p-6"
-          >
-            <div className="h-10 w-10 shrink-0 rounded-lg bg-muted sm:h-12 sm:w-12 sm:rounded-xl" />
-            <div className="min-w-0 flex-1 space-y-1.5 sm:space-y-2">
-              <div className="h-3 w-16 rounded bg-muted sm:h-4 sm:w-28" />
-              <div className="h-6 w-12 rounded bg-muted sm:h-8 sm:w-16" />
-              <div className="h-2.5 w-14 rounded bg-muted sm:h-3 sm:w-20" />
-            </div>
-          </div>
-        ))}
-      </div>
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
-        <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6">
-          <div className="mb-4 flex items-center justify-between sm:mb-6">
-            <div className="h-5 w-32 rounded bg-muted sm:h-6 sm:w-56" />
-            <div className="h-3 w-12 shrink-0 rounded bg-muted sm:h-4 sm:w-16" />
-          </div>
-          <div className="h-48 rounded-xl bg-muted/50 sm:h-64 lg:h-[280px]" />
-        </div>
-        <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6">
-          <div className="mb-4 flex items-center justify-between sm:mb-6">
-            <div className="h-5 w-28 rounded bg-muted sm:h-6 sm:w-48" />
-            <div className="h-3 w-12 shrink-0 rounded bg-muted sm:h-4 sm:w-16" />
-          </div>
-          <div className="h-48 rounded-xl bg-muted/50 sm:h-64 lg:h-[280px]" />
-        </div>
-      </div>
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
-        <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6">
-          <div className="mb-4 flex items-center justify-between sm:mb-6">
-            <div className="h-5 w-28 rounded bg-muted sm:h-6 sm:w-40" />
-            <div className="h-3 w-12 shrink-0 rounded bg-muted sm:h-4 sm:w-16" />
-          </div>
-          <div className="space-y-3 sm:space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div
-                key={i}
-                className="flex min-w-0 items-center gap-2 overflow-hidden rounded-xl border border-admin-card-border p-2 sm:gap-4 sm:p-3"
-              >
-                <div className="h-8 w-8 shrink-0 rounded-lg bg-muted sm:h-10 sm:w-10 sm:rounded-xl" />
-                <div className="min-w-0 flex-1 space-y-1.5 sm:space-y-2">
-                  <div className="h-3 w-24 max-w-full rounded bg-muted sm:h-4 sm:w-36" />
-                  <div className="h-2.5 w-16 rounded bg-muted sm:h-3 sm:w-24" />
-                </div>
-                <div className="h-4 w-10 shrink-0 rounded bg-muted sm:h-5 sm:w-14" />
-                <div className="hidden h-3 w-12 rounded bg-muted sm:block sm:w-16" />
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6">
-          <div className="mb-4 flex items-center justify-between sm:mb-6">
-            <div className="h-5 w-20 rounded bg-muted sm:h-6 sm:w-28" />
-            <div className="h-3 w-12 shrink-0 rounded bg-muted sm:h-4 sm:w-16" />
-          </div>
-          <div className="space-y-3 sm:space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div
-                key={i}
-                className="flex min-w-0 items-center gap-2 overflow-hidden rounded-xl border border-admin-card-border p-2 sm:gap-4 sm:p-3"
-              >
-                <div className="h-8 w-8 shrink-0 rounded-full bg-muted sm:h-10 sm:w-10" />
-                <div className="min-w-0 flex-1 space-y-1.5 sm:space-y-2">
-                  <div className="h-3 w-20 max-w-full rounded bg-muted sm:h-4 sm:w-32" />
-                  <div className="h-2.5 w-24 max-w-full rounded bg-muted sm:h-3 sm:w-40" />
-                </div>
-                <div className="h-4 w-10 shrink-0 rounded bg-muted sm:h-5 sm:w-14" />
-                <div className="hidden h-3 w-12 rounded bg-muted sm:block sm:w-16" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function DashboardView() {
   const { data, isLoading } = useDashboard();
@@ -153,7 +67,7 @@ export function DashboardView() {
   const newLeads = stats?.new_leads ?? 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* KPI Stats Row */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {[
@@ -427,13 +341,11 @@ export function DashboardView() {
                         className={cn(
                           "rounded-lg px-2 py-0.5 text-xs font-semibold capitalize",
                           p.status === "active" &&
-"bg-emerald-100 text-emerald-700",
-                        p.status === "sold" &&
-                            "bg-blue-100 text-blue-700",
-                        p.status === "rented" &&
+                            "bg-emerald-100 text-emerald-700",
+                          p.status === "sold" && "bg-blue-100 text-blue-700",
+                          p.status === "rented" &&
                             "bg-violet-100 text-violet-700",
-                        p.status === "draft" &&
-                            "bg-gray-100 text-gray-600",
+                          p.status === "draft" && "bg-gray-100 text-gray-600",
                         )}
                       >
                         {p.status}
@@ -496,16 +408,14 @@ export function DashboardView() {
                     <span
                       className={cn(
                         "rounded-lg px-2 py-0.5 text-xs font-semibold capitalize",
-                        l.status === "new" &&
-                          "bg-blue-100 text-blue-700",
+                        l.status === "new" && "bg-blue-100 text-blue-700",
                         l.status === "contacted" &&
                           "bg-emerald-100 text-emerald-700",
                         l.status === "qualified" &&
                           "bg-violet-100 text-violet-700",
                         l.status === "converted" &&
                           "bg-green-100 text-green-700",
-                        l.status === "lost" &&
-                          "bg-gray-100 text-gray-600",
+                        l.status === "lost" && "bg-gray-100 text-gray-600",
                       )}
                     >
                       {l.status}

@@ -1,6 +1,4 @@
 import { Suspense } from "react";
-import { Navbar } from "@/components/landing/Navbar";
-import { Footer } from "@/components/landing/Footer";
 import { PropertiesClient } from "@/components/properties/PropertiesClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Metadata } from "next";
@@ -30,14 +28,8 @@ function PropertiesLoading() {
 
 export default function PropertiesPage() {
   return (
-    <>
-      <Navbar />
-      <main className="pt-16">
-        <Suspense fallback={<PropertiesLoading />}>
-          <PropertiesClient />
-        </Suspense>
-      </main>
-      <Footer />
-    </>
+    <Suspense fallback={<PropertiesLoading />}>
+      <PropertiesClient />
+    </Suspense>
   );
 }

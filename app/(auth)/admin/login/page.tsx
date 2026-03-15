@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToFirstError } from "@/hooks/useScrollToFirstError";
@@ -47,16 +47,23 @@ const FEATURES = [
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { isAuthenticated, setAuthenticated } = useAuthStore();
+  const searchParams = useSearchParams();
+  const { isAuthenticated, setAuthenticated, clearAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    const redirectParam = searchParams.get("redirect");
+    // If we were sent here by the server (redirect param), our session is invalid — clear client state so we show the form instead of "Signing you in..."
+    if (redirectParam) {
+      clearAuth();
+      return;
+    }
     if (isAuthenticated) {
       router.replace("/admin/dashboard");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, searchParams, clearAuth]);
 
   const {
     register,
@@ -86,7 +93,10 @@ export default function AdminLoginPage() {
 
       setAuthenticated(result.email ?? data.email);
       toast.success("Welcome back!");
-      router.replace("/admin/dashboard");
+      const redirectTo = searchParams.get("redirect") || "/admin/dashboard";
+      router.replace(
+        redirectTo.startsWith("/admin") ? redirectTo : "/admin/dashboard",
+      );
     } catch {
       toast.error("Network error. Please try again.");
     }

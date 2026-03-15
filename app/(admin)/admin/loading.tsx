@@ -1,12 +1,5 @@
-import {
-  PageHeaderSkeleton,
-  TablePageSkeleton,
-} from "@/components/admin/skeletons/AdminPageSkeleton";
+import { AdminFullScreenLoader } from "@/components/admin/AdminFullScreenLoader";
 
 export default function AdminLoading() {
-  return (
-    <div className="space-y-6 bg-admin-main-bg">
-      <TablePageSkeleton rows={6} />
-    </div>
-  );
+  return <AdminFullScreenLoader />;
 }

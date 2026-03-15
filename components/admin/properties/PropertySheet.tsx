@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -32,7 +32,7 @@ import { useCreateProperty, useUpdateProperty } from "@/hooks/useProperties";
 import { useScrollToFirstError } from "@/hooks/useScrollToFirstError";
 import { useAllCategories } from "@/hooks/useCategories";
 import { useAmenities } from "@/hooks/useAmenities";
-import { slugify, generateSeoFromContent, cn } from "@/lib/utils";
+import { slugify, cn } from "@/lib/utils";
 import type { PropertyWithRelations } from "@/types";
 import { Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -40,7 +40,6 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import { AmenitiesModal } from "./AmenitiesModal";
 import { CoverImageDropzone } from "./CoverImageDropzone";
 import { GalleryDropzone } from "./GalleryDropzone";
-import { ImageUrlInput } from "./ImageUrlInput";
 
 function RequiredStar() {
   return <span className="text-red-500">*</span>;
@@ -50,6 +49,8 @@ interface PropertySheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   property?: PropertyWithRelations | null;
+  /** When set, sheet will open to this tab (e.g. "assets" to fix map link). */
+  openToTab?: "general" | "assets" | "specs" | "seo";
 }
 
 const defaultValues: PropertyFormValues = {
@@ -58,9 +59,9 @@ const defaultValues: PropertyFormValues = {
   description: null,
   short_description: null,
   type: "sale",
-  status: "draft",
+  status: "active",
   category_id: null,
-  price: 0,
+  price: undefined as unknown as number,
   price_label: null,
   area_sqft: null,
   bedrooms: null,
@@ -93,6 +94,7 @@ export function PropertySheet({
   open,
   onOpenChange,
   property,
+  openToTab,
 }: PropertySheetProps) {
   const isMobile = useIsMobile();
   const isEditing = !!property;
@@ -102,9 +104,54 @@ export function PropertySheet({
   const [createdPropertyId, setCreatedPropertyId] = useState<string | null>(
     null,
   );
+  const [assetsStepCompleted, setAssetsStepCompleted] = useState(false);
+  const [specsStepCompleted, setSpecsStepCompleted] = useState(false);
   const [amenitiesModalOpen, setAmenitiesModalOpen] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const assetsUploading = coverUploading || galleryUploading;
+  const uploadAbortRef = useRef<AbortController | null>(null);
+  const [uploadAbortSignal, setUploadAbortSignal] =
+    useState<AbortSignal | null>(null);
+  const prevActiveTabRef = useRef(activeTab);
+
+  // When sheet opens with openToTab, switch to that tab
+  useEffect(() => {
+    if (open && openToTab) {
+      setActiveTab(openToTab);
+    }
+  }, [open, openToTab]);
+
+  // Abort uploads when sheet closes
+  useEffect(() => {
+    if (!open) {
+      uploadAbortRef.current?.abort();
+      uploadAbortRef.current = null;
+      setUploadAbortSignal(null);
+      return;
+    }
+    const ctrl = new AbortController();
+    uploadAbortRef.current = ctrl;
+    setUploadAbortSignal(ctrl.signal);
+    return () => {
+      ctrl.abort();
+      uploadAbortRef.current = null;
+      setUploadAbortSignal(null);
+    };
+  }, [open]);
+
+  // Abort uploads when user changes tab (e.g. away from Assets)
+  useEffect(() => {
+    if (!open) return;
+    if (prevActiveTabRef.current === activeTab) return;
+    uploadAbortRef.current?.abort();
+    const ctrl = new AbortController();
+    uploadAbortRef.current = ctrl;
+    setUploadAbortSignal(ctrl.signal);
+    prevActiveTabRef.current = activeTab;
+  }, [open, activeTab]);
   const createMutation = useCreateProperty();
   const updateMutation = useUpdateProperty();
   const effectivePropertyId = property?.id ?? createdPropertyId ?? null;
@@ -128,9 +175,6 @@ export function PropertySheet({
   });
 
   const titleValue = watch("title");
-  const shortDescValue = watch("short_description");
-  const descValue = watch("description");
-  const metaTitleValue = watch("meta_title");
 
   useEffect(() => {
     if (property) {
@@ -161,6 +205,7 @@ export function PropertySheet({
           property.longitude != null ? Number(property.longitude) : null,
         map_embed_url: property.map_embed_url,
         cover_image_url: property.cover_image_url,
+        gallery_images: property.gallery_images ?? null,
         furnished: property.furnished ?? undefined,
         amenities: property.amenities ?? [],
         highlights: property.highlights ?? undefined,
@@ -176,9 +221,21 @@ export function PropertySheet({
     }
     setCoverFile(null);
     setGalleryFiles([]);
+    setCoverUploading(false);
+    setGalleryUploading(false);
     setCreatedPropertyId(null);
     setActiveTab("general");
-  }, [property, reset, open]);
+    if (property) {
+      setAssetsStepCompleted(true);
+      setSpecsStepCompleted(true);
+      if (property.map_embed_url?.trim()) {
+        trigger("map_embed_url").catch(() => {});
+      }
+    } else {
+      setAssetsStepCompleted(false);
+      setSpecsStepCompleted(false);
+    }
+  }, [property, reset, open, trigger]);
 
   // Auto-generate slug from title when creating
   useEffect(() => {
@@ -187,15 +244,13 @@ export function PropertySheet({
     }
   }, [titleValue, isEditing, setValue]);
 
-  // Auto-prefill SEO meta title only when empty (from property title)
-  useEffect(() => {
-    const seo = generateSeoFromContent(titleValue, shortDescValue || descValue);
-    if (seo.meta_title && !metaTitleValue?.trim()) {
-      setValue("meta_title", seo.meta_title);
-    }
-  }, [titleValue, shortDescValue, descValue, metaTitleValue, setValue]);
-
   const isPending = createMutation.isPending || updateMutation.isPending;
+
+  const generalComplete = isEditing || createdPropertyId !== null;
+  const assetsTabEnabled = generalComplete;
+  const specsTabEnabled =
+    assetsTabEnabled && (isEditing || assetsStepCompleted);
+  const seoTabEnabled = specsTabEnabled && (isEditing || specsStepCompleted);
 
   const GENERAL_FIELDS = new Set([
     "title",
@@ -205,6 +260,7 @@ export function PropertySheet({
     "category_id",
     "price",
     "price_label",
+    "cover_image_url",
     "short_description",
     "description",
     "address",
@@ -215,11 +271,7 @@ export function PropertySheet({
     "latitude",
     "longitude",
   ]);
-  const ASSETS_FIELDS = new Set([
-    "cover_image_url",
-    "gallery_images",
-    "map_embed_url",
-  ]);
+  const ASSETS_FIELDS = new Set(["gallery_images", "map_embed_url"]);
   const SPECS_FIELDS = new Set([
     "area_sqft",
     "bedrooms",
@@ -253,6 +305,7 @@ export function PropertySheet({
     "title",
     "type",
     "price",
+    "cover_image_url",
     "address",
     "city",
     "state",
@@ -272,6 +325,7 @@ export function PropertySheet({
     propertyId: string,
     payload: PropertyFormValues,
   ): Promise<PropertyFormValues> {
+    const signal = uploadAbortRef.current?.signal;
     let result = { ...payload };
     if (coverFile) {
       const fd = new FormData();
@@ -282,12 +336,15 @@ export function PropertySheet({
         method: "POST",
         credentials: "include",
         body: fd,
+        signal: signal ?? undefined,
       });
-      const json = await res.json();
-      if (res.ok && json.url) {
-        result.cover_image_url = json.url;
-      } else {
-        toast.error(json.error || "Cover image upload failed");
+      if (res.headers.get("content-type")?.includes("application/json")) {
+        const json = await res.json();
+        if (res.ok && json.url) {
+          result.cover_image_url = json.url;
+        } else if (!signal?.aborted) {
+          toast.error(json.error || "Cover image upload failed");
+        }
       }
     }
     if (galleryFiles.length > 0) {
@@ -299,13 +356,16 @@ export function PropertySheet({
         method: "POST",
         credentials: "include",
         body: fd,
+        signal: signal ?? undefined,
       });
-      const json = await res.json();
-      if (res.ok && json.urls?.length) {
-        const existing = result.gallery_images ?? [];
-        result.gallery_images = [...existing, ...json.urls];
-      } else if (!res.ok) {
-        toast.error(json.error || "Gallery upload failed");
+      if (res.headers.get("content-type")?.includes("application/json")) {
+        const json = await res.json();
+        if (res.ok && json.urls?.length) {
+          const existing = result.gallery_images ?? [];
+          result.gallery_images = [...existing, ...json.urls];
+        } else if (!res.ok && !signal?.aborted) {
+          toast.error(json.error || "Gallery upload failed");
+        }
       }
     }
     return result;
@@ -321,6 +381,20 @@ export function PropertySheet({
       if (isEditing && property) {
         await updateMutation.mutateAsync({ id: property.id, values: payload });
       } else {
+        const slugToCheck =
+          (payload.slug && payload.slug.trim()) || slugify(payload.title);
+        const checkRes = await fetch(
+          `/api/admin/properties/check-slug?slug=${encodeURIComponent(slugToCheck)}`,
+          { credentials: "include" },
+        );
+        const checkJson = (await checkRes.json()) as { exists?: boolean };
+        if (checkJson.exists) {
+          setError("slug", {
+            type: "manual",
+            message: "A property with this URL slug already exists.",
+          });
+          return;
+        }
         const created = await createMutation.mutateAsync(payload);
         const newId = (created as { id: string }).id;
         setCreatedPropertyId(newId);
@@ -331,13 +405,13 @@ export function PropertySheet({
 
     if (activeTab === "assets") {
       if (!id) {
-        toast.error("Save General tab first");
+        toast.error("Please complete the General & Location tab first");
         return;
       }
       const hasCoverUrl = !!payload.cover_image_url?.trim();
       const hasCoverFile = !!coverFile;
       if (!hasCoverUrl && !hasCoverFile) {
-        toast.error("Cover image is required");
+        toast.error("Please add a cover image");
         setActiveTab("assets");
         return;
       }
@@ -354,6 +428,7 @@ export function PropertySheet({
           setValue("cover_image_url", finalPayload.cover_image_url);
           setValue("gallery_images", finalPayload.gallery_images);
         } catch (e) {
+          if (e instanceof Error && e.name === "AbortError") return;
           toast.error(e instanceof Error ? e.message : "Upload failed");
           return;
         }
@@ -366,13 +441,14 @@ export function PropertySheet({
           map_embed_url: finalPayload.map_embed_url,
         },
       });
+      setAssetsStepCompleted(true);
       setActiveTab("specs");
       return;
     }
 
     if (activeTab === "specs") {
       if (!id) {
-        toast.error("Save previous tabs first");
+        toast.error("Please complete the previous tab first");
         return;
       }
       await updateMutation.mutateAsync({
@@ -391,6 +467,7 @@ export function PropertySheet({
           highlights: payload.highlights,
         },
       });
+      setSpecsStepCompleted(true);
       setActiveTab("seo");
     }
   }
@@ -400,13 +477,13 @@ export function PropertySheet({
     const id = effectivePropertyId;
 
     if (!id) {
-      toast.error("Complete previous tabs first");
+      toast.error("Please complete the previous tabs first");
       return;
     }
 
     const hasCover = !!payload.cover_image_url?.trim() || !!coverFile;
     if (!hasCover) {
-      toast.error("Cover image is required");
+      toast.error("Please add a cover image");
       setActiveTab("assets");
       return;
     }
@@ -417,6 +494,7 @@ export function PropertySheet({
         const finalPayload = await uploadPendingFiles(id, payload);
         await updateMutation.mutateAsync({ id, values: finalPayload });
       } catch (e) {
+        if (e instanceof Error && e.name === "AbortError") return;
         console.error("Upload failed:", e);
         toast.error(e instanceof Error ? e.message : "Upload failed");
         return;
@@ -445,14 +523,14 @@ export function PropertySheet({
       <SheetContent
         side={isMobile ? "bottom" : "right"}
         className={cn(
-          "w-full p-0 overflow-hidden bg-white/95 backdrop-blur-xl flex flex-col",
+          "w-full p-0 overflow-hidden bg-white/95 backdrop-blur-xl flex flex-col max-h-[100dvh]",
           isMobile
             ? "max-h-[90vh] rounded-t-2xl border-t border-gray-100"
-            : "sm:max-w-4xl border-l border-gray-100",
+            : "sm:max-w-4xl border-l border-gray-100 h-full max-h-[100dvh]",
         )}
       >
         {/* Header with gradient */}
-        <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 text-white relative overflow-hidden shrink-0">
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-4 sm:p-6 lg:p-8 text-white relative overflow-hidden shrink-0">
           <div className="relative z-10">
             <div className="mb-4">
               <SheetTitle className="text-xl font-bold text-white leading-tight">
@@ -471,38 +549,87 @@ export function PropertySheet({
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col flex-1 overflow-hidden relative"
+          className="flex flex-col flex-1 min-h-0 overflow-hidden"
         >
-          <div className="flex-1 overflow-y-auto p-8 pb-32">
+          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8 pb-6">
             <Tabs
               value={activeTab}
-              onValueChange={(v) =>
-                setActiveTab(v as "general" | "assets" | "specs" | "seo")
-              }
+              onValueChange={(v) => {
+                const next = v as "general" | "assets" | "specs" | "seo";
+                if (next === "assets" && !assetsTabEnabled) return;
+                if (next === "specs" && !specsTabEnabled) return;
+                if (next === "seo" && !seoTabEnabled) return;
+                setActiveTab(next);
+              }}
               className="w-full"
             >
-              <TabsList className="mb-8 flex h-11 flex-nowrap overflow-x-auto rounded-xl bg-gray-100 p-1 gap-2">
+              <TabsList className="mb-8 flex h-11 w-full flex-nowrap justify-start overflow-x-auto rounded-xl bg-muted/60 p-1.5 gap-1">
                 <TabsTrigger
+                  type="button"
                   value="general"
-                  className="mb-2 shrink-0 rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  className={cn(
+                    "shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                    "text-muted-foreground hover:text-foreground/80",
+                    "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-none",
+                    "data-[state=active]:border-2 data-[state=active]:border-amber-200/90 data-[state=active]:ring-0",
+                  )}
                 >
                   General & Location
                 </TabsTrigger>
                 <TabsTrigger
+                  type="button"
                   value="assets"
-                  className="mb-2 shrink-0 rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  disabled={!assetsTabEnabled}
+                  title={
+                    !assetsTabEnabled
+                      ? "Add the property in General tab"
+                      : undefined
+                  }
+                  className={cn(
+                    "shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                    "text-muted-foreground hover:text-foreground/80",
+                    "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-none",
+                    "data-[state=active]:border-2 data-[state=active]:border-amber-200/90 data-[state=active]:ring-0",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
+                  )}
                 >
                   Assets
                 </TabsTrigger>
                 <TabsTrigger
+                  type="button"
                   value="specs"
-                  className="mb-2 shrink-0 rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  disabled={!specsTabEnabled}
+                  title={
+                    !specsTabEnabled
+                      ? "Add the property in General tab"
+                      : undefined
+                  }
+                  className={cn(
+                    "shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                    "text-muted-foreground hover:text-foreground/80",
+                    "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-none",
+                    "data-[state=active]:border-2 data-[state=active]:border-amber-200/90 data-[state=active]:ring-0",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
+                  )}
                 >
                   Specifications
                 </TabsTrigger>
                 <TabsTrigger
+                  type="button"
                   value="seo"
-                  className="mb-2 shrink-0 rounded-lg px-4 font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  disabled={!seoTabEnabled}
+                  title={
+                    !seoTabEnabled
+                      ? "Add the property in General tab"
+                      : undefined
+                  }
+                  className={cn(
+                    "shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                    "text-muted-foreground hover:text-foreground/80",
+                    "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-none",
+                    "data-[state=active]:border-2 data-[state=active]:border-amber-200/90 data-[state=active]:ring-0",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
+                  )}
                 >
                   SEO Settings
                 </TabsTrigger>
@@ -519,7 +646,7 @@ export function PropertySheet({
                   </div>
 
                   <div className="grid grid-cols-1 gap-6">
-                    <div className="space-y-2">
+                    <div className="space-y-2" data-error-field="title">
                       <Label
                         htmlFor="title"
                         className="text-xs font-bold text-gray-700 ml-1 flex items-center gap-1"
@@ -539,9 +666,32 @@ export function PropertySheet({
                       )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-xs font-bold text-gray-700 ml-1 flex items-center gap-1">
+                    <div className="space-y-2" data-error-field="slug">
+                      <Label
+                        htmlFor="slug"
+                        className="text-xs font-bold text-gray-700 ml-1"
+                      >
+                        URL slug
+                      </Label>
+                      <Input
+                        id="slug"
+                        {...register("slug")}
+                        placeholder="auto-generated from title"
+                        className="h-11 rounded-xl border-gray-200 focus:ring-indigo-500 text-sm font-mono"
+                      />
+                      {errors.slug && (
+                        <p className="text-xs text-destructive font-medium ml-1">
+                          {errors.slug.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 items-start">
+                      <div
+                        className="flex flex-col gap-2"
+                        data-error-field="type"
+                      >
+                        <Label className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] flex items-center gap-1">
                           Type <RequiredStar />
                         </Label>
                         <Select
@@ -550,7 +700,7 @@ export function PropertySheet({
                             setValue("type", v as "sale" | "rent")
                           }
                         >
-                          <SelectTrigger className="h-12 rounded-xl border-gray-200">
+                          <SelectTrigger className="h-12 w-full rounded-xl border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl shadow-2xl">
@@ -564,8 +714,11 @@ export function PropertySheet({
                         </Select>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-xs font-bold text-gray-700 ml-1">
+                      <div
+                        className="flex flex-col gap-2"
+                        data-error-field="status"
+                      >
+                        <Label className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] flex items-center">
                           Status
                         </Label>
                         <Select
@@ -577,7 +730,7 @@ export function PropertySheet({
                             )
                           }
                         >
-                          <SelectTrigger className="h-12 rounded-xl border-gray-200">
+                          <SelectTrigger className="h-12 w-full rounded-xl border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl shadow-2xl">
@@ -598,9 +751,12 @@ export function PropertySheet({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-xs font-bold text-gray-700 ml-1">
+                    <div className="grid grid-cols-2 gap-4 items-start">
+                      <div
+                        className="flex flex-col gap-2"
+                        data-error-field="category_id"
+                      >
+                        <Label className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] flex items-center">
                           Category
                         </Label>
                         <Select
@@ -609,7 +765,7 @@ export function PropertySheet({
                             setValue("category_id", v === "none" ? null : v)
                           }
                         >
-                          <SelectTrigger className="h-12 rounded-xl border-gray-200">
+                          <SelectTrigger className="h-12 w-full rounded-xl border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0">
                             <SelectValue placeholder="Select category" />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl shadow-2xl">
@@ -632,23 +788,60 @@ export function PropertySheet({
                         </Select>
                       </div>
 
-                      <div className="space-y-2">
+                      <div
+                        className="flex flex-col gap-2"
+                        data-error-field="price"
+                      >
                         <Label
                           htmlFor="price"
-                          className="text-xs font-bold text-gray-700 ml-1 flex items-center gap-1"
+                          className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] flex items-center gap-1"
                         >
                           Price (₹) <RequiredStar />
                         </Label>
-                        <div className="relative">
+                        <div className="relative w-full">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">
                             ₹
                           </span>
                           <Input
                             id="price"
-                            type="number"
-                            {...register("price", { valueAsNumber: true })}
-                            placeholder="5,000,000"
-                            className="h-12 rounded-xl border-gray-200 focus:ring-indigo-500 pl-8 font-bold"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            {...register("price", {
+                              setValueAs: (v) => {
+                                if (v === "" || v == null) return undefined;
+                                const digits = String(v).replace(/\D/g, "");
+                                return digits === ""
+                                  ? undefined
+                                  : Number(digits);
+                              },
+                            })}
+                            onKeyDown={(e) => {
+                              if (
+                                !/[\d]/.test(e.key) &&
+                                ![
+                                  "Backspace",
+                                  "Tab",
+                                  "ArrowLeft",
+                                  "ArrowRight",
+                                  "Delete",
+                                ].includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                            onPaste={(e) => {
+                              e.preventDefault();
+                              const digits = e.clipboardData
+                                .getData("text")
+                                .replace(/\D/g, "");
+                              setValue(
+                                "price",
+                                digits === "" ? 0 : Number(digits),
+                              );
+                            }}
+                            placeholder="5000000"
+                            className="h-12 w-full rounded-xl border-gray-200 focus:ring-indigo-500 pl-8 font-bold"
                           />
                         </div>
                         {errors.price && (
@@ -657,6 +850,39 @@ export function PropertySheet({
                           </p>
                         )}
                       </div>
+                    </div>
+
+                    <div
+                      className="flex flex-col gap-2"
+                      data-error-field="cover_image_url"
+                    >
+                      <Label className="text-xs font-bold text-gray-700 ml-1 flex items-center gap-1">
+                        Cover Image <RequiredStar />
+                      </Label>
+                      <CoverImageDropzone
+                        value={watch("cover_image_url") ?? null}
+                        onValueChange={(v) => setValue("cover_image_url", v)}
+                        onFileSelect={setCoverFile}
+                        propertyId={effectivePropertyId}
+                        pendingFile={coverFile}
+                        disabled={isPending}
+                        onUploadingChange={setCoverUploading}
+                        onValidationError={(msg) =>
+                          msg
+                            ? setError("cover_image_url", {
+                                type: "manual",
+                                message: msg,
+                              })
+                            : clearErrors("cover_image_url")
+                        }
+                        onErrorClear={() => clearErrors("cover_image_url")}
+                        uploadAbortSignal={uploadAbortSignal}
+                      />
+                      {errors.cover_image_url && (
+                        <p className="text-xs text-destructive font-medium ml-1">
+                          {errors.cover_image_url.message}
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -692,7 +918,7 @@ export function PropertySheet({
                 </section>
 
                 {/* Location Section */}
-                <section className="space-y-6">
+                <section className="space-y-6 mb-8">
                   <div className="flex items-center gap-2 mb-6">
                     <div className="h-1 w-6 bg-emerald-500 rounded-full" />
                     <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 block">
@@ -701,7 +927,7 @@ export function PropertySheet({
                   </div>
 
                   <div className="grid grid-cols-1 gap-6">
-                    <div className="space-y-2">
+                    <div className="space-y-2" data-error-field="address">
                       <Label
                         htmlFor="address"
                         className="text-xs font-bold text-gray-700 ml-1 flex items-center gap-1"
@@ -721,11 +947,14 @@ export function PropertySheet({
                       )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 items-start">
+                      <div
+                        className="flex flex-col gap-2"
+                        data-error-field="city"
+                      >
                         <Label
                           htmlFor="city"
-                          className="text-xs font-bold text-gray-700 ml-1 flex items-center gap-1"
+                          className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] flex items-center gap-1"
                         >
                           City <RequiredStar />
                         </Label>
@@ -733,7 +962,7 @@ export function PropertySheet({
                           id="city"
                           {...register("city")}
                           placeholder="Kochi"
-                          className="h-12 rounded-xl border-gray-200"
+                          className="h-12 w-full rounded-xl border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0"
                         />
                         {errors.city && (
                           <p className="text-xs text-destructive font-medium ml-1">
@@ -741,10 +970,13 @@ export function PropertySheet({
                           </p>
                         )}
                       </div>
-                      <div className="space-y-2">
+                      <div
+                        className="flex flex-col gap-2"
+                        data-error-field="state"
+                      >
                         <Label
                           htmlFor="state"
-                          className="text-xs font-bold text-gray-700 ml-1 flex items-center gap-1"
+                          className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] flex items-center gap-1"
                         >
                           State <RequiredStar />
                         </Label>
@@ -752,7 +984,7 @@ export function PropertySheet({
                           id="state"
                           {...register("state")}
                           placeholder="Kerala"
-                          className="h-12 rounded-xl border-gray-200"
+                          className="h-12 w-full rounded-xl border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0"
                         />
                         {errors.state && (
                           <p className="text-xs text-destructive font-medium ml-1">
@@ -760,18 +992,44 @@ export function PropertySheet({
                           </p>
                         )}
                       </div>
-                      <div className="space-y-2">
+                      <div className="flex flex-col gap-2">
                         <Label
                           htmlFor="zip_code"
-                          className="text-xs font-bold text-gray-700 ml-1"
+                          className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] flex items-center"
                         >
                           Zip / PIN Code
                         </Label>
                         <Input
                           id="zip_code"
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          maxLength={20}
                           {...register("zip_code")}
+                          onKeyDown={(e) => {
+                            if (
+                              !/[\d]/.test(e.key) &&
+                              ![
+                                "Backspace",
+                                "Tab",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Delete",
+                              ].includes(e.key)
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                          onPaste={(e) => {
+                            e.preventDefault();
+                            const digits = e.clipboardData
+                              .getData("text")
+                              .replace(/\D/g, "")
+                              .slice(0, 20);
+                            setValue("zip_code", digits);
+                          }}
                           placeholder="400001"
-                          className="h-12 rounded-xl border-gray-200"
+                          className="h-12 w-full rounded-xl border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0"
                         />
                       </div>
                     </div>
@@ -779,72 +1037,65 @@ export function PropertySheet({
                 </section>
               </TabsContent>
 
-              <TabsContent value="assets" className="mt-0 space-y-10">
+              <TabsContent value="assets" className="mt-0 space-y-12">
                 <section className="space-y-6">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-6">
                     <div className="h-1 w-6 bg-cyan-500 rounded-full" />
                     <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 block">
                       Property Assets
                     </Label>
                   </div>
-                  <p className="text-sm text-gray-500 mb-6">
-                    Upload cover image, gallery images (max 10), and add map
-                    embed.
+                  <p className="text-sm text-muted-foreground mb-6 ml-1">
+                    Upload gallery images (max 10) and add map embed.
                   </p>
 
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 ml-1 flex items-center gap-1">
-                      Cover Image <RequiredStar />
-                    </Label>
-                    <CoverImageDropzone
-                      value={watch("cover_image_url") ?? null}
-                      onValueChange={(v) => setValue("cover_image_url", v)}
-                      onFileSelect={setCoverFile}
-                      propertyId={effectivePropertyId}
-                      pendingFile={coverFile}
-                      disabled={isPending}
-                      onValidationError={(msg) =>
-                        msg
-                          ? setError("cover_image_url", {
-                              type: "manual",
-                              message: msg,
-                            })
-                          : clearErrors("cover_image_url")
-                      }
-                      onErrorClear={() => clearErrors("cover_image_url")}
-                    />
-                  </div>
+                  <div className="grid grid-cols-1 gap-6">
+                    <div className="flex flex-col gap-2">
+                      <Label className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] flex items-center">
+                        Gallery Images
+                      </Label>
+                      <GalleryDropzone
+                        value={watch("gallery_images") ?? []}
+                        onValueChange={(v) => setValue("gallery_images", v)}
+                        onFilesSelect={setGalleryFiles}
+                        propertyId={effectivePropertyId}
+                        pendingFiles={galleryFiles}
+                        disabled={isPending}
+                        onUploadingChange={setGalleryUploading}
+                        uploadAbortSignal={uploadAbortSignal}
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-gray-700 ml-1">
-                      Gallery Images
-                    </Label>
-                    <GalleryDropzone
-                      value={watch("gallery_images") ?? []}
-                      onValueChange={(v) => setValue("gallery_images", v)}
-                      onFilesSelect={setGalleryFiles}
-                      propertyId={effectivePropertyId}
-                      pendingFiles={galleryFiles}
-                      disabled={isPending}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="map_embed_url"
-                      className="text-xs font-bold text-gray-700 ml-1"
+                    <div
+                      className="flex flex-col gap-2"
+                      data-error-field="map_embed_url"
                     >
-                      Map Embed URL
-                    </Label>
-                    <Input
-                      id="map_embed_url"
-                      {...register("map_embed_url")}
-                      placeholder="https://www.google.com/maps/embed?pb=..."
-                      className="h-12 rounded-xl border-gray-200"
-                    />
-                    <p className="text-xs text-gray-400">
-                      Paste the embed URL from Google Maps (Share → Embed a map)
-                    </p>
+                      <Label
+                        htmlFor="map_embed_url"
+                        className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] flex items-center"
+                      >
+                        Map Embed URL
+                      </Label>
+                      <Input
+                        id="map_embed_url"
+                        {...register("map_embed_url")}
+                        placeholder="https://www.google.com/maps/embed?pb=..."
+                        className={cn(
+                          "h-12 w-full rounded-xl border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0",
+                          errors.map_embed_url &&
+                            "border-destructive focus:ring-destructive",
+                        )}
+                      />
+                      {errors.map_embed_url && (
+                        <p className="text-xs text-destructive font-medium ml-1">
+                          {errors.map_embed_url.message}
+                        </p>
+                      )}
+                      <p className="text-xs text-muted-foreground ml-1">
+                        Paste a Google Maps URL (embed or share link, e.g.
+                        maps.app.goo.gl or Share → Embed a map)
+                      </p>
+                    </div>
                   </div>
                 </section>
               </TabsContent>
@@ -859,86 +1110,106 @@ export function PropertySheet({
                     </Label>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                    <div className="space-y-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 items-start">
+                    <div className="flex flex-col gap-2">
                       <Label
                         htmlFor="area_sqft"
-                        className="text-xs font-bold text-gray-700 ml-1 text-center block"
+                        className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] text-center block"
                       >
                         Area (sqft)
                       </Label>
                       <Input
                         id="area_sqft"
-                        type="number"
-                        {...register("area_sqft", { valueAsNumber: true })}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*\.?[0-9]*"
+                        {...register("area_sqft", {
+                          setValueAs: (v) => (v === "" ? undefined : Number(v)),
+                        })}
                         placeholder="0"
-                        className="h-12 rounded-xl text-center font-bold"
+                        className="h-12 w-full rounded-xl text-center font-bold"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="flex flex-col gap-2">
                       <Label
                         htmlFor="bedrooms"
-                        className="text-xs font-bold text-gray-700 ml-1 text-center block"
+                        className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] text-center block"
                       >
                         Beds
                       </Label>
                       <Input
                         id="bedrooms"
-                        type="number"
-                        {...register("bedrooms", { valueAsNumber: true })}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        {...register("bedrooms", {
+                          setValueAs: (v) => (v === "" ? undefined : Number(v)),
+                        })}
                         placeholder="0"
-                        className="h-12 rounded-xl text-center font-bold"
+                        className="h-12 w-full rounded-xl text-center font-bold"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="flex flex-col gap-2">
                       <Label
                         htmlFor="bathrooms"
-                        className="text-xs font-bold text-gray-700 ml-1 text-center block"
+                        className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] text-center block"
                       >
                         Baths
                       </Label>
                       <Input
                         id="bathrooms"
-                        type="number"
-                        {...register("bathrooms", { valueAsNumber: true })}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        {...register("bathrooms", {
+                          setValueAs: (v) => (v === "" ? undefined : Number(v)),
+                        })}
                         placeholder="0"
-                        className="h-12 rounded-xl text-center font-bold"
+                        className="h-12 w-full rounded-xl text-center font-bold"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="flex flex-col gap-2">
                       <Label
                         htmlFor="floors"
-                        className="text-xs font-bold text-gray-700 ml-1 text-center block"
+                        className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] text-center block"
                       >
                         Floors
                       </Label>
                       <Input
                         id="floors"
-                        type="number"
-                        {...register("floors", { valueAsNumber: true })}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        {...register("floors", {
+                          setValueAs: (v) => (v === "" ? undefined : Number(v)),
+                        })}
                         placeholder="0"
-                        className="h-12 rounded-xl text-center font-bold"
+                        className="h-12 w-full rounded-xl text-center font-bold"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="flex flex-col gap-2">
                       <Label
                         htmlFor="age_years"
-                        className="text-xs font-bold text-gray-700 ml-1 text-center block"
+                        className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] text-center block"
                       >
                         Age (years)
                       </Label>
                       <Input
                         id="age_years"
-                        type="number"
-                        {...register("age_years", { valueAsNumber: true })}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        {...register("age_years", {
+                          setValueAs: (v) => (v === "" ? undefined : Number(v)),
+                        })}
                         placeholder="0"
-                        className="h-12 rounded-xl text-center font-bold"
+                        className="h-12 w-full rounded-xl text-center font-bold"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="flex flex-col gap-2">
                       <Label
                         htmlFor="facing"
-                        className="text-xs font-bold text-gray-700 ml-1 block"
+                        className="text-xs font-bold text-gray-700 ml-1 min-h-[1.25rem] text-center block"
                       >
                         Facing
                       </Label>
@@ -948,7 +1219,7 @@ export function PropertySheet({
                           setValue("facing", v === "none" ? null : v)
                         }
                       >
-                        <SelectTrigger className="h-12 rounded-xl border-gray-200">
+                        <SelectTrigger className="h-12 w-full rounded-xl border-gray-200">
                           <SelectValue placeholder="Select" />
                         </SelectTrigger>
                         <SelectContent className="rounded-xl shadow-2xl">
@@ -1138,8 +1409,7 @@ export function PropertySheet({
                     </Label>
                   </div>
                   <p className="text-sm text-gray-500 -mt-2">
-                    Optimize how this property appears in search results and
-                    when shared on social media.
+                    Optimize how this property appears in search results.
                   </p>
                   <div className="grid grid-cols-1 gap-6">
                     <div className="space-y-2">
@@ -1184,20 +1454,13 @@ export function PropertySheet({
                         className="h-12 rounded-xl border-gray-200 focus:ring-indigo-500"
                       />
                     </div>
-                    <ImageUrlInput
-                      id="og_image_url"
-                      label="OG Image URL (social share preview)"
-                      value={watch("og_image_url")}
-                      onChange={(v) => setValue("og_image_url", v)}
-                      placeholder="https://example.com/og-preview.jpg"
-                    />
                   </div>
                 </section>
               </TabsContent>
             </Tabs>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 z-10 p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] bg-white/95 backdrop-blur-md border-t border-gray-100 flex gap-3 shrink-0 touch-manipulation">
+          <div className="shrink-0 p-4 sm:p-6 pb-[max(1rem,env(safe-area-inset-bottom))] bg-white border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] flex gap-3 touch-manipulation">
             <Button
               type="button"
               variant="outline"
@@ -1206,6 +1469,8 @@ export function PropertySheet({
                 reset(defaultValues);
                 setCoverFile(null);
                 setGalleryFiles([]);
+                setCoverUploading(false);
+                setGalleryUploading(false);
                 setCreatedPropertyId(null);
                 setActiveTab("general");
               }}
@@ -1218,13 +1483,13 @@ export function PropertySheet({
               <Button
                 type="button"
                 onClick={() => handleSaveAndNext("assets")}
-                disabled={isPending}
+                disabled={isPending || assetsUploading}
                 className="flex-1 rounded-xl min-h-[44px] h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98] touch-manipulation"
               >
-                {isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                Save and Next
+                {(isPending || assetsUploading) && (
+                  <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" />
+                )}
+                {assetsUploading ? "Uploading…" : "Save and Next"}
               </Button>
             ) : activeTab === "assets" ? (
               <>
@@ -1239,12 +1504,12 @@ export function PropertySheet({
                 <Button
                   type="button"
                   onClick={() => handleSaveAndNext("specs")}
-                  disabled={isPending}
+                  disabled={isPending || assetsUploading}
                   className="flex-1 rounded-xl min-h-[44px] h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98] touch-manipulation"
                 >
-                  {isPending ? (
+                  {(isPending || assetsUploading) && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : null}
+                  )}
                   Save and Next
                 </Button>
               </>
@@ -1261,10 +1526,10 @@ export function PropertySheet({
                 <Button
                   type="button"
                   onClick={() => handleSaveAndNext("seo")}
-                  disabled={isPending}
+                  disabled={isPending || assetsUploading}
                   className="flex-1 rounded-xl min-h-[44px] h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98] touch-manipulation"
                 >
-                  {isPending ? (
+                  {isPending || assetsUploading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : null}
                   Save and Next
@@ -1282,10 +1547,10 @@ export function PropertySheet({
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isPending}
+                  disabled={isPending || assetsUploading}
                   className="flex-1 rounded-xl min-h-[44px] h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm shadow-sm transition-all active:scale-[0.98] touch-manipulation"
                 >
-                  {isPending ? (
+                  {isPending || assetsUploading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : null}
                   {isEditing ? "Apply Adjustments" : "Publicly List Listing"}

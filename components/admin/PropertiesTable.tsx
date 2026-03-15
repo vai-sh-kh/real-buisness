@@ -539,12 +539,37 @@ export function PropertiesTable({ categories }: PropertiesTableProps) {
             <div>
               <Label>Price</Label>
               <Input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 {...form.register("price", {
-                  valueAsNumber: true,
-                  setValueAs: (v) =>
-                    v === "" || isNaN(Number(v)) ? undefined : Number(v),
+                  setValueAs: (v) => {
+                    if (v === "" || v == null) return undefined;
+                    const digits = String(v).replace(/\D/g, "");
+                    return digits === "" ? undefined : Number(digits);
+                  },
                 })}
+                onKeyDown={(e) => {
+                  if (
+                    !/[\d]/.test(e.key) &&
+                    ![
+                      "Backspace",
+                      "Tab",
+                      "ArrowLeft",
+                      "ArrowRight",
+                      "Delete",
+                    ].includes(e.key)
+                  ) {
+                    e.preventDefault();
+                  }
+                }}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const digits = e.clipboardData
+                    .getData("text")
+                    .replace(/\D/g, "");
+                  form.setValue("price", digits === "" ? 0 : Number(digits));
+                }}
                 className="mt-1"
               />
               {form.formState.errors.price && (

@@ -15,6 +15,11 @@ const SESSION_OPTIONS = {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Redirect exact /admin to /admin/dashboard so we never show the index loading state
+  if (pathname === "/admin" || pathname === "/admin/") {
+    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+  }
+
   // Skip auth check for login page
   if (pathname === "/admin/login") {
     return NextResponse.next();
@@ -44,5 +49,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin", "/admin/", "/admin/:path*"],
 };

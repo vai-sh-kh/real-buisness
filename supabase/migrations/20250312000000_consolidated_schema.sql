@@ -158,17 +158,3 @@ CREATE POLICY "properties_service_update" ON storage.objects
 DROP POLICY IF EXISTS "properties_service_delete" ON storage.objects;
 CREATE POLICY "properties_service_delete" ON storage.objects
   FOR DELETE USING (bucket_id = 'properties');
-
--- ─── Seed amenities ────────────────────────────────────────────────────────
-INSERT INTO public.amenities (name, slug, icon, sort_order) VALUES
-  ('Swimming Pool', 'swimming-pool', '🏊', 1),
-  ('Gym', 'gym', '🏋️', 2),
-  ('Parking', 'parking', '🅿️', 3),
-  ('Garden', 'garden', '🌳', 4),
-  ('Balcony', 'balcony', '🏠', 5),
-  ('Security', 'security', '🔒', 6),
-  ('Lift/Elevator', 'lift-elevator', '🛗', 7),
-  ('Power Backup', 'power-backup', '⚡', 8),
-  ('Water Supply', 'water-supply', '💧', 9),
-  ('Club House', 'club-house', '🏛️', 10)
-ON CONFLICT (slug) DO NOTHING;
