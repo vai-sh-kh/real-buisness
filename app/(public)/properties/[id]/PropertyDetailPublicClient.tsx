@@ -18,26 +18,52 @@ import type { PropertyWithRelations } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CONTACT, SOCIAL_LINKS } from "@/lib/constants/site";
 import { SocialIcon } from "@/components/ui/SocialIcon";
+import { cn } from "@/lib/utils";
 
 interface PropertyDetailPublicClientProps {
   identifier: string;
 }
 
+const AMENITY_COLORS = [
+  "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200",
+  "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200",
+  "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200",
+  "bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-200",
+  "bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-200",
+  "bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-200",
+  "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200",
+  "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-200",
+];
+
 function DetailSkeleton() {
   return (
-    <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24 py-6 sm:py-8">
-      <Skeleton className="h-8 w-48 mb-6" />
-      <Skeleton className="aspect-[21/9] w-full rounded-2xl mb-8" />
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          <Skeleton className="h-10 w-3/4" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-32 w-full" />
-        </div>
-        <div className="space-y-4">
-          <Skeleton className="h-12 w-full rounded-xl" />
-          <Skeleton className="h-24 w-full rounded-xl" />
+    <div className="min-h-screen bg-muted/20">
+      <Skeleton className="aspect-[21/9] w-full rounded-none" />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 lg:py-10">
+        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="flex flex-wrap gap-4">
+              <Skeleton className="h-10 w-48" />
+              <Skeleton className="h-8 w-32 rounded-full" />
+            </div>
+            <div className="flex gap-4">
+              <Skeleton className="h-16 w-24 rounded-xl" />
+              <Skeleton className="h-16 w-24 rounded-xl" />
+              <Skeleton className="h-16 w-24 rounded-xl" />
+            </div>
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-40 w-full" />
+            <div className="grid grid-cols-3 gap-3">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Skeleton key={i} className="aspect-[4/3] rounded-xl" />
+              ))}
+            </div>
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-14 w-full rounded-2xl" />
+            <Skeleton className="h-24 rounded-2xl" />
+            <Skeleton className="h-12 rounded-2xl" />
+          </div>
         </div>
       </div>
     </div>
@@ -46,21 +72,25 @@ function DetailSkeleton() {
 
 function DetailEmpty() {
   return (
-    <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24 py-16 sm:py-24 text-center">
-      <Building2 className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-      <h1 className="text-xl font-semibold text-brand-charcoal mb-2">
-        Property not found
-      </h1>
-      <p className="text-muted-foreground mb-6">
-        This listing may have been removed or the link is invalid.
-      </p>
-      <Link
-        href="/properties"
-        className="inline-flex items-center gap-2 min-h-[44px] px-6 py-3 rounded-lg bg-brand-charcoal text-white font-medium hover:bg-brand-charcoal/90"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to properties
-      </Link>
+    <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 py-16 sm:py-24 bg-muted/20">
+      <div className="rounded-2xl border border-border bg-white p-8 sm:p-10 text-center max-w-md shadow-sm">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-muted mb-4">
+          <Building2 className="h-7 w-7 text-muted-foreground" />
+        </div>
+        <h1 className="text-xl font-semibold text-brand-charcoal mb-2">
+          Property not found
+        </h1>
+        <p className="text-muted-foreground text-sm sm:text-base mb-6">
+          This listing may have been removed or the link is invalid.
+        </p>
+        <Link
+          href="/properties"
+          className="inline-flex items-center justify-center gap-2 min-h-[48px] px-6 py-3 rounded-xl bg-brand-charcoal text-white font-medium hover:bg-brand-charcoal/90 focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to properties
+        </Link>
+      </div>
     </div>
   );
 }
@@ -84,10 +114,15 @@ export function PropertyDetailPublicClient({
     ? [coverUrl, ...gallery.filter((u) => u !== coverUrl)]
     : gallery;
 
+  const hasSpecs =
+    property.bedrooms != null ||
+    property.bathrooms != null ||
+    property.area_sqft != null;
+
   return (
-    <>
-      {/* Hero: full-bleed image, no rounded corners; native back button with tap feedback */}
-      <section className="relative w-full aspect-[21/9] min-h-[240px] sm:min-h-[280px] md:min-h-[320px] max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24 pt-4 sm:pt-6 mb-6 sm:mb-8 overflow-hidden">
+    <div className="min-h-screen bg-muted/20">
+      {/* Hero: full-bleed, overlay, back + title */}
+      <section className="relative w-full aspect-[21/9] min-h-[220px] sm:min-h-[280px] md:min-h-[340px] lg:min-h-[380px] overflow-hidden bg-brand-charcoal">
         {coverUrl ? (
           <Image
             src={coverUrl}
@@ -95,94 +130,115 @@ export function PropertyDetailPublicClient({
             fill
             className="object-cover"
             priority
-            sizes="(min-width: 1024px) 80vw, 100vw"
+            sizes="100vw"
           />
         ) : (
-          <div className="absolute inset-0 bg-muted flex items-center justify-center">
-            <Building2 className="h-16 w-16 text-muted-foreground" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Building2 className="h-20 w-20 text-white/30" />
           </div>
         )}
-        {/* Dark gradient overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
-        {/* Back button: no bg, white icon only */}
-        <button
-          type="button"
-          onClick={() => router.push("/properties")}
-          className="absolute left-4 sm:left-6 lg:left-16 xl:left-24 top-4 sm:top-6 z-10 flex items-center justify-center size-11 rounded-none border-0 bg-transparent text-white hover:text-white/90 active:text-white/80 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent touch-manipulation"
-          aria-label="Back to properties"
-        >
-          <ArrowLeft className="h-5 w-5 shrink-0" aria-hidden />
-        </button>
-        {/* Title + location at bottom of image */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:px-16 xl:px-24 pb-6 sm:pb-8 text-white">
-          <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight drop-shadow-md">
-            {property.title}
-          </h1>
-          {(property.city || property.state) && (
-            <p className="mt-1 flex items-center gap-1.5 text-white/95 text-sm sm:text-base drop-shadow-sm">
-              <MapPin className="h-4 w-4 shrink-0" />
-              {[property.city, property.state].filter(Boolean).join(", ")}
-            </p>
-          )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent lg:from-black/50" />
+
+        <div className="absolute inset-0 flex flex-col max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+          <div className="flex items-start justify-between pt-4 sm:pt-6">
+            <button
+              type="button"
+              onClick={() => router.push("/properties")}
+              className="flex items-center justify-center size-11 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 active:bg-white/25 border border-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent"
+              aria-label="Back to properties"
+            >
+              <ArrowLeft className="h-5 w-5 shrink-0" />
+            </button>
+            {allImages.length > 1 && (
+              <span className="rounded-full bg-black/40 backdrop-blur-sm text-white/90 text-xs font-medium px-3 py-1.5 border border-white/20">
+                {allImages.length} photos
+              </span>
+            )}
+          </div>
+          <div className="mt-auto pb-6 sm:pb-8 lg:pb-10">
+            <span className="inline-block rounded-full bg-brand-gold/90 text-white text-xs font-semibold px-3 py-1 uppercase tracking-wide mb-3">
+              {property.type === "sale" ? "For Sale" : "For Rent"}
+            </span>
+            <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight drop-shadow-lg max-w-3xl">
+              {property.title}
+            </h1>
+            {(property.city || property.state) && (
+              <p className="mt-2 flex items-center gap-2 text-white/90 text-sm sm:text-base">
+                <MapPin className="h-4 w-4 shrink-0" />
+                {[property.city, property.state].filter(Boolean).join(", ")}
+              </p>
+            )}
+          </div>
         </div>
       </section>
 
-      <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24 pb-12 sm:pb-16">
-        <div className="grid lg:grid-cols-3 gap-8 lg:gap-10">
-          {/* Main content */}
-          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-            {/* Price & quick specs */}
-            <div className="flex flex-wrap items-center gap-4 border-b border-border pb-6">
-              <p className="text-2xl sm:text-3xl font-bold text-brand-charcoal">
-                {formatPrice(property.price)}
-              </p>
-              <span className="text-sm text-muted-foreground">
-                {getPriceTypeLabel(property.price_type)}
-                {property.price_label ? ` · ${property.price_label}` : ""}
-              </span>
-              {property.type && (
-                <span className="rounded-full bg-brand-gold/15 text-brand-charcoal px-3 py-1 text-sm font-medium capitalize">
-                  {property.type}
+      {/* Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 lg:py-10">
+        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
+          {/* Main */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Price & meta */}
+            <div className="rounded-2xl border border-border bg-white p-5 sm:p-6 shadow-sm">
+              <div className="flex flex-wrap items-baseline gap-3 gap-y-1">
+                <p className="text-2xl sm:text-3xl font-bold text-brand-charcoal">
+                  {formatPrice(property.price ?? 0)}
+                </p>
+                <span className="text-sm text-muted-foreground">
+                  {getPriceTypeLabel(property.price_type)}
+                  {property.price_label ? ` · ${property.price_label}` : ""}
                 </span>
-              )}
+              </div>
             </div>
 
-            {(property.bedrooms != null ||
-              property.bathrooms != null ||
-              property.area_sqft != null) && (
-              <div className="flex flex-wrap gap-6 text-muted-foreground">
+            {/* Specs row */}
+            {hasSpecs && (
+              <div className="grid grid-cols-3 gap-3 sm:gap-4">
                 {property.bedrooms != null && (
-                  <span className="flex items-center gap-2">
-                    <Bed className="h-5 w-5" />
-                    {property.bedrooms} Beds
-                  </span>
+                  <div className="rounded-xl border border-border bg-white p-4 flex flex-col items-center gap-1 text-center shadow-sm">
+                    <Bed className="h-5 w-5 text-brand-gold" aria-hidden />
+                    <span className="text-lg font-bold text-brand-charcoal tabular-nums">
+                      {property.bedrooms}
+                    </span>
+                    <span className="text-xs text-muted-foreground">Beds</span>
+                  </div>
                 )}
                 {property.bathrooms != null && (
-                  <span className="flex items-center gap-2">
-                    <Bath className="h-5 w-5" />
-                    {property.bathrooms} Baths
-                  </span>
+                  <div className="rounded-xl border border-border bg-white p-4 flex flex-col items-center gap-1 text-center shadow-sm">
+                    <Bath className="h-5 w-5 text-brand-gold" aria-hidden />
+                    <span className="text-lg font-bold text-brand-charcoal tabular-nums">
+                      {property.bathrooms}
+                    </span>
+                    <span className="text-xs text-muted-foreground">Baths</span>
+                  </div>
                 )}
                 {property.area_sqft != null && (
-                  <span className="flex items-center gap-2">
-                    <Maximize2 className="h-5 w-5" />
-                    {property.area_sqft} sqft
-                  </span>
+                  <div className="rounded-xl border border-border bg-white p-4 flex flex-col items-center gap-1 text-center shadow-sm">
+                    <Maximize2 className="h-5 w-5 text-brand-gold" aria-hidden />
+                    <span className="text-lg font-bold text-brand-charcoal tabular-nums">
+                      {property.area_sqft}
+                    </span>
+                    <span className="text-xs text-muted-foreground">sqft</span>
+                  </div>
                 )}
               </div>
             )}
 
+            {/* Short description */}
             {property.short_description && (
-              <p className="text-muted-foreground leading-relaxed">
-                {property.short_description}
-              </p>
+              <div className="rounded-2xl border border-border bg-white p-5 sm:p-6 shadow-sm">
+                <p className="text-muted-foreground leading-relaxed">
+                  {property.short_description}
+                </p>
+              </div>
             )}
 
+            {/* Full description */}
             {property.description && (
-              <div className="prose prose-brand-charcoal max-w-none">
-                <h3 className="text-lg font-semibold text-brand-charcoal mb-2">
+              <div className="rounded-2xl border border-border bg-white p-5 sm:p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-brand-charcoal mb-3">
                   Description
-                </h3>
+                </h2>
                 <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
                   {property.description}
                 </p>
@@ -191,22 +247,25 @@ export function PropertyDetailPublicClient({
 
             {/* Gallery */}
             {allImages.length > 1 && (
-              <div>
-                <h3 className="text-lg font-semibold text-brand-charcoal mb-4">
+              <div className="rounded-2xl border border-border bg-white p-5 sm:p-6 shadow-sm overflow-hidden">
+                <h2 className="text-lg font-semibold text-brand-charcoal mb-4">
                   Gallery
-                </h3>
+                </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {allImages.slice(0, 6).map((url, i) => (
                     <div
                       key={i}
-                      className="relative aspect-[4/3] rounded-xl overflow-hidden bg-muted"
+                      className={cn(
+                        "relative aspect-[4/3] rounded-xl overflow-hidden bg-muted",
+                        i === 0 && "sm:col-span-2 sm:row-span-2 sm:aspect-auto sm:min-h-[200px]"
+                      )}
                     >
                       <Image
                         src={url}
                         alt=""
                         fill
                         className="object-cover"
-                        sizes="(max-width: 640px) 50vw, 33vw"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
                       />
                     </div>
                   ))}
@@ -216,42 +275,32 @@ export function PropertyDetailPublicClient({
 
             {/* Amenities */}
             {property.amenities && property.amenities.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-brand-charcoal mb-3">
+              <div className="rounded-2xl border border-border bg-white p-5 sm:p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-brand-charcoal mb-4">
                   Amenities
-                </h3>
+                </h2>
                 <ul className="flex flex-wrap gap-2">
-                  {property.amenities.map((a, i) => {
-                    const colors = [
-                      "bg-blue-100 text-blue-800",
-                      "bg-emerald-100 text-emerald-800",
-                      "bg-amber-100 text-amber-800",
-                      "bg-violet-100 text-violet-800",
-                      "bg-rose-100 text-rose-800",
-                      "bg-teal-100 text-teal-800",
-                      "bg-orange-100 text-orange-800",
-                      "bg-indigo-100 text-indigo-800",
-                    ];
-                    const style = colors[i % colors.length];
-                    return (
-                      <li
-                        key={i}
-                        className={`rounded-lg px-3 py-1.5 text-sm font-medium ${style}`}
-                      >
-                        {a}
-                      </li>
-                    );
-                  })}
+                  {property.amenities.map((a, i) => (
+                    <li
+                      key={i}
+                      className={cn(
+                        "rounded-lg px-3 py-1.5 text-sm font-medium",
+                        AMENITY_COLORS[i % AMENITY_COLORS.length]
+                      )}
+                    >
+                      {a}
+                    </li>
+                  ))}
                 </ul>
               </div>
             )}
 
             {/* Map */}
             {property.map_embed_url && (
-              <div>
-                <h3 className="text-lg font-semibold text-brand-charcoal mb-3">
+              <div className="rounded-2xl border border-border bg-white p-5 sm:p-6 shadow-sm overflow-hidden">
+                <h2 className="text-lg font-semibold text-brand-charcoal mb-4">
                   Location
-                </h3>
+                </h2>
                 <div className="aspect-video w-full rounded-xl overflow-hidden border border-border">
                   <iframe
                     title="Location map"
@@ -269,15 +318,14 @@ export function PropertyDetailPublicClient({
             )}
           </div>
 
-          {/* Sidebar — WhatsApp only (logo color + white text), then social + back */}
+          {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 rounded-2xl border border-border bg-white p-6 shadow-lg shadow-black/5">
-              {/* WhatsApp button: gold background, white icon + text (from constant) */}
+            <div className="sticky top-24 rounded-2xl border border-border bg-white p-6 shadow-lg shadow-black/5 space-y-5">
               <a
                 href={CONTACT.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2.5 w-full min-h-[48px] rounded-xl bg-brand-gold text-white font-semibold hover:bg-brand-gold/90 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
+                className="inline-flex items-center justify-center gap-2.5 w-full min-h-[52px] rounded-xl bg-brand-gold text-white font-semibold hover:bg-brand-gold/90 transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
                 aria-label={CONTACT.whatsappLabel}
               >
                 <svg
@@ -290,8 +338,7 @@ export function PropertyDetailPublicClient({
                 </svg>
                 <span>{CONTACT.whatsappLabel}</span>
               </a>
-              {/* Social icons — Instagram, etc. from constant */}
-              <div className="mt-5 pt-5 border-t border-border">
+              <div className="pt-5 border-t border-border">
                 <p className="text-xs font-medium text-muted-foreground mb-3">
                   Follow us
                 </p>
@@ -315,7 +362,7 @@ export function PropertyDetailPublicClient({
               </div>
               <Link
                 href="/properties"
-                className="mt-4 inline-flex items-center justify-center gap-2 w-full min-h-[44px] rounded-xl border border-border text-brand-charcoal font-medium hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
+                className="inline-flex items-center justify-center gap-2 w-full min-h-[48px] rounded-xl border-2 border-border text-brand-charcoal font-medium hover:bg-muted/50 hover:border-brand-charcoal/70 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
               >
                 <ArrowLeft className="h-4 w-4" aria-hidden />
                 Back to properties
@@ -324,6 +371,6 @@ export function PropertyDetailPublicClient({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
