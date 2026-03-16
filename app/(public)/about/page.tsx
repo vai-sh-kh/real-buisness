@@ -6,22 +6,12 @@ import {
   Star,
   Lightbulb,
   Heart,
-  MapPin,
-  Phone,
-  Mail,
-  MessageCircle,
   CheckCircle2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import {
-  SITE_NAME,
-  CONTACT,
-  ABOUT,
-  SOCIAL_LINKS,
-} from "@/lib/constants/site";
-import { SocialIcon } from "@/components/ui/SocialIcon";
+import { SITE_NAME, ABOUT } from "@/lib/constants/site";
 
 const HERO_BANNER = "/hero-about.jpg";
 const STORY_IMAGE = "/about-story.jpg";
@@ -217,122 +207,6 @@ export default function AboutPage() {
                 </div>
               );
             })}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact / Find us — from CONTACT */}
-      <section className="py-16 sm:py-20 lg:py-24 bg-white border-t border-border">
-        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-            <div>
-              <span className="inline-block text-brand-gold font-semibold tracking-widest uppercase text-xs mb-4">
-                Get in touch
-              </span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-charcoal mb-6">
-                Where to find us
-              </h2>
-              <p className="text-muted-foreground text-lg mb-8">
-                We would love to hear from you. Reach out via phone, email,
-                WhatsApp, or visit us at our office.
-              </p>
-              <ul className="space-y-5">
-                <li className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-brand-gold/15 flex items-center justify-center text-brand-gold shrink-0">
-                    <MapPin className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-brand-charcoal">
-                      {CONTACT.address.line1}
-                    </p>
-                    <p className="text-muted-foreground">
-                      {CONTACT.address.city}
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-brand-gold/15 flex items-center justify-center text-brand-gold shrink-0">
-                    <Phone className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <a
-                      href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}
-                      className="font-semibold text-brand-charcoal hover:text-brand-gold transition-colors"
-                    >
-                      {CONTACT.phone}
-                    </a>
-                    {CONTACT.phoneSecondary && (
-                      <p className="text-muted-foreground text-sm mt-0.5">
-                        {CONTACT.phoneSecondary}
-                      </p>
-                    )}
-                  </div>
-                </li>
-                <li className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-brand-gold/15 flex items-center justify-center text-brand-gold shrink-0">
-                    <Mail className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <a
-                      href={`mailto:${CONTACT.email}`}
-                      className="font-semibold text-brand-charcoal hover:text-brand-gold transition-colors"
-                    >
-                      {CONTACT.email}
-                    </a>
-                  </div>
-                </li>
-              </ul>
-              <div className="mt-8 pt-8 border-t border-border">
-                <p className="text-sm font-semibold text-brand-charcoal mb-2">
-                  Working hours
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  {CONTACT.workingHours.weekdays}
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  {CONTACT.workingHours.saturday}
-                </p>
-              </div>
-            </div>
-            <div className="rounded-2xl border border-border bg-muted/30 p-8 sm:p-10">
-              <h3 className="text-xl font-bold text-brand-charcoal mb-6">
-                Connect with us
-              </h3>
-              <div className="flex flex-wrap gap-4">
-                <a
-                  href={CONTACT.whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 min-h-[48px] px-6 rounded-xl bg-brand-gold text-white font-semibold hover:bg-brand-gold/90 transition-colors w-full sm:w-auto"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                  {CONTACT.whatsappLabel}
-                </a>
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center justify-center gap-2 min-h-[48px] px-6 rounded-xl border-2 border-brand-gold text-brand-gold font-semibold hover:bg-brand-gold hover:text-white transition-colors w-full sm:w-auto"
-                >
-                  {CONTACT.contactUsLabel}
-                </Link>
-              </div>
-              <p className="text-sm text-muted-foreground mt-6 mb-4">
-                Follow us on social
-              </p>
-              <div className="flex flex-wrap gap-3">
-                {SOCIAL_LINKS.map((social) => (
-                  <a
-                    key={social.platform}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={social.ariaLabel}
-                    className="h-11 w-11 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-brand-gold hover:border-brand-gold/50 transition-colors"
-                  >
-                    <SocialIcon platform={social.platform} className="h-5 w-5" />
-                  </a>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </section>
