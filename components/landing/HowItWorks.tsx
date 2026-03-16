@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Search, Wallet, FileCheck, ArrowRight } from "lucide-react";
+import { Search, Wallet, FileCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const steps = [
@@ -112,22 +111,6 @@ export function HowItWorks() {
             );
           })}
         </div>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.4, delay: 0.4 }}
-          className="mt-6 sm:mt-10 text-center"
-        >
-          <Link
-            href="/properties"
-            className="inline-flex items-center justify-center gap-2 min-h-[48px] w-full sm:w-auto max-w-xs sm:max-w-none mx-auto px-5 sm:px-6 rounded-xl bg-brand-charcoal text-white text-sm font-semibold hover:bg-brand-charcoal/90 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 transition-colors"
-          >
-            Start your search
-            <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
-          </Link>
-        </motion.div>
       </div>
     </section>
   );

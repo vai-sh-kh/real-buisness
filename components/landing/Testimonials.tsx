@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
-import { Star } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const reviews = [
   {
@@ -44,29 +45,22 @@ function ReviewCard({
   rating,
   quote,
   date,
-  index,
-  inView,
+  className,
 }: {
   name: string;
   avatar: string;
   rating: number;
   quote: string;
   date: string;
-  index: number;
-  inView: boolean;
+  className?: string;
 }) {
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 20 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.1,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      className="rounded-2xl bg-white border border-neutral-200/80 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full"
+    <article
+      className={cn(
+        "rounded-2xl bg-white border border-neutral-200/80 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full shrink-0 w-full lg:w-1/3 px-2 sm:px-1",
+        className
+      )}
     >
-      {/* Top row: avatar + name + stars + date */}
       <div className="flex items-start gap-3 mb-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -88,7 +82,12 @@ function ReviewCard({
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-4 w-4 shrink-0 ${i < rating ? "fill-[#FFC107] text-[#FFC107]" : "fill-neutral-200 text-neutral-200"}`}
+                  className={cn(
+                    "h-4 w-4 shrink-0",
+                    i < rating
+                      ? "fill-[#FFC107] text-[#FFC107]"
+                      : "fill-neutral-200 text-neutral-200"
+                  )}
                   aria-hidden
                 />
               ))}
@@ -98,14 +97,30 @@ function ReviewCard({
         </div>
       </div>
       <p className="text-sm text-neutral-700 leading-relaxed flex-1">{quote}</p>
-    </motion.article>
+    </article>
   );
 }
 
 export function Testimonials() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
+  const [index, setIndex] = useState(0);
+  const [isLarge, setIsLarge] = useState(false);
 
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsLarge(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const goPrev = () =>
+    setIndex((i) => (i === 0 ? reviews.length - 1 : i - 1));
+  const goNext = () =>
+    setIndex((i) => (i === reviews.length - 1 ? 0 : i + 1));
+
+  // Desktop: show all 3 in a row. Mobile/tablet: slider, 1 per view
   return (
     <section
       className="py-12 sm:py-16 md:py-20 lg:py-24 bg-neutral-100 overflow-hidden"
@@ -113,7 +128,6 @@ export function Testimonials() {
       aria-labelledby="reviews-heading"
     >
       <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-16 xl:px-24">
-        {/* Header: Google Reviews style — title + aggregate rating + count */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10">
           <div>
             <div className="flex items-center gap-3 flex-wrap">
@@ -140,25 +154,81 @@ export function Testimonials() {
               What our clients say about us
             </p>
           </div>
+          {/* Arrows: show on mobile/tablet only (slider mode) */}
+          {!isLarge && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={goPrev}
+                className="h-10 w-10 rounded-full border border-neutral-300 bg-white text-neutral-700 flex items-center justify-center hover:bg-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
+                aria-label="Previous review"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={goNext}
+                className="h-10 w-10 rounded-full border border-neutral-300 bg-white text-neutral-700 flex items-center justify-center hover:bg-neutral-50 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
+                aria-label="Next review"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Review cards grid — like Google Reviews listing */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {reviews.map((review, i) => (
-            <ReviewCard
-              key={review.name}
-              name={review.name}
-              avatar={review.avatar}
-              rating={review.rating}
-              quote={review.quote}
-              date={review.date}
-              index={i}
-              inView={inView}
-            />
-          ))}
+        {/* Slider: 1 card on mobile, 3 on desktop */}
+        <div className="relative -mx-2 sm:mx-0">
+          <div className="overflow-hidden lg:overflow-visible">
+            <motion.div
+              className={cn(
+                "flex gap-4 sm:gap-6",
+                isLarge ? "flex-wrap" : "flex-nowrap transition-transform duration-300 ease-out"
+              )}
+              style={
+                isLarge
+                  ? undefined
+                  : { transform: `translateX(-${index * (100 / reviews.length)}%)` }
+              }
+            >
+              {reviews.map((review, i) => (
+                <ReviewCard
+                  key={review.name}
+                  name={review.name}
+                  avatar={review.avatar}
+                  rating={review.rating}
+                  quote={review.quote}
+                  date={review.date}
+                  className={cn(
+                    "min-w-full md:min-w-full lg:min-w-0 lg:flex-1 lg:max-w-[calc(33.333%-0.5rem)]"
+                  )}
+                />
+              ))}
+            </motion.div>
+          </div>
         </div>
 
-        {/* Optional: subtle "Google" style hint — text only, no trademark */}
+        {/* Dots: mobile/tablet only */}
+        {!isLarge && (
+          <div className="flex justify-center gap-2 mt-6">
+            {reviews.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setIndex(i)}
+                className={cn(
+                  "h-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-neutral-100",
+                  i === index
+                    ? "w-6 bg-amber-500"
+                    : "w-2 bg-neutral-300 hover:bg-neutral-400"
+                )}
+                aria-label={`Go to review ${i + 1}`}
+                aria-current={i === index ? "true" : undefined}
+              />
+            ))}
+          </div>
+        )}
+
         <p className="text-center text-xs text-neutral-400 mt-8">
           Customer reviews
         </p>

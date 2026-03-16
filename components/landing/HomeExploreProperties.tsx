@@ -171,14 +171,14 @@ export function HomeExploreProperties() {
               home or investment.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap sm:justify-end">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 sm:flex-nowrap sm:justify-end">
             {TABS.map((tab) => (
               <button
                 key={tab.value}
                 type="button"
                 onClick={() => setActiveTab(tab.value)}
                 className={cn(
-                  "min-h-[48px] sm:min-h-[44px] px-4 sm:px-5 rounded-xl text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2",
+                  "min-h-[40px] sm:min-h-[44px] px-3 sm:px-5 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2",
                   activeTab === tab.value
                     ? "bg-brand-charcoal text-white"
                     : "bg-white border border-border text-muted-foreground hover:border-brand-gold/50 hover:text-brand-charcoal"
@@ -189,10 +189,10 @@ export function HomeExploreProperties() {
             ))}
             <Link
               href="/properties"
-              className="min-h-[48px] sm:min-h-[44px] px-4 sm:px-5 rounded-xl bg-brand-gold text-white text-sm font-semibold inline-flex items-center gap-2 hover:bg-brand-gold/90 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 shrink-0"
+              className="min-h-[40px] sm:min-h-[44px] px-3 sm:px-5 py-2 rounded-lg sm:rounded-xl bg-brand-gold text-white text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5 sm:gap-2 hover:bg-brand-gold/90 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 shrink-0"
             >
               View all
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Link>
           </div>
         </div>
